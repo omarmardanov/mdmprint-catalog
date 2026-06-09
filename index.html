@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MDMprint · прототипы</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,'Segoe UI',Inter,Arial,sans-serif;color:#1a1a1a;background:#fafafa;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card{max-width:420px;width:100%;text-align:center}
+  h1{font-size:22px;font-weight:800;margin-bottom:6px}
+  p{color:#6a6f78;font-size:14px;margin-bottom:24px}
+  a.link{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;background:#fff;border:1px solid #ececec;border-radius:14px;margin-bottom:12px;text-decoration:none;color:#1a1a1a;transition:border-color .15s,box-shadow .15s}
+  a.link:hover{border-color:#FFC829;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+  a.link b{font-size:16px;font-weight:700}
+  a.link span{font-size:13px;color:#8a8f98;display:block;margin-top:2px}
+  a.link .arr{font-size:22px;color:#c2c5cb}
+  .txt{text-align:left}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>MDMprint — прототипы каталога</h1>
+    <p>Выберите версию для просмотра</p>
+    <a class="link" href="header-catalog-mobile.html">
+      <span class="txt"><b>Мобильная версия</b><span>Шапка + каталог drill-down</span></span>
+      <span class="arr">›</span>
+    </a>
+    <a class="link" href="header-catalog.html">
+      <span class="txt"><b>Десктоп-версия</b><span>Шапка + выпадающий каталог (1200px)</span></span>
+      <span class="arr">›</span>
+    </a>
+  </div>
+</body>
+</html>
