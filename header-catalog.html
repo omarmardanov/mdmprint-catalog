@@ -1459,9 +1459,9 @@
       {id:'calc', ref:'Навбар · кнопка расчёта', anchor:'.calc',
        q:'Сейчас «Калькулятор». На встрече склонялись к «Рассчитать и заказать». Какой текст оставить?',
        opts:['Калькулятор','Рассчитать и заказать','Рассчитать']},
-      {id:'landings', ref:'Навбар · разделы', anchor:'.quick',
-       q:'Лендинги-сущности (конструктор из блоков): Сувениры и мерч, Брендирование, Карты и настольные игры, Коробочные решения. Список полный?',
-       opts:['Список ок','Дополнить (в комменте)']},
+      {id:'landings', ref:'Каталог · Сувениры и мерч', anchor:'.rail .ri[data-sec="6"]', mega:true, sec:'6',
+       q:'Лендинги-сущности (конструктор из блоков) — отдельными пунктами: Брендирование ваших сувениров, Готовые наборы подарков, Индивидуальный дизайн, Каталог сувениров. Список полный?',
+       opts:['Список полный','Дополнить (в комменте)']},
       {id:'rail', ref:'Каталог · левая колонка', anchor:'#rail', mega:true, apply:true,
        q:'Выберите стиль строк рельсы и раскладку Услуг/Материалов — кнопки применяют вид вживую.',
        opts:['Минимал + Рельса 2','Минимал + Рельса 1','Плашки + Рельса 2','Плашки + Рельса 1']}
@@ -1477,7 +1477,7 @@
 
     function highlight(q){
       document.querySelectorAll('.q-highlight').forEach(el=>el.classList.remove('q-highlight'));
-      if(q.mega){ if(typeof openMega==='function') openMega(); }
+      if(q.mega){ if(typeof openMega==='function') openMega(); if(q.sec && typeof showSec==='function') showSec(q.sec); }
       else { if(typeof closeMega==='function') closeMega(); }
       const el = document.querySelector(q.anchor);
       if(!el) return;
