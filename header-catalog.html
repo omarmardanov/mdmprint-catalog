@@ -37,7 +37,9 @@
   .topbar a{color:#c7c9cd;transition:color .15s}
   .topbar a:hover{color:#fff}
   .topbar .menu{display:flex;gap:22px;align-items:center;font-weight:500}
-  .topbar .info{display:flex;gap:22px;align-items:center}
+  .topbar .info{display:flex;gap:16px;align-items:center}
+  .topbar .tb-cta{display:inline-flex;align-items:center;height:24px;padding:0 12px;border-radius:var(--radius-pill);background:#FFC829;color:#1a1a1a;font-size:12.5px;font-weight:600;white-space:nowrap}
+  .topbar .tb-cta:hover{background:#E6A700;color:#1a1a1a}
   .topbar .info .it{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;color:#c7c9cd}
   .topbar .info .it:hover{color:#fff}
   /* «О компании» — выпадающее меню в топбаре */
@@ -62,13 +64,20 @@
   .search .si{color:var(--muted2);flex-shrink:0;margin-right:8px}
   .search input{flex:1;border:none;outline:none;font-size:13.5px;background:transparent;color:#1a1a1a}
   .search input::placeholder{color:var(--muted2)}
-  .search button{height:32px;padding:0 18px;border:none;border-radius:var(--radius-pill);background:#f0f0f1;color:#3a3a3a;font-size:13px;font-weight:500;cursor:pointer;flex-shrink:0;transition:background .15s,color .15s}
-  .search button:hover{background:#e6e6e8;color:#1a1a1a}
+  .search button{height:32px;padding:0 18px;border:none;border-radius:var(--radius-pill);background:#1a1a1a;color:#fff;font-size:13px;font-weight:500;cursor:pointer;flex-shrink:0;transition:background .15s}
+  .search button:hover{background:#000}
 
   /* телефон в шапке — выделенный (решение со встречи) */
-  .hphone{display:flex;flex-direction:column;align-items:flex-end;gap:0;flex-shrink:0;margin:0 6px}
+  .hphone{display:flex;align-items:center;gap:10px;flex-shrink:0;margin:0 4px;padding:5px 10px;border-radius:10px;transition:background .15s}
+  .hphone:hover{background:var(--hover)}
+  .hphone .ph-ic{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#1a1a1a;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .hphone .ph-txt{display:flex;flex-direction:column;align-items:flex-start;gap:0}
   .hphone .num{font-size:16px;font-weight:700;color:#1a1a1a;white-space:nowrap;letter-spacing:.2px;line-height:1.25}
-  .hphone .cb{font-size:11.5px;color:#8a8f98;border-bottom:1px dashed #c9cdd3;line-height:1.3;align-self:flex-end}
+  .hphone .num .pre{font-weight:600;color:#7a7f88}
+  .hphone .num .l4{color:#1a1a1a}
+  .hphone .psub{display:flex;align-items:center;gap:8px}
+  .hphone .day{font-size:11.5px;color:#8a8f98;line-height:1.3;white-space:nowrap}
+  .hphone .cb{font-size:11.5px;color:#8a8f98;border-bottom:1px dashed #c9cdd3;line-height:1.3}
   .hphone .cb:hover{color:#1a1a1a;border-color:#1a1a1a}
 
   /* единый стиль кнопок шапки */
@@ -273,6 +282,83 @@
   .note{max-width:var(--max);margin:22px auto;padding:14px 18px;font-size:12.5px;color:#6a6f78;background:#fff;border:1px dashed var(--line2);border-radius:10px;line-height:1.7}
   .note b{color:#1a1a1a}
 
+  /* ===== ФИКС-ШАПКА + УМЕНЬШЕНИЕ ПРИ СКРОЛЛЕ (демо; механику доработаем) ===== */
+  .site-head{position:sticky;top:0;z-index:50}
+  .topbar{transition:max-height .25s ease,opacity .2s ease;max-height:80px}
+  body.scrolled .topbar{max-height:0;opacity:0;overflow:hidden}
+
+  /* компактная «Каталог» в основной шапке (видна только при скролле) */
+  .hcat{display:none;align-items:center;gap:8px;background:#1a1a1a;color:#fff;font-weight:500;font-size:13px;height:36px;padding:0 14px;border-radius:var(--radius-pill);cursor:pointer;user-select:none;flex-shrink:0}
+  .hcat .ic{display:flex;flex-direction:column;gap:3px}
+  .hcat .ic i{width:14px;height:1.5px;background:#fff;border-radius:2px;transition:.2s}
+  .hcat.active .ic i:nth-child(1){transform:translateY(4.5px) rotate(45deg)}
+  .hcat.active .ic i:nth-child(2){opacity:0}
+  .hcat.active .ic i:nth-child(3){transform:translateY(-4.5px) rotate(-45deg)}
+  /* компактный «Калькулятор» перед Telegram — в стиле кнопки Telegram (.hbtn), виден только при скролле */
+  .hcalc{display:none}
+  .hcalc .ci svg{color:#E6A700}
+
+  /* плавное пропорциональное уменьшение элементов */
+  .hbar{transition:height .2s ease}
+  .logo img,.search,.search button,.hphone,.hphone .ph-ic,.hphone .num,.hbtn,.hbtn .ci{transition:all .2s ease}
+  body.scrolled .hbar{height:54px}
+  body.scrolled .logo img{height:22px}
+  body.scrolled .search{height:36px}
+  body.scrolled .search button{height:28px;padding:0 14px;font-size:12.5px}
+  body.scrolled .search input{font-size:13px}
+  body.scrolled .hphone{padding:3px 8px;gap:8px}
+  body.scrolled .hphone .ph-ic{width:30px;height:30px}
+  body.scrolled .hphone .num{font-size:14.5px}
+  body.scrolled .hbtn{min-width:50px;font-size:11.5px;padding:4px 6px}
+  body.scrolled .hbtn .ci{width:20px;height:20px}
+  body.scrolled .hcat{display:flex;height:34px}
+  body.scrolled .hcalc{display:flex}
+  /* скрыть 3-ю линию шапки, оставив навбар как опору для выпадающего каталога */
+  body.scrolled .navbar{border-bottom:none}
+  body.scrolled .navbar .nav{display:none}
+
+  /* ===== РЕЖИМ РЕВЬЮ (демо): вопросы к макету ===== */
+  .review-fab{position:fixed;top:12px;left:12px;z-index:201;display:inline-flex;align-items:center;gap:8px;border:none;font-family:inherit;font-size:13px;font-weight:600;color:#1a1a1a;background:var(--accent);padding:10px 15px;border-radius:10px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+  .review-fab.active{background:#1a1a1a;color:#fff}
+  .review-fab svg{display:block}
+  body.review-on{padding-right:360px;transition:padding-right .25s ease}
+  body.review-on .ver-switch{display:none}
+  .review-panel{position:fixed;top:0;right:0;width:360px;height:100vh;background:#fff;border-left:1px solid var(--line);box-shadow:-10px 0 34px rgba(0,0,0,.13);z-index:200;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease}
+  body.review-on .review-panel{transform:translateX(0)}
+  .rp-head{padding:18px 18px 14px;border-bottom:1px solid var(--line);flex-shrink:0}
+  .rp-head h3{font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:6px}
+  .rp-head p{font-size:12px;line-height:1.5;color:#6a6f78}
+  .rp-list{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+  .q-card{border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;transition:border-color .15s,box-shadow .15s;background:#fff}
+  .q-card:hover{border-color:#c9cdd3}
+  .q-card.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+  .q-card.answered{background:#fcfcfa}
+  .q-top{display:flex;gap:10px;align-items:flex-start}
+  .q-num{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#1a1a1a;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .q-card.answered .q-num{background:var(--accent);color:#1a1a1a}
+  .q-ref{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:#9a9fa8;font-weight:700;margin-bottom:3px}
+  .q-card h4{font-size:13px;font-weight:600;color:#1a1a1a;line-height:1.4}
+  .q-opts{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0 32px}
+  .q-opts button{font-family:inherit;font-size:12px;border:1px solid var(--line2);background:#fff;color:#3a3a3a;border-radius:16px;padding:5px 11px;cursor:pointer;transition:.12s}
+  .q-opts button:hover{border-color:#c9cdd3}
+  .q-opts button.sel{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+  .q-comment{margin:8px 0 0 32px;width:calc(100% - 32px);border:1px solid var(--line2);border-radius:8px;padding:7px 9px;font-family:inherit;font-size:12.5px;color:#1a1a1a;resize:vertical;min-height:32px;outline:none}
+  .q-comment:focus{border-color:#1a1a1a}
+  .rp-foot{padding:12px;border-top:1px solid var(--line);display:flex;gap:8px;flex-shrink:0}
+  .rp-foot button{flex:1;font-family:inherit;font-size:12.5px;font-weight:600;border-radius:9px;padding:10px;cursor:pointer;border:none;background:#1a1a1a;color:#fff;transition:.12s}
+  .rp-foot button:hover{background:#000}
+  .rp-foot button.ghost{background:#fff;border:1px solid var(--line2);color:#3a3a3a;flex:0 0 auto;padding:10px 14px}
+  .rp-foot button.ghost:hover{background:var(--hover)}
+  .q-highlight{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px;animation:qPulse 1.1s ease-out 1}
+  @keyframes qPulse{0%{box-shadow:0 0 0 0 rgba(255,200,41,.55)}100%{box-shadow:0 0 0 16px rgba(255,200,41,0)}}
+
+  /* страница-заглушка (демо скролла; в проде — реальный контент) */
+  .ph-page{max-width:var(--max);margin:24px auto 64px;padding:0 20px;display:flex;flex-direction:column;gap:20px}
+  .ph-row{background:#fff;border:1px solid var(--line);border-radius:14px;display:flex;align-items:center;justify-content:center}
+  .scroll-hint{display:inline-flex;align-items:center;gap:10px;color:#9a9fa8;font-size:16px;font-weight:600;letter-spacing:.2px;user-select:none}
+  .scroll-hint svg{animation:hintBounce 1.4s ease-in-out infinite}
+  @keyframes hintBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+
   /* ===== ДЕМО-ПЕРЕКЛЮЧАТЕЛЬ ВЕРСИЙ (в проде убрать) ===== */
   .ver-switch{position:fixed;top:12px;right:12px;z-index:200;display:flex;gap:2px;background:rgba(27,27,29,.92);backdrop-filter:blur(6px);border-radius:9px;padding:3px;box-shadow:0 4px 16px rgba(0,0,0,.18)}
   .ver-switch button{border:none;background:none;font-family:inherit;font-size:12px;font-weight:600;color:#9a9ba0;padding:6px 13px;border-radius:6px;cursor:pointer;transition:.12s;white-space:nowrap}
@@ -294,14 +380,24 @@
 
   <!-- ДЕМО-ПЕРЕКЛЮЧАТЕЛЬ ВЕРСИЙ (в проде убрать) -->
   <div class="ver-switch" id="verSwitch">
-    <button data-ver="v1">До</button>
-    <button data-ver="v2" class="active">После</button>
+    <button data-ver="v1">Плашки</button>
+    <button data-ver="v2" class="active">Минимал</button>
   </div>
   <!-- ДЕМО-ПЕРЕКЛЮЧАТЕЛЬ РЕЛЬСЫ (в проде убрать) -->
   <div class="ver-switch" id="railSwitch" style="top:54px">
     <button data-rv="v2" class="active">Рельса 2</button>
     <button data-rv="v1">Рельса 1</button>
   </div>
+
+  <!-- ===== РЕЖИМ РЕВЬЮ (демо): вопросы к спорным частям макета ===== -->
+  <button class="review-fab" id="reviewFab" title="Вопросы к макету">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span id="rfLabel">Вопросы к макету</span>
+  </button>
+  <aside class="review-panel" id="reviewPanel" aria-hidden="true"></aside>
+
+  <!-- ФИКС-ШАПКА (прилипает + уменьшается при скролле) -->
+  <div class="site-head">
 
   <!-- ВЕРХНЯЯ ПОЛОСА (меню слева, контакты справа) -->
   <div class="topbar">
@@ -315,11 +411,15 @@
         <div class="tb-drop">
           <span class="tb-drop-t">О компании <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           <div class="tb-menu">
-            <a href="#">О нас</a>
+            <a href="#">Преимущества компании</a>
+            <a href="#">О компании</a>
             <a href="#">Производство</a>
             <a href="#">Сертификаты и лицензии</a>
             <a href="#">Вакансии</a>
             <a href="#">Отзывы</a>
+            <a href="#">Блог</a>
+            <a href="#">Новости</a>
+            <a href="#">Написать директору</a>
           </div>
         </div>
       </div>
@@ -328,6 +428,7 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
           info@mdmprint.ru
         </a>
+        <a class="tb-cta" href="#">Оставить заявку</a>
       </div>
     </div>
   </div>
@@ -338,22 +439,27 @@
       <a href="#" class="logo">
         <img src="assets/mdmprint-logo.svg" alt="MDMprint — заводская типография">
       </a>
+      <div class="hcat" id="hcat" title="Каталог">
+        <span class="ic"><i></i><i></i><i></i></span>
+        Каталог
+      </div>
       <form class="search" onsubmit="return false">
         <span class="si"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
         <input type="text" placeholder="Поиск по 2000+ услугам: визитки, наклейки, коробки…">
         <button type="submit">Найти</button>
       </form>
       <div class="hphone">
-        <a href="tel:+74952561000" class="num">+7 (495) 256-10-00</a>
-        <a href="#" class="cb">Заказать звонок</a>
+        <span class="ph-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.5 15.5 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg></span>
+        <div class="ph-txt">
+          <a href="tel:+74952561000" class="num"><span class="pre">+7 (495) 256-</span><span class="l4">10-00</span></a>
+          <div class="psub"><span class="day">без выходных</span><a href="#" class="cb">Заказать звонок</a></div>
+        </div>
       </div>
       <div class="hactions">
-        <div class="hbtn" title="Связаться">
-          <span class="ci">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="#FFC829"><path d="M19.91,16.51A8.45,8.45,0,0,0,22,11c0-5-4.49-9-10-9S2,6,2,11s4.49,9,10,9a10.9,10.9,0,0,0,3-.41l4.59,2.3A.91.91,0,0,0,20,22a1,1,0,0,0,.62-.22,1,1,0,0,0,.35-1ZM8,12a1,1,0,1,1,1-1A1,1,0,0,1,8,12Zm4,0a1,1,0,1,1,1-1A1,1,0,0,1,12,12Zm4,0a1,1,0,1,1,1-1A1,1,0,0,1,16,12Z"/></svg>
-          </span>
-          Связаться
-        </div>
+        <a class="hbtn hcalc" id="hcalc" href="#" title="Калькулятор">
+          <span class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="2.5" width="14" height="19" rx="2.2" stroke="currentColor" stroke-width="1.7"/><rect x="8" y="5.5" width="8" height="3.4" rx="1" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/><circle cx="15.5" cy="13" r="1" fill="currentColor"/><circle cx="8.5" cy="17.3" r="1" fill="currentColor"/><circle cx="12" cy="17.3" r="1" fill="currentColor"/><circle cx="15.5" cy="17.3" r="1" fill="currentColor"/></svg></span>
+          Калькулятор
+        </a>
         <div class="hbtn" title="Telegram">
           <span class="ci"><img src="assets/telegram.svg" alt="Telegram" width="22" height="22"></span>
           Telegram
@@ -391,8 +497,8 @@
         <a href="#" data-open="4">Наклейки и стикеры</a>
       </nav>
       <div class="calc">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2.2"/><circle cx="8" cy="17" r="2.2"/></svg>
-        Рассчитать и заказать
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="5" y="2.5" width="14" height="19" rx="2.2" stroke="currentColor" stroke-width="1.7"/><rect x="8" y="5.5" width="8" height="3.4" rx="1" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/><circle cx="15.5" cy="13" r="1" fill="currentColor"/><circle cx="8.5" cy="17.3" r="1" fill="currentColor"/><circle cx="12" cy="17.3" r="1" fill="currentColor"/><circle cx="15.5" cy="17.3" r="1" fill="currentColor"/></svg>
+        Калькулятор
         <span class="save">−5%</span>
       </div>
     </div>
@@ -419,9 +525,9 @@
             <div class="ri" data-sec="8"><span class="em"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M12 3v6M12 9l3 2.5M12 9 9 11.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><rect x="6" y="11" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.7"/></svg></span> POS-материалы <span class="arr"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
             <div class="ri" data-sec="9"><span class="em"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.7"/><path d="M7 14h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span> Пластиковые карты <span class="arr"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
             <div class="sep"></div>
-            <div class="lbl">Решения для</div>
-            <div class="ri" data-sec="10"><span class="em"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M4 20V9l8-5 8 5v11" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><rect x="9" y="13" width="6" height="7" stroke="currentColor" stroke-width="1.7"/></svg></span> Бизнеса <span class="arr"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-            <div class="ri" data-sec="11"><span class="em"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M3 11l16-6-3 14-5-4-3 3v-5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span> Рекламных агентств <span class="arr"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+            <div class="lbl">Готовые решения</div>
+            <div class="ri" data-sec="10"><span class="em"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M4 20V9l8-5 8 5v11" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><rect x="9" y="13" width="6" height="7" stroke="currentColor" stroke-width="1.7"/></svg></span> Бизнесу <span class="arr"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+            <div class="ri" data-sec="11"><span class="em"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M3 11l16-6-3 14-5-4-3 3v-5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span> Рекламным агентствам <span class="arr"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
             <div class="rail-v2">
             <div class="sep"></div>
             <div class="lbl">Услуги</div>
@@ -856,7 +962,7 @@
 
             <!-- 10 БИЗНЕСУ -->
             <div class="panel" data-sec="10">
-              <div class="phead"><h3>Решения для бизнеса</h3><a href="#">Все решения<span class="arr-ico"></span></a></div>
+              <div class="phead"><h3>Готовые решения бизнесу</h3><a href="#">Все решения<span class="arr-ico"></span></a></div>
               <div class="cols-flow">
                 <div class="group"><h4>Для <span class="nw">офиса<i class="ha"></i></span></h4><ul>
                   <li><a href="#">Бейджи</a></li>
@@ -898,7 +1004,7 @@
 
             <!-- 11 РЕКЛАМНЫМ АГЕНТСТВАМ -->
             <div class="panel" data-sec="11">
-              <div class="phead"><h3>Решения для рекламных агентств</h3><a href="#">Все решения<span class="arr-ico"></span></a></div>
+              <div class="phead"><h3>Готовые решения рекламным агентствам</h3><a href="#">Все решения<span class="arr-ico"></span></a></div>
               <div class="cols-flow">
                 <div class="group"><h4>Выставки и <span class="nw">мероприятия<i class="ha"></i></span></h4><ul>
                   <li><a href="#">Блокноты · ручки</a></li>
@@ -1209,17 +1315,27 @@
       </div><!-- /mega-inner -->
     </div><!-- /mega -->
   </div>
+  </div><!-- /site-head -->
 
   <div class="overlay" id="overlay"></div>
 
-  <div class="note">
-    <b>Прототип хедера с каталогом · MDMprint · ширина 1200px.</b><br>
-    Правки со встречи: верхние табы Каталог/Услуги/Материалы убраны → Услуги и Материалы перенесены в левую колонку (единая рельса). Опции (КБС/КШС…) — максимум 4 + «ещё». Визитки: «премиальные» выделены, «популярные» убраны. Телефон вынесен в шапку + «заказать звонок». В топбаре — «О компании» с выпадающим меню. Тач-зоны навигации — 44px.
-  </div>
+  <!-- ЗАГЛУШКА страницы: только для демонстрации фикс-шапки и скролла -->
+  <main class="ph-page">
+    <div class="ph-row" style="height:360px">
+      <div class="scroll-hint">Скролл вниз — шапка уменьшится
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="ph-row" style="height:280px"></div>
+    <div class="ph-row" style="height:320px"></div>
+    <div class="ph-row" style="height:260px"></div>
+    <div class="ph-row" style="height:300px"></div>
+  </main>
 
 <script>
   const mega = document.getElementById('mega');
   const catbtn = document.getElementById('catbtn');
+  const hcat = document.getElementById('hcat');
   const overlay = document.getElementById('overlay');
   const rail = document.getElementById('rail');
   const ris = [...rail.querySelectorAll('.ri')];
@@ -1236,17 +1352,23 @@
     showSec(sec!==undefined ? sec : '0');
     mega.classList.add('open');
     catbtn.classList.add('active');
+    hcat.classList.add('active');
     overlay.classList.add('show');
   }
   function closeMega(){
     mega.classList.remove('open');
     catbtn.classList.remove('active');
+    hcat.classList.remove('active');
     overlay.classList.remove('show');
     quick.forEach(a=>a.classList.remove('active'));
     showSec('0');
   }
 
   catbtn.addEventListener('click', e=>{
+    e.stopPropagation();
+    mega.classList.contains('open') ? closeMega() : openMega();
+  });
+  hcat.addEventListener('click', e=>{
     e.stopPropagation();
     mega.classList.contains('open') ? closeMega() : openMega();
   });
@@ -1279,6 +1401,8 @@
       document.body.classList.toggle('rv1', btn.dataset.rv==='v1');
       [...railSwitch.children].forEach(b=>b.classList.toggle('active', b===btn));
       if(typeof openMega==='function') openMega();
+      // показать разницу: прокрутить рельсу к нижним пунктам (Услуги/Материалы)
+      requestAnimationFrame(()=>rail.scrollTo({top:rail.scrollHeight, behavior:'smooth'}));
     });
   }
 
@@ -1295,6 +1419,17 @@
     });
   }
 
+  // фикс-шапка: класс .scrolled при прокрутке (демо уменьшения).
+  // Гистерезис: включаем при >80px, выключаем при <20px — мёртвая зона убирает мерцание у границы.
+  let headShrunk = false;
+  const onScroll = () => {
+    const y = window.scrollY;
+    if(!headShrunk && y > 80){ headShrunk = true; document.body.classList.add('scrolled'); }
+    else if(headShrunk && y < 20){ headShrunk = false; document.body.classList.remove('scrolled'); }
+  };
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
   // переключатель версий (демо)
   const verSwitch = document.getElementById('verSwitch');
   if(verSwitch){
@@ -1309,6 +1444,105 @@
       if(typeof openMega==='function') openMega();
     });
   }
+
+  // ===== РЕЖИМ РЕВЬЮ: вопросы к спорным частям макета (демо) =====
+  (function(){
+    const fab = document.getElementById('reviewFab');
+    const panel = document.getElementById('reviewPanel');
+    const label = document.getElementById('rfLabel');
+    if(!fab || !panel) return;
+
+    const QS = [
+      {id:'zayavka', ref:'Шапка · заявка и звонок', anchor:'.tb-cta',
+       q:'«Оставить заявку» (жёлтая, топбар) и «Заказать звонок» (у телефона) дублируют смысл. Что оставляем?',
+       opts:['Оставить обе','Убрать «Оставить заявку»','Убрать «Заказать звонок»']},
+      {id:'calc', ref:'Навбар · кнопка расчёта', anchor:'.calc',
+       q:'Сейчас «Калькулятор». На встрече склонялись к «Рассчитать и заказать». Какой текст оставить?',
+       opts:['Калькулятор','Рассчитать и заказать','Рассчитать']},
+      {id:'landings', ref:'Навбар · разделы', anchor:'.quick',
+       q:'Лендинги-сущности (конструктор из блоков): Сувениры и мерч, Брендирование, Карты и настольные игры, Коробочные решения. Список полный?',
+       opts:['Список ок','Дополнить (в комменте)']},
+      {id:'rail', ref:'Каталог · левая колонка', anchor:'#rail', mega:true, apply:true,
+       q:'Выберите стиль строк рельсы и раскладку Услуг/Материалов — кнопки применяют вид вживую.',
+       opts:['Минимал + Рельса 2','Минимал + Рельса 1','Плашки + Рельса 2','Плашки + Рельса 1']}
+    ];
+    const answers = {};
+
+    function applyRail(opt){
+      const plashki = opt.indexOf('Плашки')===0;
+      document.body.classList.toggle('demo-v1', plashki);
+      document.body.classList.toggle('demo-v2', !plashki);
+      document.body.classList.toggle('rv1', /Рельса 1$/.test(opt));
+    }
+
+    function highlight(q){
+      document.querySelectorAll('.q-highlight').forEach(el=>el.classList.remove('q-highlight'));
+      if(q.mega){ if(typeof openMega==='function') openMega(); }
+      else { if(typeof closeMega==='function') closeMega(); }
+      const el = document.querySelector(q.anchor);
+      if(!el) return;
+      void el.offsetWidth; el.classList.add('q-highlight');
+      if(q.id==='rail'){ const r=document.getElementById('rail'); if(r) requestAnimationFrame(()=>r.scrollTo({top:r.scrollHeight, behavior:'smooth'})); }
+    }
+
+    panel.innerHTML =
+      '<div class="rp-head"><h3>Вопросы к макету</h3><p>Кликните вопрос — подсветится часть макета. Ответьте вариантом или комментарием. Выключите режим, чтобы оценить чистую вёрстку.</p></div>'+
+      '<div class="rp-list">'+ QS.map((q,i)=>
+        '<div class="q-card" data-id="'+q.id+'">'+
+          '<div class="q-top"><span class="q-num">'+(i+1)+'</span><div><div class="q-ref">'+q.ref+'</div><h4>'+q.q+'</h4></div></div>'+
+          '<div class="q-opts">'+ q.opts.map(o=>'<button type="button" data-opt="'+o+'">'+o+'</button>').join('') +'</div>'+
+          '<textarea class="q-comment" placeholder="Комментарий / предложение…"></textarea>'+
+        '</div>').join('') +'</div>'+
+      '<div class="rp-foot"><button id="rpCopy">Скопировать ответы</button><button id="rpReset" class="ghost">Сбросить</button></div>';
+
+    panel.addEventListener('click', e=>{
+      const optBtn = e.target.closest('button[data-opt]');
+      const card = e.target.closest('.q-card');
+      if(optBtn && card){
+        const id = card.dataset.id, q = QS.find(x=>x.id===id);
+        (answers[id] = answers[id] || {}).opt = optBtn.dataset.opt;
+        card.querySelectorAll('button[data-opt]').forEach(b=>b.classList.toggle('sel', b===optBtn));
+        card.classList.add('answered');
+        if(q.apply) applyRail(optBtn.dataset.opt);
+        highlight(q);
+        return;
+      }
+      if(card && !e.target.closest('.q-comment')){
+        panel.querySelectorAll('.q-card').forEach(c=>c.classList.toggle('active', c===card));
+        highlight(QS.find(x=>x.id===card.dataset.id));
+      }
+    });
+
+    panel.addEventListener('input', e=>{
+      const ta = e.target.closest('.q-comment'); if(!ta) return;
+      const card = e.target.closest('.q-card');
+      (answers[card.dataset.id] = answers[card.dataset.id] || {}).comment = ta.value;
+      card.classList.toggle('answered', !!ta.value.trim() || !!(answers[card.dataset.id]||{}).opt);
+    });
+
+    panel.querySelector('#rpCopy').addEventListener('click', ()=>{
+      let txt = 'Ответы по прототипу MDMprint\n\n';
+      QS.forEach((q,i)=>{ const a=answers[q.id]||{}; txt += (i+1)+'. '+q.ref+'\n   '+q.q+'\n   Ответ: '+(a.opt||'—')+(a.comment?' | '+a.comment:'')+'\n\n'; });
+      const done = ()=>{ const b=panel.querySelector('#rpCopy'); b.textContent='Скопировано ✓'; setTimeout(()=>b.textContent='Скопировать ответы',1500); };
+      if(navigator.clipboard) navigator.clipboard.writeText(txt).then(done, done); else done();
+    });
+    panel.querySelector('#rpReset').addEventListener('click', ()=>{
+      for(const k in answers) delete answers[k];
+      panel.querySelectorAll('button[data-opt]').forEach(b=>b.classList.remove('sel'));
+      panel.querySelectorAll('.q-comment').forEach(t=>t.value='');
+      panel.querySelectorAll('.q-card').forEach(c=>c.classList.remove('answered','active'));
+    });
+
+    fab.addEventListener('click', ()=>{
+      const on = document.body.classList.toggle('review-on');
+      fab.classList.toggle('active', on);
+      label.textContent = on ? 'Скрыть вопросы' : 'Вопросы к макету';
+      if(!on){
+        document.querySelectorAll('.q-highlight').forEach(el=>el.classList.remove('q-highlight'));
+        if(typeof closeMega==='function') closeMega();
+      }
+    });
+  })();
 </script>
 </body>
 </html>
