@@ -293,11 +293,6 @@
   .promo-hybrid p{color:#b9bbc0}
   .promo-hybrid .order{position:relative}
 
-  /* переключатель типов (демо) */
-  .promo-switch{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:2px;background:rgba(255,255,255,.7);backdrop-filter:blur(4px);border:1px solid rgba(0,0,0,.06);border-radius:8px;padding:2px}
-  .promo-switch button{border:none;background:none;font-family:inherit;font-size:10.5px;font-weight:700;color:#8a7846;padding:4px 8px;border-radius:6px;cursor:pointer;transition:.12s}
-  .promo-switch button:hover{color:#1a1a1a}
-  .promo-switch button.active{background:#1a1a1a;color:#fff}
 
   .note{max-width:var(--max);margin:22px auto;padding:14px 18px;font-size:12.5px;color:#6a6f78;background:#fff;border:1px dashed var(--line2);border-radius:10px;line-height:1.7}
   .note b{color:#1a1a1a}
@@ -1205,16 +1200,8 @@
 
           </div><!-- /pane -->
 
-          <!-- ПРОМО (переключаемый компонент: data-variant = offer|image|content|hybrid) -->
-          <div class="promo promo--offer" id="promo" data-variant="offer">
-
-            <!-- переключатель типов (только для демо) -->
-            <div class="promo-switch" id="promoSwitch">
-              <button data-v="offer" class="active">Оффер</button>
-              <button data-v="image">Баннер</button>
-              <button data-v="content">Контент</button>
-              <button data-v="hybrid">Гибрид</button>
-            </div>
+          <!-- ПРОМО (переключаемый компонент: data-variant = offer|image|content|hybrid; дефолт — hybrid) -->
+          <div class="promo" id="promo" data-variant="hybrid">
 
             <!-- A. ОФФЕР: бейдж + заголовок + текст + мокап + цена + кнопка -->
             <div class="promo-body" data-for="offer">
@@ -1363,19 +1350,6 @@
   document.querySelectorAll('.tabs .tab-more').forEach(m=>{
     m.addEventListener('click', e=>{ e.stopPropagation(); m.closest('.tabs').classList.add('expanded'); });
   });
-
-  // переключатель типов промо (демо)
-  const promo = document.getElementById('promo');
-  const promoSwitch = document.getElementById('promoSwitch');
-  if(promoSwitch){
-    promoSwitch.addEventListener('click', e=>{
-      const btn = e.target.closest('button[data-v]');
-      if(!btn) return;
-      e.stopPropagation();
-      promo.dataset.variant = btn.dataset.v;
-      [...promoSwitch.children].forEach(b=>b.classList.toggle('active', b===btn));
-    });
-  }
 
   // фикс-шапка: класс .scrolled при прокрутке (демо уменьшения).
   // Гистерезис: включаем при >80px, выключаем при <20px — мёртвая зона убирает мерцание у границы.
