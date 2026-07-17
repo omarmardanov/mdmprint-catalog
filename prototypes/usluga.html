@@ -1507,6 +1507,8 @@
     #mega .m-root .mr-cat .mr-cat-d{font-size:12.5px;line-height:1.3;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     #mega .m-root .mr-cat .mr-arr{margin-left:auto;color:var(--text-tertiary);display:flex}
     /* калькулятор — та же анатомия строки, но тональная плашка (инструмент, не главный вход) и стрелка → (переход на страницу) */
+    /* Стили .mr-contacts удалены вместе с блоком (17.07): контакты в drawer дублировали call-bar
+       шапки. Заодно ушёл хардкод 12.5px — кегля, которого в шкале нет. */
     #mega .m-root .mr-calc{display:flex;align-items:center;gap:14px;width:100%;padding:12px 16px;min-height:60px;border:none;border-bottom:1px solid var(--border);background:none;color:var(--text-primary);cursor:pointer;text-align:left}
     #mega .m-root .mr-calc:active{background:var(--surface-subtle)}
     #mega .m-root .mr-calc .mr-calc-ic{width:34px;height:34px;flex-shrink:0;border-radius:var(--radius-md);background:var(--surface-on-light);color:var(--text-secondary);display:flex;align-items:center;justify-content:center}
@@ -1519,17 +1521,6 @@
     #mega .m-root .mr-links a{display:block;padding:13px 16px;min-height:46px;font-size:var(--t-ui);color:var(--text-primary);border-bottom:1px solid var(--border)}
 
     /* КОНТАКТЫ: строки с иконками — иконка отличает их от навигационных ссылок */
-    #mega .m-root .mr-contacts{display:flex;flex-direction:column}
-    #mega .m-root .mr-contacts .mc-row{display:flex;align-items:center;gap:8px;padding-right:16px;border-bottom:1px solid var(--border)}
-    #mega .m-root .mr-contacts .mc-row .mc-item{flex:1;min-width:0;border-bottom:none}
-    #mega .m-root .mr-contacts .mc-row .cb{flex-shrink:0;height:32px;min-height:32px;padding:0 12px;font-size:var(--t-caption);font-weight:500}
-    #mega .m-root .mr-contacts .mc-item{display:flex;align-items:center;gap:14px;padding:11px 16px;min-height:52px;color:var(--text-primary);border-bottom:1px solid var(--border)}
-    #mega .m-root .mr-contacts .mc-item:active{background:var(--surface-subtle)}
-    #mega .m-root .mr-contacts .mc-ic{width:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text-secondary)}
-    #mega .m-root .mr-contacts .mc-ic svg{width:20px;height:20px}
-    #mega .m-root .mr-contacts .mc-tx{display:flex;flex-direction:column;gap:2px;min-width:0}
-    #mega .m-root .mr-contacts .mc-t{font-size:var(--t-ui);font-weight:500;line-height:1.25;color:var(--text-primary)}
-    #mega .m-root .mr-contacts .mc-d{font-size:12.5px;line-height:1.3;color:var(--text-secondary)}
     /* заявка — тот же вход, что калькулятор (бежевая плашка); жёлтый в меню ровно один — у Каталога.
        Акцент CTA держит жирный заголовок, а не цвет плашки. */
     #mega .m-root .mr-req .mr-cat-t{font-weight:600}
@@ -1537,27 +1528,27 @@
     /* поиск в корне drawer — общий поиск по сайту, над «Каталог»; на всю ширину, без рамки (бар заподлицо + нижний разделитель) */
     #mega .m-root .m-dsearch{display:flex;align-items:center;gap:10px;flex-shrink:0;margin:0;padding:0 16px;height:52px;background:var(--surface-subtle);border:none;border-bottom:1px solid var(--border);border-radius:0}
     #mega .m-dsearch svg{width:19px;height:19px;color:var(--text-secondary);flex-shrink:0}
-    /* ── ПОИСК НА МОБИЛКЕ: выдача во весь drawer ──────────────────────────────
-       Поверхность выдачи здесь — сам экран, а не дропдаун: drawer уже полноэкранный, и это
-       нативный паттерн (поиск забирает экран целиком). Пока в поле есть запрос, остальное меню
-       скрыто — иначе выдача конкурировала бы с каталогом и контактами за ту же высоту.
-       Разметка и логика — общие с десктопом (дропдаун клонируется), меняется только раскладка. */
-    #mega .m-root.m-searching > *:not(.m-dsearch):not(.m-drop){display:none}
-    #mega .m-drop{display:none;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
-      -webkit-overflow-scrolling:touch}
+    /* ── ПОИСК НА МОБИЛКЕ ────────────────────────────────────────────────────
+       Выдача появляется ТОЛЬКО по фокусу или вводу. Раньше «Популярные запросы» висели под полем
+       всегда и отжимали «Каталог» вниз: человек открыл меню, чтобы пойти в каталог, а ему
+       подсовывают чипы. Меню — главное, поиск — по требованию.
+       Вся десктопная отделка снята: у .search-drop position:absolute, рамка, радиус 21px, тень и
+       padding:47px — это плавающая КАРТОЧКА над полем. В drawer поверхность плоская и во всю
+       ширину, карточке тут делать нечего (клон её и притащил — так выглядят «скругления мимо»). */
+    #mega .m-drop{display:none;position:static;background:none;border:0;border-radius:0;
+      box-shadow:none;padding:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;
+      -webkit-overflow-scrolling:touch;flex:1;min-height:0}
+    #mega .m-drop::before{display:none}   /* разделитель под полем — от десктопной карточки */
     #mega .m-root.m-searching .m-drop{display:block}
+    /* пока ищем — экран отдан выдаче: меню не должно спорить с ней за высоту */
+    #mega .m-root.m-searching > *:not(.m-dsearch):not(.m-drop){display:none}
     #mega .m-drop .sd-pane{display:none}
     #mega .m-drop[data-state="empty"] .sd-empty,
     #mega .m-drop[data-state="results"] .sd-results,
     #mega .m-drop[data-state="none"] .sd-none{display:block}
-    /* пустое состояние (популярные запросы) видно и БЕЗ ввода — сразу под полем, как подсказка,
-       с чего начать; поэтому .m-drop показывается при .m-searching, а чипы живут в корне */
-    #mega .m-root:not(.m-searching) .m-drop{display:block}
-    #mega .m-root:not(.m-searching) .m-drop[data-state="results"] .sd-results,
-    #mega .m-root:not(.m-searching) .m-drop[data-state="none"] .sd-none{display:none}
 
     /* строки выдачи — во всю ширину экрана с разделителями: тот же приём, что у цен, требований и
-       файлов. Тач-цель 48 (норма 44). Тег типа не режем: он говорит, куда ведёт строка. */
+       файлов. Тач-цель 48 (норма 44). Тег типа оставлен: он говорит, куда ведёт строка. */
     #mega .m-drop .sd-list{max-height:none;overflow:visible;padding:0}
     #mega .m-drop .sd-row{gap:var(--sp-12);min-height:48px;padding:var(--sp-12) var(--sp-16);
       border-radius:0;-webkit-tap-highlight-color:transparent}
@@ -1565,25 +1556,27 @@
     #mega .m-drop .sd-row:hover{background:none}
     #mega .m-drop .sd-row:active{background:var(--surface-subtle)}
     #mega .m-drop .sd-row .sd-tx{font-size:var(--t-ui);line-height:var(--t-ui-lh)}
-    /* «Все результаты» — уход на страницу, потому со стрелкой (правило ДС) и жирнее строк выдачи */
-    #mega .m-drop .sd-all{display:flex;align-items:center;gap:var(--sp-8);min-height:52px;
+    /* «Все результаты» — уход на страницу, потому со стрелкой (правило ДС) */
+    /* margin:0 — у десктопной версии он отрицательный (карточка с padding:8px по бокам), в drawer
+       из-за него строка выпадала из ряда; gap:0 — «Все результаты по «визит»» это ОДНА фраза, а
+       флекс-gap раздвигал её на куски вокруг <b> */
+    #mega .m-drop .sd-all{display:flex;align-items:center;gap:0;margin:0;min-height:52px;
       padding:var(--sp-14) var(--sp-16);border-top:1px solid var(--border);
       font-size:var(--t-ui);line-height:var(--t-ui-lh);font-weight:500;color:var(--text-primary);
       text-decoration:none;-webkit-tap-highlight-color:transparent}
     #mega .m-drop .sd-all:active{background:var(--surface-subtle)}
     #mega .m-drop .sd-all .mk-arr{margin-left:auto;color:var(--text-tertiary)}
-    /* популярные запросы: чипы переносятся, тач-цель 40 */
+    /* популярные запросы — только когда поле в фокусе и пустое */
     #mega .m-drop .sd-h{padding:var(--sp-16) var(--sp-16) var(--sp-8)}
     #mega .m-drop .sd-chips{padding:0 var(--sp-16) var(--sp-16);gap:var(--sp-8)}
     #mega .m-drop .sd-chip{min-height:40px;-webkit-tap-highlight-color:transparent}
     #mega .m-drop .sd-none{padding:var(--sp-24) var(--sp-16)}
-    /* крестик очистки поля — появляется, только когда есть что чистить */
-    #mega .m-dsearch{position:relative}
+    /* крестик очистки — только когда есть что чистить */
     #mega .m-dsearch-clear{display:none;width:40px;height:40px;flex-shrink:0;border:0;background:none;
       color:var(--text-tertiary);cursor:pointer;align-items:center;justify-content:center;
       -webkit-tap-highlight-color:transparent}
     #mega .m-dsearch-clear svg{width:18px;height:18px}
-    #mega .m-root.m-searching .m-dsearch-clear{display:inline-flex}
+    #mega .m-root.m-has-q .m-dsearch-clear{display:inline-flex}
     #mega .m-dsearch-clear:active{color:var(--text-primary)}
     #mega .m-dsearch input{flex:1;min-width:0;border:none;background:none;outline:none;font-size:var(--t-body);color:var(--text-primary)}
     #mega .m-dsearch input::placeholder{color:var(--text-tertiary)}
@@ -1896,28 +1889,11 @@
             </button>
 
             <!-- КОНТАКТЫ: с иконками, чтобы не терялись среди навигационных ссылок -->
-            <nav class="mr-contacts" aria-label="Контакты">
-              <div class="mc-row">
-                <a class="mc-item mc-tel" href="tel:+74952561000">
-                  <span class="mc-ic"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></span>
-                  <span class="mc-tx"><span class="mc-t">+7 (495) 256-10-00</span><span class="mc-d">Ежедневно с 9 до 22</span></span>
-                </a>
-                <button type="button" class="cb mk-btn mk-btn--ghost">Заказать звонок</button>
-              </div>
-              <a class="mc-item" href="#">
-                <span class="mc-ic"><svg viewBox="39.4 66.2 142.4 120" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z"/></svg></span>
-                <span class="mc-tx"><span class="mc-t">Телеграм</span></span>
-              </a>
-              <a class="mc-item" href="#">
-                <span class="mc-ic"><svg viewBox="0 0 266 265" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M78.7282 246.114C77.385 245.162 75.5339 245.421 74.4078 246.622C59.3591 262.672 20.8452 273.931 19.081 252.024C19.081 234.86 15.2258 220.397 10.9812 204.471C5.78268 184.967 0 163.272 0 131.74C0 56.5481 61.6671 0 134.783 0C207.899 0 265.225 59.3087 265.225 132.47C265.225 205.631 206.074 263.48 135.475 263.48C110.428 263.48 98.2731 259.952 78.7282 246.114ZM136.834 65.195C102.135 63.3755 75.0576 87.4529 69.0868 125.138C64.142 156.345 72.9088 194.372 80.4074 196.286C83.5879 197.098 91.2419 191.243 96.8105 185.992C97.8576 185.005 99.4401 184.839 100.668 185.59C109.348 190.898 119.176 194.887 130.011 195.455C165.634 197.323 197.202 169.443 199.067 133.818C200.933 98.1929 172.456 67.0632 136.834 65.195Z"/></svg></span>
-                <span class="mc-tx"><span class="mc-t">Макс</span></span>
-              </a>
-              <a class="mc-item" href="mailto:info@mdmprint.ru">
-                <span class="mc-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v.35l-10 5.9-10-5.9V6a2 2 0 0 1 2-2Zm18 4.67V18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.67l9.49 5.6a1 1 0 0 0 1.02 0L22 8.67Z"/></svg></span>
-                <span class="mc-tx"><span class="mc-t">info@mdmprint.ru</span></span>
-              </a>
-            </nav>
-
+            <!-- Контакты из drawer убраны (17.07). Телефон, Телеграм, Макс и почта дублировали
+                 call-bar шапки — он на мобилке ВСЕГДА на экране, вторым рядом, с крупным номером.
+                 В меню они стояли посередине и рвали логику: действия → вдруг справка → снова ссылки.
+                 Плюс ниже уже есть пункт «Контакты» — то есть контакты в меню лежали дважды.
+                 Теперь: поиск → ДЕЙСТВИЯ (каталог, калькулятор, заявка) → ССЫЛКИ (включая «Контакты»). -->
             <nav class="mr-links" aria-label="Информация">
               <a href="#">Оплата</a>
               <a href="#">Доставка</a>
@@ -4031,11 +4007,21 @@
         mDrop.removeAttribute('id'); mDrop.classList.add('m-drop'); mDrop.dataset.state='empty';
         mForm.insertAdjacentElement('afterend', mDrop);
         const root = document.getElementById('mRoot');
-        // класс на корне прячет остальное меню, пока идёт поиск: экран отдан выдаче целиком
-        const sync = ()=> root && root.classList.toggle('m-searching', mInput.value.trim().length>0);
+        // Поиск включается ФОКУСОМ, а не наличием текста: тапнул поле — экран отдан выдаче
+        // (сначала «Популярные запросы»), ушёл с пустым полем — меню вернулось.
+        // m-has-q отдельно от m-searching: крестик нужен только когда есть что стирать.
+        const sync = ()=>{
+          if(!root) return;
+          const has = mInput.value.trim().length>0;
+          root.classList.toggle('m-has-q', has);
+          root.classList.toggle('m-searching', has || document.activeElement===mInput);
+        };
         bind(mInput, mDrop, {});
         mInput.addEventListener('input', sync);
         mInput.addEventListener('focus', sync);
+        // blur с задержкой: тап по чипу/строке сначала снимает фокус, и без паузы выдача
+        // исчезла бы ДО того, как клик по ней долетит
+        mInput.addEventListener('blur', ()=> setTimeout(sync, 180));
         // очистка поля × — та же кнопка, что у desktop-поля, но своя на мобилке
         const mClear = document.createElement('button');
         mClear.type='button'; mClear.className='m-dsearch-clear'; mClear.setAttribute('aria-label','Очистить');
