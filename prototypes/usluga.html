@@ -9,9 +9,9 @@
 <!-- ?v= — обход кэша: CSS лежит по неизменному адресу, и браузер держит его часами.
      При правке assets/css/* бампать число, иначе телефон покажет новый HTML со старым CSS
      (ловили 16.07: мобильная шкала уехала в токены, страница осталась на десктопной). -->
-<link rel="stylesheet" href="../assets/css/fonts.css?v=20260717k">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=20260717k">
-<link rel="stylesheet" href="../assets/css/kit.css?v=20260717k">
+<link rel="stylesheet" href="../assets/css/fonts.css?v=20260717l">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=20260717l">
+<link rel="stylesheet" href="../assets/css/kit.css?v=20260717l">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:var(--font-body);color:var(--text-primary);background:var(--surface-subtle);font-size:var(--t-small);line-height:1.45}
@@ -1537,6 +1537,54 @@
     /* поиск в корне drawer — общий поиск по сайту, над «Каталог»; на всю ширину, без рамки (бар заподлицо + нижний разделитель) */
     #mega .m-root .m-dsearch{display:flex;align-items:center;gap:10px;flex-shrink:0;margin:0;padding:0 16px;height:52px;background:var(--surface-subtle);border:none;border-bottom:1px solid var(--border);border-radius:0}
     #mega .m-dsearch svg{width:19px;height:19px;color:var(--text-secondary);flex-shrink:0}
+    /* ── ПОИСК НА МОБИЛКЕ: выдача во весь drawer ──────────────────────────────
+       Поверхность выдачи здесь — сам экран, а не дропдаун: drawer уже полноэкранный, и это
+       нативный паттерн (поиск забирает экран целиком). Пока в поле есть запрос, остальное меню
+       скрыто — иначе выдача конкурировала бы с каталогом и контактами за ту же высоту.
+       Разметка и логика — общие с десктопом (дропдаун клонируется), меняется только раскладка. */
+    #mega .m-root.m-searching > *:not(.m-dsearch):not(.m-drop){display:none}
+    #mega .m-drop{display:none;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+      -webkit-overflow-scrolling:touch}
+    #mega .m-root.m-searching .m-drop{display:block}
+    #mega .m-drop .sd-pane{display:none}
+    #mega .m-drop[data-state="empty"] .sd-empty,
+    #mega .m-drop[data-state="results"] .sd-results,
+    #mega .m-drop[data-state="none"] .sd-none{display:block}
+    /* пустое состояние (популярные запросы) видно и БЕЗ ввода — сразу под полем, как подсказка,
+       с чего начать; поэтому .m-drop показывается при .m-searching, а чипы живут в корне */
+    #mega .m-root:not(.m-searching) .m-drop{display:block}
+    #mega .m-root:not(.m-searching) .m-drop[data-state="results"] .sd-results,
+    #mega .m-root:not(.m-searching) .m-drop[data-state="none"] .sd-none{display:none}
+
+    /* строки выдачи — во всю ширину экрана с разделителями: тот же приём, что у цен, требований и
+       файлов. Тач-цель 48 (норма 44). Тег типа не режем: он говорит, куда ведёт строка. */
+    #mega .m-drop .sd-list{max-height:none;overflow:visible;padding:0}
+    #mega .m-drop .sd-row{gap:var(--sp-12);min-height:48px;padding:var(--sp-12) var(--sp-16);
+      border-radius:0;-webkit-tap-highlight-color:transparent}
+    #mega .m-drop .sd-row + .sd-row{border-top:1px solid var(--border)}
+    #mega .m-drop .sd-row:hover{background:none}
+    #mega .m-drop .sd-row:active{background:var(--surface-subtle)}
+    #mega .m-drop .sd-row .sd-tx{font-size:var(--t-ui);line-height:var(--t-ui-lh)}
+    /* «Все результаты» — уход на страницу, потому со стрелкой (правило ДС) и жирнее строк выдачи */
+    #mega .m-drop .sd-all{display:flex;align-items:center;gap:var(--sp-8);min-height:52px;
+      padding:var(--sp-14) var(--sp-16);border-top:1px solid var(--border);
+      font-size:var(--t-ui);line-height:var(--t-ui-lh);font-weight:500;color:var(--text-primary);
+      text-decoration:none;-webkit-tap-highlight-color:transparent}
+    #mega .m-drop .sd-all:active{background:var(--surface-subtle)}
+    #mega .m-drop .sd-all .mk-arr{margin-left:auto;color:var(--text-tertiary)}
+    /* популярные запросы: чипы переносятся, тач-цель 40 */
+    #mega .m-drop .sd-h{padding:var(--sp-16) var(--sp-16) var(--sp-8)}
+    #mega .m-drop .sd-chips{padding:0 var(--sp-16) var(--sp-16);gap:var(--sp-8)}
+    #mega .m-drop .sd-chip{min-height:40px;-webkit-tap-highlight-color:transparent}
+    #mega .m-drop .sd-none{padding:var(--sp-24) var(--sp-16)}
+    /* крестик очистки поля — появляется, только когда есть что чистить */
+    #mega .m-dsearch{position:relative}
+    #mega .m-dsearch-clear{display:none;width:40px;height:40px;flex-shrink:0;border:0;background:none;
+      color:var(--text-tertiary);cursor:pointer;align-items:center;justify-content:center;
+      -webkit-tap-highlight-color:transparent}
+    #mega .m-dsearch-clear svg{width:18px;height:18px}
+    #mega .m-root.m-searching .m-dsearch-clear{display:inline-flex}
+    #mega .m-dsearch-clear:active{color:var(--text-primary)}
     #mega .m-dsearch input{flex:1;min-width:0;border:none;background:none;outline:none;font-size:var(--t-body);color:var(--text-primary)}
     #mega .m-dsearch input::placeholder{color:var(--text-tertiary)}
 
@@ -1736,8 +1784,8 @@
             </div>
           </div>
           <div class="sd-pane sd-results">
-            <ul class="sd-list" id="sdList"></ul>
-            <a class="sd-all" id="sdAll" href="#">Все результаты по «<b id="sdQ"></b>»<span class="arr-ico"></span></a>
+            <ul class="sd-list"></ul>
+            <a class="sd-all" href="#">Все результаты по «<b class="sd-q"></b>»<span class="mk-arr" aria-hidden="true"></span></a>
           </div>
           <div class="sd-pane sd-none">
             <div class="sd-none-t">Ничего не найдено</div>
@@ -3877,15 +3925,17 @@
     });
   })();
 
-  // ===== ПОИСК: дропдаун с подсказками (состояния: empty / results / none) =====
-  (function(){
-    const form = document.getElementById('searchForm');
-    const input = document.getElementById('searchInput');
-    const drop = document.getElementById('searchDrop');
-    const list = document.getElementById('sdList');
-    const qEl = document.getElementById('sdQ');
-    const clearBtn = document.getElementById('searchClear');
-    if(!form || !input || !drop) return;
+    // ===== ПОИСК: один механизм, две поверхности =====
+    // Датасет, ранжирование и подсветка — общие. Десктоп рисует выдачу в дропдауне под полем,
+    // мобилка — во весь drawer: там поле уже есть, а экран целиком и есть поверхность выдачи.
+    // Второго поиска не заводим: разошлись бы ранжирование и типы. Дропдаун мобилке КЛОНИРУЕТСЯ
+    // из десктопного (оттого внутри него классы, а не id) — разметка гарантированно одна.
+    (function(){
+      const form  = document.getElementById('searchForm');
+      const input = document.getElementById('searchInput');
+      const drop  = document.getElementById('searchDrop');
+      const clearBtn = document.getElementById('searchClear');
+      if(!form || !input || !drop) return;
 
     // демо-датасет подсказок: [название, тип, (раздел для мегаменю)]
     // поиск по всему сайту. Типы каталога = наша таксономия: Продукция / Услуга (технология) /
@@ -3919,49 +3969,81 @@
     const TYPE_RANK = {'Продукция':0,'Услуга':0,'Материал':0,'Раздел':0,'Статья':1,'Портфолио':1,'Новость':2,'Страница':2};
     const esc = s => s.replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-    function setState(s){ drop.dataset.state = s; }
-    function open(){ form.classList.add('s-open'); document.body.classList.add('search-open'); if(typeof closeMega==='function') closeMega(); }
-    function close(){ form.classList.remove('s-open'); document.body.classList.remove('search-open'); }
-
-    function render(raw){
-      const q = (raw||'').trim();
-      form.classList.toggle('has-val', q.length>0);
-      if(!q){ setState('empty'); return; }
-      const ql = q.toLowerCase();
-      const m = DATA.filter(d=>d[0].toLowerCase().includes(ql));
-      m.sort((a,b)=>{
-        const aw = a[0].toLowerCase().startsWith(ql)?0:1, bw = b[0].toLowerCase().startsWith(ql)?0:1;
-        return aw-bw || (TYPE_RANK[a[1]]-TYPE_RANK[b[1]]) || a[0].length-b[0].length;
-      });
-      const top = m.slice(0,12);
-      if(!top.length){ setState('none'); return; }
-      qEl.textContent = q;
-      list.innerHTML = top.map(d=>{
-        const t = d[0], type = d[1], i = t.toLowerCase().indexOf(ql);
-        const tx = esc(t.slice(0,i)) + '<mark>' + esc(t.slice(i,i+q.length)) + '</mark>' + esc(t.slice(i+q.length));
-        const sec = d[2] ? ' data-sec="'+esc(d[2])+'"' : '';
-        return '<li class="sd-row" data-t="'+esc(t)+'"'+sec+'><span class="sd-tx">'+tx+'</span><span class="sd-tag '+TYPE_CLS[type]+'">'+esc(type)+'</span><span class="arr-ico"></span></li>';
-      }).join('');
-      setState('results');
-    }
-
-    input.addEventListener('focus', ()=>{ open(); render(input.value); });
-    input.addEventListener('input', ()=>{ open(); render(input.value); });
-    input.addEventListener('keydown', e=>{ if(e.key==='Escape'){ close(); input.blur(); } });
-    document.addEventListener('click', e=>{ if(!form.contains(e.target)) close(); });
-
-    drop.addEventListener('click', e=>{
-      const chip = e.target.closest('.sd-chip');
-      if(chip){ input.value = chip.textContent.trim(); input.focus(); render(input.value); return; }
-      const row = e.target.closest('.sd-row');
-      if(row){
-        if(row.dataset.sec!==undefined){ close(); input.blur(); if(typeof openMega==='function') openMega(row.dataset.sec); return; } // раздел → открыть каталог
-        input.value = row.dataset.t; render(input.value); input.focus(); // прототип: тут был бы переход на страницу результата
+    // Рисует выдачу в ЛЮБОЙ дропдаун: сам находит свои .sd-list/.sd-q внутри него.
+      function render(dropEl, raw){
+        const q = (raw||'').trim();
+        const list = dropEl.querySelector('.sd-list'), qEl = dropEl.querySelector('.sd-q');
+        if(!q){ dropEl.dataset.state='empty'; return; }
+        const ql = q.toLowerCase();
+        const m = DATA.filter(d=>d[0].toLowerCase().includes(ql));
+        m.sort((a,b)=>{
+          const aw = a[0].toLowerCase().startsWith(ql)?0:1, bw = b[0].toLowerCase().startsWith(ql)?0:1;
+          return aw-bw || (TYPE_RANK[a[1]]-TYPE_RANK[b[1]]) || a[0].length-b[0].length;
+        });
+        const top = m.slice(0,12);
+        if(!top.length){ dropEl.dataset.state='none'; return; }
+        if(qEl) qEl.textContent = q;
+        list.innerHTML = top.map(d=>{
+          const t = d[0], type = d[1], i = t.toLowerCase().indexOf(ql);
+          const tx = esc(t.slice(0,i)) + '<mark>' + esc(t.slice(i,i+q.length)) + '</mark>' + esc(t.slice(i+q.length));
+          const sec = d[2] ? ' data-sec="'+esc(d[2])+'"' : '';
+          return '<li class="sd-row" data-t="'+esc(t)+'"'+sec+'><span class="sd-tx">'+tx+'</span><span class="sd-tag '+TYPE_CLS[type]+'">'+type+'</span></li>';
+        }).join('');
+        dropEl.dataset.state='results';
       }
-    });
 
-    clearBtn && clearBtn.addEventListener('click', ()=>{ input.value=''; input.focus(); render(''); });
-  })();
+      // Общее поведение поверхности: ввод → выдача, чип → подстановка, строка → переход.
+      function bind(inputEl, dropEl, opts){
+        opts = opts || {};
+        const upd = () => { opts.onOpen && opts.onOpen(); render(dropEl, inputEl.value); };
+        inputEl.addEventListener('focus', upd);
+        inputEl.addEventListener('input', upd);
+        inputEl.addEventListener('keydown', e=>{ if(e.key==='Escape'){ opts.onClose && opts.onClose(); inputEl.blur(); } });
+        dropEl.addEventListener('click', e=>{
+          const chip = e.target.closest('.sd-chip');
+          if(chip){ inputEl.value = chip.textContent.trim(); inputEl.focus(); render(dropEl, inputEl.value); return; }
+          const row = e.target.closest('.sd-row');
+          if(!row) return;
+          if(row.dataset.sec!==undefined){          // раздел каталога → открыть его, а не искать
+            opts.onClose && opts.onClose(); inputEl.blur();
+            if(typeof openMega==='function') openMega(row.dataset.sec);
+            return;
+          }
+          inputEl.value = row.dataset.t; render(dropEl, inputEl.value); inputEl.focus();  // прототип: тут переход на страницу результатов
+        });
+      }
+
+      // ── десктоп
+      bind(input, drop, {
+        onOpen: ()=>{ form.classList.add('s-open'); document.body.classList.add('search-open');
+                      if(typeof closeMega==='function') closeMega(); },
+        onClose: ()=>{ form.classList.remove('s-open'); document.body.classList.remove('search-open'); }
+      });
+      input.addEventListener('input', ()=> form.classList.toggle('has-val', input.value.trim().length>0));
+      document.addEventListener('click', e=>{ if(!form.contains(e.target)){ form.classList.remove('s-open'); document.body.classList.remove('search-open'); } });
+      clearBtn && clearBtn.addEventListener('click', ()=>{ input.value=''; input.focus(); form.classList.remove('has-val'); render(drop, ''); });
+
+      // ── мобилка: клон дропдауна прямо в drawer, под поле поиска
+      const mForm = document.querySelector('#mega .m-dsearch');
+      const mInput = mForm && mForm.querySelector('input');
+      if(mInput){
+        const mDrop = drop.cloneNode(true);
+        mDrop.removeAttribute('id'); mDrop.classList.add('m-drop'); mDrop.dataset.state='empty';
+        mForm.insertAdjacentElement('afterend', mDrop);
+        const root = document.getElementById('mRoot');
+        // класс на корне прячет остальное меню, пока идёт поиск: экран отдан выдаче целиком
+        const sync = ()=> root && root.classList.toggle('m-searching', mInput.value.trim().length>0);
+        bind(mInput, mDrop, {});
+        mInput.addEventListener('input', sync);
+        mInput.addEventListener('focus', sync);
+        // очистка поля × — та же кнопка, что у desktop-поля, но своя на мобилке
+        const mClear = document.createElement('button');
+        mClear.type='button'; mClear.className='m-dsearch-clear'; mClear.setAttribute('aria-label','Очистить');
+        mClear.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+        mClear.addEventListener('click', ()=>{ mInput.value=''; mInput.focus(); render(mDrop,''); sync(); });
+        mForm.appendChild(mClear);
+      }
+    })();
 
   /* ── Модалки-лиды (обратный звонок + заявка): общая логика ── */
   function setupLead(back, triggerSel){
