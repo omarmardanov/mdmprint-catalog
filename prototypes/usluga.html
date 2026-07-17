@@ -766,7 +766,11 @@
        и кнопки — не видна без скролла и оторвана от заголовка. display:contents распускает
        .hero-left в тот же поток, что и .hero-media → порядок переставляется через order,
        разметку и десктоп не трогаем. */
-    .usl-hero{padding-top:var(--sp-8)!important;padding-bottom:var(--sp-40)!important}   /* десктопные 40px убраны, но не в ноль — крошкам нужно дыхание под шапкой */
+    /* padding-top:0 — крошки сами держат свою полосу (свои поля 10 сверху и 10 снизу до линии).
+       Прежние 8px «на дыхание» ставились, когда под шапкой сразу шли крошки; теперь там контакт-ряд
+       со своей линией, и эти 8 вклинивались МЕЖДУ линией и полосой крошек: сверху выходило 18,
+       снизу 10 — текст заваливался вниз на 7px (замер по пикселям, не на глаз). */
+    .usl-hero{padding-top:0!important;padding-bottom:var(--sp-40)!important}
     .usl-hero .hero-grid{display:flex;flex-direction:column;align-items:stretch}   /* базовый align-items:start в колонке сжимал бы всё по контенту */
     .usl-hero .hero-left{display:contents}
     .usl-hero .eyebrow{order:1}
@@ -775,11 +779,26 @@
     /* картинка ПОСЛЕ лида: заголовок и лид дешёвые по высоте и отвечают «что это»,
        картинка идёт подтверждением к ним; связку «буллеты + CTA» не разрываем.
        Отступ снизу не нужен — у .hero-bullets свой margin-top:20 */
-    .usl-hero .hero-media{order:4;margin-top:var(--sp-20)}
-    .usl-hero .hero-bullets{order:5}
+    /* Кадр 3:2 вместо десктопных 4:3: при 4:3 он занимал 274px из 390-й ширины, и главный CTA
+       уходил за первый экран на 92px (замер). 3:2 отдаёт 55px — кадр остаётся доказательством
+       («вот как ложится фольга»), но перестаёт выталкивать кнопку. */
+    /* align-self:start обязателен: .hero-grid — флекс со stretch, он тянет кадр по высоте и
+       перебивает aspect-ratio (замер: правило 3/2 применено, а по факту 1.31 — растянут).
+       Те же грабли, что ловили в «Преимуществах»: при stretch пропорция не работает. */
+    /* min-height:0 + flex:none обязательны: .hero-grid на мобилке — флекс-КОЛОНКА, там основная
+       ось вертикальная, и высота элемента берётся из flex-basis:auto, то есть из КОНТЕНТА
+       (картинка 1356×1017 → 356px), а aspect-ratio молча игнорируется (замер: правило 3/2 стоит,
+       height вычислен 356 = 1.31). Те же грабли ловили в «Преимуществах». */
+    .usl-hero .hero-media{order:4;margin-top:var(--sp-20);aspect-ratio:3/2;
+      align-self:start;width:100%;min-height:0;flex:none;height:auto}
+    /* CTA (5) ВЫШЕ буллетов (6): порядок «заголовок → лид → кадр → кнопка → буллеты».
+       Замер: при кнопке под буллетами она уходила за первый экран (837 при экране ~780) —
+       главное действие страницы человек не видел, пока не пролистает. Буллеты это подробности,
+       им место после призыва. */
+    .usl-hero .hero-bullets{order:6}
     /* CTA во всю ширину: крупная цель для пальца и однозначный якорь конверсии
        (тот же приём, что у кнопки в «Требованиях к макету») */
-    .usl-hero .hero-cta{order:6;flex-direction:column;gap:var(--sp-10);margin-top:var(--sp-24)}
+    .usl-hero .hero-cta{order:5;flex-direction:column;gap:var(--sp-10);margin-top:var(--sp-24)}
     .usl-hero .hero-cta .mk-btn{width:100%}
     /* h2 был 32px против 34px у h1 — заголовок секции кричал наравне с заголовком страницы.
        Правило .usl h2 в цель не попадало: база написана как .usl h2:not([class]), а :not([class])
@@ -1375,7 +1394,7 @@
      МОБИЛЬНАЯ ШАПКА + КАТАЛОГ-DRAWER (drill-down, ≤900px).
      Переиспользуем #mega: .rail = уровень 0, #pane/.panel = уровень 1.
      ============================================================ */
-  .m-dhead,.m-back,.m-dsearch,.m-root,.rail .ri-desc,.hactions .m-search{display:none}   /* по умолчанию (десктоп) скрыты; .ri-desc — только мобильная подсказка */
+  .m-dhead,.m-back,.m-dsearch,.m-root,.rail .ri-desc,.hactions .m-search,.m-contactbar{display:none}   /* по умолчанию (десктоп) скрыты; .ri-desc — только мобильная подсказка */
   @keyframes mDrawerFade{from{opacity:0}to{opacity:1}}
 
   @media(max-width:900px){
@@ -1411,9 +1430,16 @@
       padding:var(--sp-10) var(--container-pad);border-bottom:1px solid var(--border)}
     .usl .crumbs>*{flex-shrink:0;white-space:nowrap}
     .usl .crumbs a:nth-of-type(n+2):not(:last-of-type){display:none}   /* середина пути */
-    .usl .crumbs span:nth-of-type(2){font-size:0}                       /* её «/» → «… /» */
-    .usl .crumbs span:nth-of-type(2)::before{content:"…";font-size:var(--t-caption)}
-    .usl .crumbs span:nth-of-type(2)::after{content:"/";font-size:var(--t-caption);margin-left:var(--sp-6)}
+    /* Схлопнутая середина пути: «/» этого разделителя превращается в «… /».
+       font-size:0 гасит СВОЙ текст («/»), а «…» и «/» рисуют псевдоэлементы своим кеглем.
+       display:inline-flex + align-items:center обязательны: без них у элемента с нулевым кеглем
+       своя базовая линия, высота выходила 20 против 16 у соседей, и разделитель прыгал на 2px
+       вверх (замер: 129..149 против 131..147). Флекс считает высоту по псевдоэлементам.
+       width:0 тут НЕЛЬЗЯ (пробовал): обрезает и псевдоэлементы — многоточие исчезает совсем. */
+    .usl .crumbs span:nth-of-type(2){font-size:0;display:inline-flex;align-items:center;
+      line-height:var(--t-caption-lh)}
+    .usl .crumbs span:nth-of-type(2)::before{content:"…";font-size:var(--t-caption);line-height:var(--t-caption-lh)}
+    .usl .crumbs span:nth-of-type(2)::after{content:"/";font-size:var(--t-caption);line-height:var(--t-caption-lh);margin-left:var(--sp-6)}
     .usl .crumbs span:nth-of-type(n+3):not(:last-of-type){display:none}  /* «/» скрытой середины */
     .usl .crumbs b{flex-shrink:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
 
@@ -1528,6 +1554,44 @@
     /* поиск в корне drawer — общий поиск по сайту, над «Каталог»; на всю ширину, без рамки (бар заподлицо + нижний разделитель) */
     #mega .m-root .m-dsearch{display:flex;align-items:center;gap:10px;flex-shrink:0;margin:0;padding:0 16px;height:52px;background:var(--surface-subtle);border:none;border-bottom:1px solid var(--border);border-radius:0}
     #mega .m-dsearch svg{width:19px;height:19px;color:var(--text-secondary);flex-shrink:0}
+    /* ── КОНТАКТ-РЯД под шапкой (мобилка) ───────────────────────────────────
+       До 17.07 телефона на мобилке не было НИГДЕ, кроме футера на 11 305-м пикселе: в шапке он
+       скрыт, а из меню контакты убраны как дубль. Для типографии это удар по деньгам — половина
+       заказов начинается со звонка.
+       Ряд НЕ липкий: липкая часть уже 107px (шапка 59 + подшапка 49) = четверть экрана. */
+    .m-contactbar{display:flex;align-items:center;gap:var(--sp-12);
+      padding:var(--sp-4) var(--container-pad);border-bottom:1px solid var(--border);
+      background:var(--surface-page)}
+    /* тач-цель 44 держит сам блок-ссылка, поэтому у ряда поля всего 4: высота идёт от контента,
+       а не от воздуха — ряд вспомогательный и не должен есть экран */
+    .m-contactbar .mcb-tx{display:flex;flex-direction:column;gap:0;min-height:44px;
+      justify-content:center;text-decoration:none;-webkit-tap-highlight-color:transparent}
+    .m-contactbar .mcb-tx:active{opacity:.6}
+    /* номер: последние 4 жирным — как в десктопной шапке (.num .pre/.l4), тот же приём и те же веса */
+    /* номер --t-ui (15), а не --t-h4 (16): ряд вспомогательный, он не должен спорить с шапкой */
+    .m-contactbar .mcb-num{font-family:var(--font-body);font-size:var(--t-ui);line-height:19px;
+      color:var(--text-primary)}
+    .m-contactbar .mcb-num .pre{font-weight:500}
+    .m-contactbar .mcb-num .l4{font-weight:800}
+    /* время работы — ПОД номером: это подпись к нему, а не сосед */
+    /* время работы — ступенью ниже (--t-micro 11): это сноска к номеру, а не второй по важности текст */
+    .m-contactbar .mcb-when{font-size:var(--t-micro);line-height:var(--t-micro-lh);
+      color:var(--text-tertiary);white-space:nowrap}
+    .m-contactbar .mcb-ics{display:flex;align-items:center;gap:var(--sp-8);margin-left:auto}
+    /* иконки в ЗАЛИТОМ контейнере — как контактные в футере (.fcontact__ic): 32×32, радиус 8,
+       тональная заливка. Тут светлая сторона, потому --surface-on-light вместо --surface-on-dark.
+       Тач-цель добирается полями до 44, сам контейнер остаётся 32 — как в футере. */
+    .m-contactbar .mcb-ic{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;
+      border-radius:var(--radius-md);background:var(--surface-on-light);color:var(--text-secondary);
+      -webkit-tap-highlight-color:transparent;transition:background .15s,color .15s}
+    /* Иконки взяты из футера ЦЕЛИКОМ — те же svg (.usl-foot .fcontact__ic) и те же размеры:
+       контейнер 32, глиф 16. Единственное отличие — сторона: футер тёмный, ряд светлый, поэтому
+       --surface-on-dark → --surface-on-light. Больше ничего не трогаем.
+       (До этого я тащил svg из drawer — другой набор, оттого почта и была огромной.) */
+    .m-contactbar .mcb-ic svg{width:16px;height:16px;display:block}
+    @media (hover:hover){.m-contactbar .mcb-ic:hover{background:var(--surface-on-light-2);color:var(--text-primary)}}
+    .m-contactbar .mcb-ic:active{background:var(--surface-on-light-2);color:var(--text-primary)}
+
     /* ── ПОИСК НА МОБИЛКЕ ────────────────────────────────────────────────────
        Выдача появляется ТОЛЬКО по фокусу или вводу. Раньше «Популярные запросы» висели под полем
        всегда и отжимали «Каталог» вниз: человек открыл меню, чтобы пойти в каталог, а ему
@@ -1827,6 +1891,7 @@
     </div>
   </header>
 
+  
 
   <!-- НАВИГАЦИЯ -->
   <div class="navbar">
@@ -2749,6 +2814,25 @@
     </div><!-- /mega -->
   </div>
   </div><!-- /site-head -->
+
+<!-- КОНТАКТ-РЯД (только мобилка). НЕ липкий и это принципиально: липкая часть уже 107px
+       (шапка 59 + подшапка 49) — четверть экрана телефона, третий уровень туда не влезает.
+       Ряд ловит того, кто только пришёл, и уезжает при скролле, отдавая место контенту.
+       Слева номер ТЕКСТОМ, а не иконкой: трубка требует догадки, номер читается и жмётся сразу.
+       Справа мессенджеры и почта иконками — у них узнаваемые глифы, подписи не нужны. -->
+  <div class="m-contactbar">
+    <!-- Ссылка — ВЕСЬ блок, а не только номер: график работы стоит вплотную под ним и читается
+         как часть одного объекта, значит и жаться должен вместе с ним. Тач-цель = 44 на оба. -->
+    <a class="mcb-tx" href="tel:+74952561000">
+      <span class="mcb-num"><span class="pre">+7 (495) 256-</span><span class="l4">10-00</span></span>
+      <span class="mcb-when">Ежедневно с 9 до 22</span>
+    </a>
+    <span class="mcb-ics">
+      <a class="mcb-ic" href="#" aria-label="Написать в Телеграме"><svg aria-hidden="true" viewBox="39.4 66.2 142.4 120" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z"/></svg></a>
+      <a class="mcb-ic" href="#" aria-label="Написать в Максе"><svg aria-hidden="true" viewBox="0 0 266 265" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M78.7282 246.114C77.385 245.162 75.5339 245.421 74.4078 246.622C59.3591 262.672 20.8452 273.931 19.081 252.024C19.081 234.86 15.2258 220.397 10.9812 204.471C5.78268 184.967 0 163.272 0 131.74C0 56.5481 61.6671 0 134.783 0C207.899 0 265.225 59.3087 265.225 132.47C265.225 205.631 206.074 263.48 135.475 263.48C110.428 263.48 98.2731 259.952 78.7282 246.114ZM136.834 65.195C102.135 63.3755 75.0576 87.4529 69.0868 125.138C64.142 156.345 72.9088 194.372 80.4074 196.286C83.5879 197.098 91.2419 191.243 96.8105 185.992C97.8576 185.005 99.4401 184.839 100.668 185.59C109.348 190.898 119.176 194.887 130.011 195.455C165.634 197.323 197.202 169.443 199.067 133.818C200.933 98.1929 172.456 67.0632 136.834 65.195Z"/></svg></a>
+      <a class="mcb-ic" href="mailto:info@mdmprint.ru" aria-label="Написать на почту"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z"/></svg></a>
+    </span>
+  </div>
 
   <div class="overlay" id="overlay"></div>
 
