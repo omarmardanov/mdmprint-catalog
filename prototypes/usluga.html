@@ -11,7 +11,7 @@
      (ловили 16.07: мобильная шкала уехала в токены, страница осталась на десктопной). -->
 <link rel="stylesheet" href="../assets/css/fonts.css?v=20260717l">
 <link rel="stylesheet" href="../assets/css/tokens.css?v=20260717l">
-<link rel="stylesheet" href="../assets/css/kit.css?v=20260720a">
+<link rel="stylesheet" href="../assets/css/kit.css?v=20260720b">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:var(--font-body);color:var(--text-primary);background:var(--surface-subtle);font-size:var(--t-small);line-height:1.45}
@@ -543,6 +543,10 @@
     .usl-price .mk-pcard__name,.usl-price .mk-pcard__term{grid-column:1}
     .usl-price .mk-pcard__val{grid-column:2;grid-row:1;text-align:right;margin-top:0}
     .usl-price .mk-pcard__unit{grid-column:2;grid-row:2;text-align:right}
+    /* Плашка срока приезжает из кита, но её вертикальные margin'ы там держат ритм ВЕРТИКАЛЬНОЙ
+       карточки (6/16). Здесь строка двухколоночная, и они разъехали бы ряды сетки — гасим.
+       justify-self вместо align-self: в гриде растяжение по горизонтали лечится им. */
+    .usl-price .mk-pcard__term{justify-self:start;margin:var(--sp-4) 0 0}
     /* КАЛЬКУЛЯТОР без тёмной плашки: просто группа внутри бежевой секции, после кнопки.
        Отступы по правилу «внешние > внутренних»: внутри группы 12 (заголовок/подпись/кнопка),
        между группами 32 — граница групп держится расстоянием, раз её больше не держит фон.

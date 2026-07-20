@@ -179,18 +179,25 @@
    Ряд белых плашек с переносом. В каждой: услуга, срок, цена.
    Радиус плашки меньше радиуса карточки-родителя (вложенный радиус). */
 .mk-pricelist{display:flex;flex-wrap:wrap;gap:var(--sp-16);width:100%}
-.mk-pcard{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:var(--sp-4);
+/* Ритм задают margin, а не gap: карточка распадается на ДВЕ группы — «что и когда» и «сколько».
+   Внутри группы 2–6px, между группами 16. Без этого четыре строки читались как четыре
+   равнозначные, и было неясно, что срок относится к названию, а расшифровка — к цене. */
+.mk-pcard{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:0;
   background:var(--surface-card);border-radius:var(--radius-md);padding:var(--sp-16)}
 .mk-pcard__name{font-family:var(--font-body);font-size:var(--t-small);line-height:var(--t-small-lh);
   color:var(--text-primary)}
+/* Срок — плашкой: он и расшифровка цены оба мелкий серый, и стояли по разные стороны от цены,
+   различаясь только местом. Плашка разводит их оформлением. align-self:flex-start обязателен —
+   иначе фон растянется на всю ширину колонки и станет полосой, а не плашкой. */
 .mk-pcard__term{font-family:var(--font-body);font-size:var(--t-caption);line-height:var(--t-caption-lh);
-  color:var(--text-secondary)}
+  color:var(--text-secondary);align-self:flex-start;background:var(--surface-on-light);
+  border-radius:var(--radius-inside);padding:2px var(--sp-8);margin:var(--sp-6) 0 var(--sp-16)}
 .mk-pcard__val{font-family:var(--font-head);font-weight:700;text-transform:uppercase;color:var(--text-primary);
-  font-size:var(--t-h4);line-height:var(--t-h4-lh);letter-spacing:var(--t-h4-ls);margin-top:var(--sp-4)}
+  font-size:var(--t-h4);line-height:var(--t-h4-lh);letter-spacing:var(--t-h4-ls);margin-top:0}
 /* Расшифровка под ценой: тираж и цена за штуку. Главная цифра — стоимость минимального ЗАКАЗА
    (по ней клиент понимает порог входа), цена за штуку — вторым планом, для сравнения тиражей. */
 .mk-pcard__unit{font-family:var(--font-body);font-size:var(--t-caption);line-height:var(--t-caption-lh);
-  color:var(--text-secondary)}
+  color:var(--text-secondary);margin-top:2px}
 
 /* ---- Лента с горизонтальной прокруткой ----
    Нативный скролл + snap. Стрелки — вспомогательные: трекпад/колесо работают и без них.
