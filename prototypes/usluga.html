@@ -4103,6 +4103,26 @@
     window.scrollTo(0, lockedScrollY);   // вернуть туда, где были: без этого страница прыгнет наверх
   }
 
+  /* iOS + КЛАВИАТУРА. Клавиатура НЕ входит в CSS-вьюпорт, поэтому дравер (высота по lvh)
+     остаётся во весь «большой» экран: его низ уходит под клавиатуру, и Safari разрешает
+     ПАНОРАМИРОВАТЬ визуальный вьюпорт к спрятанной части — фиксированные шапка и дравер
+     визуально едут. Ни overflow:hidden, ни position:fixed на body этого не держат: двигается
+     не документ, а видимая область. Лечит только visualViewport: ужимаем дравер до ВИДИМОЙ
+     высоты (и прижимаем к её верху), тогда под клавиатурой не остаётся области для панорамы —
+     ехать становится нечему.
+     Замер подтвердил, что на уровне раскладки в поиске ничего не скроллится: единственный
+     скроллер — список выдачи, и то на 18px. */
+  const vv = window.visualViewport;
+  function syncDrawerToViewport(){
+    if(!vv) return;
+    if(!mega.classList.contains('open') || !window.matchMedia('(max-width:900px)').matches){
+      mega.style.height = ''; mega.style.top = ''; return;
+    }
+    mega.style.top    = (58 + vv.offsetTop) + 'px';        // держим под шапкой, следуя за вьюпортом
+    mega.style.height = Math.max(0, vv.height - 58) + 'px'; // ровно видимая высота, без «хвоста» под клавиатурой
+  }
+  if(vv){ vv.addEventListener('resize', syncDrawerToViewport); vv.addEventListener('scroll', syncDrawerToViewport); }
+
   function openMega(sec){
     showSec(sec!==undefined ? sec : '0');
     markQuick(sec);
@@ -4113,6 +4133,7 @@
     [catbtn, hcat].forEach(b => b.setAttribute('aria-expanded','true'));
     overlay.classList.add('show');
     lockScroll();   // мобилка: блок скролла фона (iOS-safe, см. CSS body.nav-open)
+    syncDrawerToViewport();   // подогнать под текущий вьюпорт (на случай, если клавиатура уже была)
   }
   function closeMega(){
     mega.classList.remove('open');
@@ -4124,6 +4145,7 @@
     [catbtn, hcat].forEach(b => b.setAttribute('aria-expanded','false'));
     overlay.classList.remove('show');
     unlockScroll();
+    mega.style.height = ''; mega.style.top = '';   // снять inline-подгон под вьюпорт
     showSec('0');       // сброс панелей/рельсы к разделу по умолчанию
     markQuick();        // и гасим подсветку в навбаре
   }
