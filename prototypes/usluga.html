@@ -1870,10 +1870,20 @@
        прокручиваются под ним. Заодно исчезает прежняя неопрятность: крестик больше
        не висит поверх проезжающих полей, под ним всегда фон шапки. */
     .cbm > [data-role] > .cbm-title{position:sticky;top:0;z-index:1;
-      background:var(--surface-card);border-bottom:1px solid var(--border);
+      background:var(--surface-card);
       margin-inline:calc(var(--container-pad) * -1);
-      padding:0 44px var(--sp-12) var(--container-pad)}
-    .cbm > [data-role] > .cbm-title + *{margin-top:var(--sp-12)}
+      padding:0 44px var(--sp-10) var(--container-pad)}
+    /* Ноль: расстояние до подзаголовка держит нижний padding шапки (10px). Раньше к нему
+       добавлялся ещё и margin, и подзаголовок отъезжал от заголовка на 20px — они
+       переставали читаться как одна группа. */
+    .cbm > [data-role] > .cbm-title + *{margin-top:0}
+    /* Линия появляется ТОЛЬКО при прокрутке. Постоянная линия разрезала заголовок и его
+       же подзаголовок: текст оставался висеть между чужой границей сверху и полями снизу,
+       не принадлежа ничему. В покое линии нет — заголовок и текст читаются одним блоком,
+       а когда под шапку заезжает содержимое, граница появляется и отделяет её.
+       Ширина 1px задана всегда, меняется только цвет — иначе раскладка дёргалась бы. */
+    .cbm > [data-role] > .cbm-title{border-bottom:1px solid transparent;transition:border-color .15s}
+    .cbm > [data-role].scrolled > .cbm-title{border-bottom-color:var(--border)}
     /* ВНИМАНИЕ: здесь только то, что перебивает десктопное ID-правило #reqBack .cbm.
        transform в этот селектор класть НЕЛЬЗЯ — вес ID (1,0,1) побьёт правило показа
        .cbm-back.show .cbm (0,2,0), и шторка останется за нижним краем экрана.
@@ -4456,6 +4466,8 @@
       if(e) e.preventDefault();
       lastFocus = document.activeElement;
       resetFiles();                              // иначе файлы прошлой заявки приезжают в новую
+      formWrap.scrollTop = 0;                    // и открываемся всегда с начала формы,
+      formWrap.classList.remove('scrolled');     // а линия под шапкой при этом не висит
       formWrap.hidden = false; doneWrap.hidden = true;
       back.classList.add('show'); back.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
@@ -4472,6 +4484,12 @@
     document.querySelectorAll(triggerSel).forEach(o=>o.addEventListener('click', openModal));
     back.querySelectorAll('[data-cbm-close]').forEach(c=>c.addEventListener('click', closeModal));
     back.addEventListener('click', e=>{ if(e.target===back) closeModal(); });
+
+    /* Линия под липким заголовком нужна, только когда под него что-то заехало. */
+    const scroller = back.querySelector('[data-role="form"]');
+    if(scroller) scroller.addEventListener('scroll', ()=>{
+      scroller.classList.toggle('scrolled', scroller.scrollTop > 4);
+    }, {passive:true});
 
     /* СВАЙП ВНИЗ — только по верхней зоне шторки (ручка и заголовок).
        Тянуть за содержимое НЕЛЬЗЯ: там свой скролл, и два жеста начали бы спорить —
