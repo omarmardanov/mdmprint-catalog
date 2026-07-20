@@ -3,33 +3,115 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MDMprint · прототипы</title>
+<title>MDMprint — прототипы и передача в разработку</title>
+<link rel="stylesheet" href="assets/css/fonts.css?v=20260720a">
+<link rel="stylesheet" href="assets/css/tokens.css?v=20260717l">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,'Segoe UI',Inter,Arial,sans-serif;color:#1a1a1a;background:#fafafa;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-  .card{max-width:420px;width:100%;text-align:center}
-  h1{font-size:22px;font-weight:800;margin-bottom:6px}
-  p{color:#6a6f78;font-size:14px;margin-bottom:24px}
-  a.link{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;background:#fff;border:1px solid #ececec;border-radius:14px;margin-bottom:12px;text-decoration:none;color:#1a1a1a;transition:border-color .15s,box-shadow .15s}
-  a.link:hover{border-color:#FFC829;box-shadow:0 4px 16px rgba(0,0,0,.06)}
-  a.link b{font-size:16px;font-weight:700}
-  a.link span{font-size:13px;color:#8a8f98;display:block;margin-top:2px}
-  a.link .arr{font-size:22px;color:#c2c5cb}
-  .txt{text-align:left}
+  body{font-family:var(--font-body);color:var(--text-primary);background:var(--surface-subtle);
+    padding:32px 20px 80px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-family:var(--font-head);font-size:26px;line-height:32px;margin-bottom:8px}
+  .sub{color:var(--text-secondary);font-size:15px;line-height:22px;margin-bottom:8px}
+  .upd{color:var(--text-tertiary,var(--text-secondary));font-size:13px;margin-bottom:32px}
+  h2{font-family:var(--font-head);font-size:13px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--text-secondary);margin:32px 0 12px}
+  a.row{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;background:var(--surface-card);
+    border:1px solid transparent;border-radius:var(--radius-md);margin-bottom:8px;
+    text-decoration:none;color:var(--text-primary);transition:border-color .15s,box-shadow .15s}
+  a.row:hover{border-color:var(--brand);box-shadow:0 4px 16px rgba(0,0,0,.06)}
+  a.row b{font-size:15px;font-weight:700;display:block}
+  a.row .d{font-size:13px;line-height:19px;color:var(--text-secondary);display:block;margin-top:3px}
+  a.row .arr{margin-left:auto;color:var(--text-secondary);font-size:18px;line-height:1;padding-top:2px}
+  .tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+    background:var(--brand);color:var(--text-primary);border-radius:var(--radius-inside);
+    padding:2px 6px;margin-left:8px;vertical-align:2px}
+  .tag--wip{background:var(--surface-on-light);color:var(--text-secondary)}
+  .note{background:var(--surface-card);border-radius:var(--radius-md);padding:16px 18px;
+    font-size:13px;line-height:20px;color:var(--text-secondary);margin-top:8px}
+  .note b{color:var(--text-primary)}
 </style>
 </head>
 <body>
-  <div class="card">
-    <h1>MDMprint — прототипы каталога</h1>
-    <p>Выберите версию для просмотра</p>
-    <a class="link" href="prototypes/header-catalog-mobile.html">
-      <span class="txt"><b>Мобильная версия</b><span>Шапка + каталог drill-down</span></span>
-      <span class="arr">›</span>
-    </a>
-    <a class="link" href="prototypes/header-catalog.html">
-      <span class="txt"><b>Десктоп-версия</b><span>Шапка + выпадающий каталог (1200px)</span></span>
-      <span class="arr">›</span>
-    </a>
+<div class="wrap">
+  <h1>MDMprint — каталог: прототипы и передача в разработку</h1>
+  <p class="sub">Редизайн страниц каталога. Прототипы свёрстаны в HTML/CSS и являются
+    <b>эталоном вёрстки</b>, а не картинкой: их переносят на WordPress как код.</p>
+  <p class="upd">Обновлено 20.07.2026</p>
+
+  <h2>Начать отсюда</h2>
+  <a class="row" href="docs/BRIEF_PM.md">
+    <span><b>BRIEF_PM.md — бриф проджект-менеджеру</b>
+      <span class="d">Объём, состав работ, что блокирует старт, риски. Для планирования, не для кода.</span></span>
+    <span class="arr">›</span>
+  </a>
+  <a class="row" href="docs/HANDOFF.md">
+    <span><b>HANDOFF.md — передача в разработку</b>
+      <span class="d">Что передаётся, порядок работ, что живое и что заглушка, чек-лист приёмки.</span></span>
+    <span class="arr">›</span>
+  </a>
+  <a class="row" href="docs/DEV_WALKTHROUGH.md">
+    <span><b>DEV_WALKTHROUGH.md — читать первым разработчику</b>
+      <span class="d">Путь разработчика: 9 мест, где встаёшь, включая 3 мины, которые снаружи не видно.</span></span>
+    <span class="arr">›</span>
+  </a>
+  <a class="row" href="docs/QUESTIONS.md">
+    <span><b>QUESTIONS.md — вопросы до старта</b>
+      <span class="d">Что нужно узнать до первой строки кода: API ХП, лиды, юрлинки. Помечено, что блокирует.</span></span>
+    <span class="arr">›</span>
+  </a>
+
+  <h2>Прототипы</h2>
+  <a class="row" href="prototypes/usluga.html">
+    <span><b>Страница услуги — «Тиснение фольгой»<span class="tag">эталон</span></b>
+      <span class="d">Главный результат. Один шаблон на три типа записи: услуга, технология, материал.
+        Десктоп и мобилка, живой drawer каталога, поиск, формы.</span></span>
+    <span class="arr">›</span>
+  </a>
+  <a class="row" href="prototypes/header-catalog.html">
+    <span><b>Шапка и каталог</b>
+      <span class="d">Мегаменю на десктопе, drill-down на мобилке. Отдельный стенд шапки.</span></span>
+    <span class="arr">›</span>
+  </a>
+  <a class="row" href="prototypes/technology-template.html">
+    <span><b>Шаблон страницы технологии</b>
+      <span class="d">Ранний вариант. Актуальная сборка — в странице услуги выше.</span></span>
+    <span class="arr">›</span>
+  </a>
+  <a class="row" href="prototypes/buttons.html">
+    <span><b>Витрина кнопок</b>
+      <span class="d">Все состояния кнопок дизайн-системы на одной странице.</span></span>
+    <span class="arr">›</span>
+  </a>
+  <a class="row" href="prototypes/_sandbox-specs.html">
+    <span><b>Блок «Характеристики»<span class="tag tag--wip">не согласован</span></b>
+      <span class="d">Для шаблона материалов. Собран, но в эталон не перенесён — ждёт решения.</span></span>
+    <span class="arr">›</span>
+  </a>
+
+  <h2>Документация</h2>
+  <a class="row" href="docs/DESIGN_SYSTEM.md">
+    <span><b>DESIGN_SYSTEM.md</b>
+      <span class="d">Токены, шкалы, поверхности, формы, тач-правила. Источник правды — код, не макет.</span></span>
+    <span class="arr">›</span>
+  </a>
+  <a class="row" href="docs/TEMPLATES.md">
+    <span><b>TEMPLATES.md</b>
+      <span class="d">Карта блоков: один шаблон, три типа записи. Какой блок когда включается.</span></span>
+    <span class="arr">›</span>
+  </a>
+  <a class="row" href="docs/CMS_FIELDS.md">
+    <span><b>CMS_FIELDS.md</b>
+      <span class="d">Админка: поля, лимиты символов, поведение при пустых и крайних значениях.</span></span>
+    <span class="arr">›</span>
+  </a>
+
+  <div class="note">
+    <b>Ассеты:</b> <code>assets/css/{fonts,tokens,kit}.css</code> подключать именно в этом порядке
+    и обязательно с <code>?v=ГГГГММДД</code> — иначе браузер часами отдаёт старый CSS.
+    <b>Папка <code>archive/</code></b> к передаче не относится: там черновики, на которых собирались
+    блоки. Подробности — в <code>archive/sandboxes/README.md</code>.
   </div>
+</div>
 </body>
 </html>
