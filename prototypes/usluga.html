@@ -1855,11 +1855,28 @@
        дали бы ей пустоту в пол-экрана. Короткая форма остаётся короткой.
        dvh, а не vh: vh на мобильных не учитывает съезжающую панель браузера. */
     .cbm-back{align-items:flex-end;padding:0}
+    /* Боковые поля сняты с самой шторки и отданы прокручиваемому слою: иначе поле ввода
+       упиралось в границу скролл-контейнера, и кольцо фокуса (box-shadow 3px) обрезалось. */
     .cbm{max-width:none;width:100%;max-height:88dvh;
       border-radius:var(--radius-outside) var(--radius-outside) 0 0;
-      padding:var(--sp-20) var(--container-pad) 0;
+      padding:var(--sp-20) 0 0;
       display:flex;flex-direction:column;overflow:hidden;
       transform:translateY(100%);transition:transform .24s ease}
+    .cbm > [data-role]{padding-inline:var(--container-pad)}
+    /* Крестик выше прокручиваемого слоя — иначе поля проезжают ПОВЕРХ него. */
+    .cbm-x{z-index:2}
+    /* ЛИПКАЯ ШАПКА ШТОРКИ. Ради одной линии под ручкой отдельный блок заводить незачем —
+       линию несёт заголовок, который и так есть. Он прилипает к верху прокручиваемого слоя,
+       уходит в поля отрицательным margin (линия от края до края) и оставляет справа место
+       под крестик, чтобы текст под него не заезжал.
+       Цена — только высота самого заголовка; вводный текст и плашка контекста
+       прокручиваются под ним. Заодно исчезает прежняя неопрятность: крестик больше
+       не висит поверх проезжающих полей, под ним всегда фон шапки. */
+    .cbm > [data-role] > .cbm-title{position:sticky;top:0;z-index:1;
+      background:var(--surface-card);border-bottom:1px solid var(--border);
+      margin-inline:calc(var(--container-pad) * -1);
+      padding:0 44px var(--sp-12) var(--container-pad)}
+    .cbm > [data-role] > .cbm-title + *{margin-top:var(--sp-12)}
     /* ВНИМАНИЕ: здесь только то, что перебивает десктопное ID-правило #reqBack .cbm.
        transform в этот селектор класть НЕЛЬЗЯ — вес ID (1,0,1) побьёт правило показа
        .cbm-back.show .cbm (0,2,0), и шторка останется за нижним краем экрана.
@@ -1872,9 +1889,14 @@
       -webkit-overflow-scrolling:touch}
     /* Кнопка залипает внизу видимой области шторки. Фон обязателен — под ней проезжает текст.
        env() — чтобы кнопка не пряталась под системную полосу жеста. */
+    /* Подвал выходит из боковых полей прокручиваемого слоя в отрицательные margin и
+       возвращает их себе padding'ом: фон и линия идут от края до края экрана, а кнопка
+       остаётся на сетке 16px. Тот же приём, что у лент и разделителей секций. */
     .cbm-foot{position:sticky;bottom:0;background:var(--surface-card);
-      padding-block:var(--sp-12);
-      padding-bottom:calc(var(--sp-12) + env(safe-area-inset-bottom));
+      border-top:1px solid var(--border);
+      margin-inline:calc(var(--container-pad) * -1);
+      padding:var(--sp-12) var(--container-pad)
+              calc(var(--sp-12) + env(safe-area-inset-bottom));
       margin-top:var(--sp-4)}
     /* Ручка — привычный признак шторки: показывает, что панель пришла снизу. */
     .cbm::before{content:"";position:absolute;top:var(--sp-8);left:50%;transform:translateX(-50%);
@@ -2987,7 +3009,7 @@
 
       <div id="cbmForm" data-role="form">
         <h2 class="cbm-title" id="cbmTitle">Заказать звонок</h2>
-        <p class="cbm-sub">Оставьте номер — перезвоним в течение 15 минут в рабочее время.</p>
+        <p class="cbm-sub">Оставьте номер — перезвоним в рабочее время, ежедневно с 9 до 22.</p>
         <form id="cbmFormEl" novalidate>
           <div class="cbm-field">
             <label class="cbm-lbl" for="cbmPhone">Телефон <i>*</i></label>
@@ -3041,7 +3063,7 @@
              и не пересказывает её заново. Нередактируемо — стирать нечего.
              Значение подставляет CMS из текущей записи; hidden-поле уходит менеджеру,
              иначе строка обещала бы то, чего нет. -->
-        <p class="cbm-sub">Опишите задачу — рассчитаем стоимость и сроки. Ответим за 15 минут, ежедневно с 9 до 22.</p>
+        <p class="cbm-sub">Опишите задачу — рассчитаем стоимость и сроки. Ответим в рабочее время, ежедневно с 9 до 22.</p>
         <p class="cbm-ctx">Заявка по услуге: <b data-cms="page_context">Тиснение фольгой</b></p>
         <form novalidate>
           <input type="hidden" name="context" value="Тиснение фольгой">
@@ -3122,7 +3144,7 @@
           <!-- Иерархия в три ступени, а не один абзац: сначала ЧТО БУДЕТ («перезвоним за 15 минут»),
                потом ЧТО МЫ ПОНЯЛИ (тема и номер строками, как в квитанции), потом мелким — режим.
                Строки читаются взглядом сверху вниз; сплошной текст по центру так не читается. -->
-          <p class="cbm-done-lead" data-done-lead>Перезвоним в течение 15 минут, ежедневно с 9 до 22</p>
+          <p class="cbm-done-lead" data-done-lead>Перезвоним в рабочее время — ежедневно с 9 до 22</p>
           <dl class="cbm-done-list">
             <div><dt>Тема</dt><dd data-done-ctx>Тиснение фольгой</dd></div>
             <div><dt data-done-waylbl>Телефон</dt><dd data-done-contact>ваш номер</dd></div>
@@ -4447,6 +4469,37 @@
     document.querySelectorAll(triggerSel).forEach(o=>o.addEventListener('click', openModal));
     back.querySelectorAll('[data-cbm-close]').forEach(c=>c.addEventListener('click', closeModal));
     back.addEventListener('click', e=>{ if(e.target===back) closeModal(); });
+
+    /* СВАЙП ВНИЗ — только по верхней зоне шторки (ручка и заголовок).
+       Тянуть за содержимое НЕЛЬЗЯ: там свой скролл, и два жеста начали бы спорить —
+       палец то тянет окно, то листает форму. Отсюда и берутся рывки и залипание
+       на полпути. Верхняя полоса скролла не имеет, поэтому конфликта нет.
+       Порог 90px: короткий смах не должен закрывать заполненную форму. */
+    const sheet = back.querySelector('.cbm');
+    if(sheet){
+      let y0 = 0, dy = 0, drag = false;
+      sheet.addEventListener('touchstart', e=>{
+        if(!matchMedia('(max-width:900px)').matches) return;
+        const t = e.touches[0];
+        if(t.clientY - sheet.getBoundingClientRect().top > 56) return;   // ниже ручки не тянем
+        drag = true; y0 = t.clientY; dy = 0;
+        sheet.style.transition = 'none';                                 // за пальцем — без задержки
+      }, {passive:true});
+      sheet.addEventListener('touchmove', e=>{
+        if(!drag) return;
+        dy = Math.max(0, e.touches[0].clientY - y0);                     // вверх не тянем
+        sheet.style.transform = 'translateY(' + dy + 'px)';
+      }, {passive:true});
+      const endDrag = ()=>{
+        if(!drag) return;
+        drag = false;
+        sheet.style.transition = '';                                     // вернули плавность
+        sheet.style.transform = '';                                      // и штатное положение
+        if(dy > 90) closeModal();
+      };
+      sheet.addEventListener('touchend', endDrag);
+      sheet.addEventListener('touchcancel', endDrag);
+    }
     document.addEventListener('keydown', e=>{ if(e.key==='Escape' && back.classList.contains('show')) closeModal(); });
 
     // фокус-ловушка: aria-modal сам по себе не держит Tab — без неё фокус уходит на страницу под модалкой
@@ -4479,7 +4532,17 @@
           if(bad && !first) first = el;
         });
         if(!consent.checked) consent.closest('.cbm-check')?.classList.add('invalid');
-        if(first) first.focus();
+        /* Доводим до первого проблемного поля явно. Внутри шторки свой скролл-контейнер,
+           и одного focus() мало: поле могло остаться за экраном — человек жал кнопку,
+           а внешне не происходило ничего.
+           block:'center' — чтобы поле не встало вплотную под липкую шапку или над подвалом.
+           preventScroll у focus() — иначе браузер дёрнет свой скачок поверх плавного. */
+        /* Если текстовые поля в порядке, а не отмечено согласие — ведём к нему.
+           Прокручиваем к СТРОКЕ целиком (.cbm-check), а не к самому input 22×22:
+           иначе по центру экрана оказывается квадратик, а текст рядом с ним — нет. */
+        if(!first) first = consent;
+        (first.closest('.cbm-check') || first).scrollIntoView({block:'center', behavior:'smooth'});
+        if(first.focus) first.focus({preventScroll:true});
         return;
       }
       consent.closest('.cbm-check')?.classList.remove('invalid');
@@ -4491,14 +4554,16 @@
       const wayEl = form.querySelector('[name="contact_way"]');
       const way   = wayEl ? wayEl.value : '';
       const mailEl = form.querySelector('input[type="email"]');
-      /* Одной фразой: КАК свяжемся + КОГДА + в какие часы. Раньше это были две строки,
-         причём вторая — отдельным мелким примечанием, и экран выглядел набором обрывков. */
-      const HOURS = ', ежедневно с 9 до 22';   // неразрывные — иначе «22» повисает одна на строке
+      /* Одной фразой: КАК свяжемся и КОГДА. Срок «за 15 минут» здесь НЕ обещаем: вместе
+         с рабочими часами это противоречие — заявку можно оставить и ночью, а ответить
+         через 15 минут в три часа никто не сможет. Нейтральная формулировка честнее и
+         не создаёт ожидания, которое сами же нарушим. */
+      const HOURS = ' — ежедневно с 9 до 22';   // неразрывные — иначе «22» повисает одна на строке
       const WAYS = {
-        'Позвонить': ['Перезвоним в течение 15 минут' + HOURS,          'Телефон'],
-        'Telegram':  ['Напишем в Telegram в течение 15 минут' + HOURS,  'Telegram'],
-        'MAX':       ['Напишем в MAX в течение 15 минут' + HOURS,       'MAX'],
-        'E-mail':    ['Ответим на почту в течение 15 минут' + HOURS,    'E-mail']
+        'Позвонить': ['Перезвоним в рабочее время' + HOURS,          'Телефон'],
+        'Telegram':  ['Напишем в Telegram в рабочее время' + HOURS,  'Telegram'],
+        'MAX':       ['Напишем в MAX в рабочее время' + HOURS,       'MAX'],
+        'E-mail':    ['Ответим на почту в рабочее время' + HOURS,    'E-mail']
       };
       const [lead, label] = WAYS[way] || WAYS['Позвонить'];
       const set = (sel, val) => { const el = doneWrap.querySelector(sel); if(el && val) el.textContent = val; };
