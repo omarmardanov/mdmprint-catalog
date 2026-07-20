@@ -1023,7 +1023,9 @@
      Правило одно на все модалки (звонок, заявка, вопрос) — класс общий. */
   .cbm-title{font-family:var(--font-head);font-size:var(--t-h3);line-height:var(--t-h3-lh);
     letter-spacing:var(--t-h3-ls);text-transform:uppercase;font-weight:700;color:var(--text-primary)}
-  .cbm-sub{font-size:var(--t-caption);color:var(--text-secondary);margin-top:var(--sp-6);line-height:var(--t-caption-lh)}
+  /* Было 13/16 — для вводного абзаца это кегль подписи, да ещё с тесным леадингом:
+     текст читался как служебная сноска. 14/20 — ступень основного мелкого текста. */
+  .cbm-sub{font-size:var(--t-small);line-height:var(--t-small-lh);color:var(--text-secondary);margin-top:var(--sp-8)}
   /* Плашка контекста: тональная, без брендового цвета — жёлтый в модалке принадлежит
      кнопке отправки, и второй акцент спорил бы с ней. Радиус вложенный (модалка на
      --radius-outside). Тема набрана primary, подпись secondary: читается «что известно»,
@@ -1032,7 +1034,6 @@
     background:var(--surface-on-light);border-radius:var(--radius-md);
     font-size:var(--t-caption);line-height:var(--t-caption-lh);color:var(--text-secondary)}
   .cbm-ctx b{color:var(--text-primary);font-weight:700}
-  .cbm-ctx + .cbm-sub{margin-top:var(--sp-10)}
   .cbm form{margin-top:18px;display:flex;flex-direction:column;gap:13px}
   .cbm-field{display:flex;flex-direction:column;gap:6px}
   /* Было 12.5px — такого кегля нет ни в шкале, ни в природе. Ступень --t-small (14/20), а не
@@ -1104,17 +1105,22 @@
   .cbm-check em{color:var(--text-tertiary);font-style:normal}
   /* .cbm-submit = .mk-btn--primary; своё — растяжка по ширине формы */
   .cbm-submit{width:100%;margin-top:3px}
-  /* Было 10.5px хардкодом — мельче самой нижней ступени шкалы и мимо ДС. Ставим --t-micro. */
-  .cbm-fine{font-size:var(--t-micro);line-height:var(--t-micro-lh);color:var(--text-tertiary);text-align:center}
+  /* Подвал формы. Раньше кнопка и примечание были прямыми детьми form и разделялись её
+     gap:13px; теперь они внутри обёртки, и расстояние надо задать здесь — иначе слипаются. */
+  .cbm-foot{display:flex;flex-direction:column;gap:var(--sp-10)}
+  /* Было 10.5px хардкодом — мимо шкалы ДС. Сначала перевёл на --t-micro (11), но 11px для
+     примечания, которое НАДО прочитать, всё ещё мелко: --t-micro — кегль для служебных
+     подписей, а не для текста. Ставим --t-caption и цвет secondary вместо tertiary. */
+  .cbm-fine{font-size:var(--t-caption);line-height:var(--t-caption-lh);color:var(--text-secondary);text-align:center}
   .cbm-done{text-align:center;padding:8px 4px 4px}
   /* Иконка 40, а не 56: она подтверждает, а не солирует. При тексте 13–15px пятно 56px
      перевешивало и заголовок, и саму суть сообщения. Глиф уменьшен пропорционально. */
   .cbm-done-ic{width:40px;height:40px;border-radius:var(--radius-md);background:var(--brand);color:var(--text-primary);display:flex;align-items:center;justify-content:center;margin:0 auto var(--sp-12)}
   .cbm-done-ic svg{width:22px;height:22px}
-  /* Обещание — вторая ступень после заголовка: кегль интерфейсный, цвет основной.
-     Это то, ради чего человек читает экран, поэтому оно не мелким серым. */
-  .cbm-done-lead{font-size:var(--t-ui);line-height:var(--t-ui-lh);color:var(--text-primary);
-    font-weight:600;margin-top:var(--sp-6)}
+  /* Обещание — обычным начертанием: это предложение, а не ярлык. Полужирный тут спорил
+     с заголовком и со значениями в списке ниже, где выделение действительно нужно. */
+  .cbm-done-lead{font-size:var(--t-small);line-height:var(--t-small-lh);color:var(--text-secondary);
+    margin-top:var(--sp-6)}
   /* Что мы поняли — строками, как в квитанции. Выключка влево: пары «подпись — значение»
      сканируются взглядом, центрированный сплошной текст нет. */
   .cbm-done-list{margin:var(--sp-16) 0 var(--sp-12);text-align:left;
@@ -1839,6 +1845,45 @@
        от них (решение Omar, 16.07). Плата за это — контент 310 из 390: контейнер 16 + карточка 24. */
     .faq-form .cbm-row{flex-direction:column;gap:var(--sp-12)}
     .faq-form input[type=tel],.faq-form input.cbm-tf,.faq-form .cbm-sel select{height:48px}
+
+    /* ── МОДАЛКА = ШТОРКА СНИЗУ ──────────────────────────────────────────────────
+       Центрированный попап на телефоне не работает: он тянулся во весь экран, кнопка
+       отправки уходила за нижний край, а по бокам оставались полосы оверлея.
+       Шторка приклеена к низу, во всю ширину, и её высота ограничена — прокручивается
+       содержимое, а не окно.
+       max-height, а НЕ фиксированная высота: у формы звонка четыре поля, и жёсткие 70%
+       дали бы ей пустоту в пол-экрана. Короткая форма остаётся короткой.
+       dvh, а не vh: vh на мобильных не учитывает съезжающую панель браузера. */
+    .cbm-back{align-items:flex-end;padding:0}
+    .cbm{max-width:none;width:100%;max-height:88dvh;
+      border-radius:var(--radius-outside) var(--radius-outside) 0 0;
+      padding:var(--sp-20) var(--container-pad) 0;
+      display:flex;flex-direction:column;overflow:hidden;
+      transform:translateY(100%);transition:transform .24s ease}
+    /* ВНИМАНИЕ: здесь только то, что перебивает десктопное ID-правило #reqBack .cbm.
+       transform в этот селектор класть НЕЛЬЗЯ — вес ID (1,0,1) побьёт правило показа
+       .cbm-back.show .cbm (0,2,0), и шторка останется за нижним краем экрана.
+       Ровно это и случилось при первом заходе, поймано замером. */
+    #reqBack .cbm{max-width:none;max-height:88dvh;overflow:hidden}
+    /* Скроллит внутренний слой, а не сама шторка — поэтому крестик остаётся на месте,
+       а не уезжает вместе с содержимым. min-height:0 обязателен: без него флекс-ребёнок
+       не даёт себя сжать, и overflow не включается. */
+    .cbm > [data-role]{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+      -webkit-overflow-scrolling:touch}
+    /* Кнопка залипает внизу видимой области шторки. Фон обязателен — под ней проезжает текст.
+       env() — чтобы кнопка не пряталась под системную полосу жеста. */
+    .cbm-foot{position:sticky;bottom:0;background:var(--surface-card);
+      padding-block:var(--sp-12);
+      padding-bottom:calc(var(--sp-12) + env(safe-area-inset-bottom));
+      margin-top:var(--sp-4)}
+    /* Ручка — привычный признак шторки: показывает, что панель пришла снизу. */
+    .cbm::before{content:"";position:absolute;top:var(--sp-8);left:50%;transform:translateX(-50%);
+      width:36px;height:4px;border-radius:var(--radius-pill);background:var(--border-strong)}
+    .cbm-done{padding-bottom:calc(var(--sp-12) + env(safe-area-inset-bottom))}
+    /* Поля в одну колонку. Двухколоночная сетка на 390px давала по 144px на поле —
+       туда не влезала ни подсказка («Как к вам обра»), ни введённое значение.
+       У формы ЧАВО это правило уже было; в модалках его просто не завели. */
+    .cbm .cbm-row{flex-direction:column;gap:var(--sp-12)}
     /* ПОДПИСИ КАРТОЧЕК. Замер: заголовок 16/24 — это леадинг ПРОЗЫ (1.5), а тут 1–2 строки,
        от него подпись расползалась; кадр→тег 12 и тег→заголовок 8 почти равны, поэтому подпись
        не читалась как одна группа. Ставим заголовку 1.25 и разводим отступы вдвое (8 снаружи,
@@ -2963,8 +3008,10 @@
             <input type="checkbox" class="mk-check" id="cbmPromo">
             <span>Согласен получать новости и спецпредложения <em>(необязательно)</em></span>
           </label>
-          <button type="submit" class="cbm-submit mk-btn mk-btn--primary" id="cbmSubmit" disabled>Жду звонка</button>
-          <p class="cbm-fine">Мы используем номер только для обратного звонка по вашей заявке.</p>
+          <div class="cbm-foot">
+            <button type="submit" class="cbm-submit mk-btn mk-btn--primary" id="cbmSubmit" disabled>Жду звонка</button>
+            <p class="cbm-fine">Мы используем номер только для обратного звонка по вашей заявке.</p>
+          </div>
         </form>
       </div>
 
@@ -2994,8 +3041,8 @@
              и не пересказывает её заново. Нередактируемо — стирать нечего.
              Значение подставляет CMS из текущей записи; hidden-поле уходит менеджеру,
              иначе строка обещала бы то, чего нет. -->
-        <p class="cbm-ctx">Заявка по услуге: <b data-cms="page_context">Тиснение фольгой</b></p>
         <p class="cbm-sub">Опишите задачу — рассчитаем стоимость и сроки. Ответим за 15 минут, ежедневно с 9 до 22.</p>
+        <p class="cbm-ctx">Заявка по услуге: <b data-cms="page_context">Тиснение фольгой</b></p>
         <form novalidate>
           <input type="hidden" name="context" value="Тиснение фольгой">
           <div class="cbm-row">
@@ -3057,8 +3104,12 @@
             <input type="checkbox" class="mk-check" name="promo">
             <span>Согласен получать новости и спецпредложения <em>(необязательно)</em></span>
           </label>
-          <button type="submit" class="cbm-submit mk-btn mk-btn--primary" disabled>Отправить заявку</button>
-          <p class="cbm-fine">Мы используем контакты только для ответа по вашей заявке.</p>
+          <!-- .cbm-foot: на мобилке залипает внизу шторки, чтобы кнопка была видна всегда,
+               а поля прокручивались под ней. На десктопе это обычный блок в потоке. -->
+          <div class="cbm-foot">
+            <button type="submit" class="cbm-submit mk-btn mk-btn--primary" disabled>Отправить заявку</button>
+            <p class="cbm-fine">Мы используем контакты только для ответа по вашей заявке.</p>
+          </div>
         </form>
       </div>
 
@@ -3071,12 +3122,11 @@
           <!-- Иерархия в три ступени, а не один абзац: сначала ЧТО БУДЕТ («перезвоним за 15 минут»),
                потом ЧТО МЫ ПОНЯЛИ (тема и номер строками, как в квитанции), потом мелким — режим.
                Строки читаются взглядом сверху вниз; сплошной текст по центру так не читается. -->
-          <p class="cbm-done-lead" data-done-lead>Перезвоним за 15 минут</p>
+          <p class="cbm-done-lead" data-done-lead>Перезвоним в течение 15 минут, ежедневно с 9 до 22</p>
           <dl class="cbm-done-list">
             <div><dt>Тема</dt><dd data-done-ctx>Тиснение фольгой</dd></div>
             <div><dt data-done-waylbl>Телефон</dt><dd data-done-contact>ваш номер</dd></div>
           </dl>
-          <p class="cbm-fine">Работаем ежедневно с 9 до 22</p>
           <button type="button" class="cbm-submit mk-btn mk-btn--primary" data-cbm-close>Хорошо</button>
         </div>
       </div>
@@ -4441,11 +4491,14 @@
       const wayEl = form.querySelector('[name="contact_way"]');
       const way   = wayEl ? wayEl.value : '';
       const mailEl = form.querySelector('input[type="email"]');
+      /* Одной фразой: КАК свяжемся + КОГДА + в какие часы. Раньше это были две строки,
+         причём вторая — отдельным мелким примечанием, и экран выглядел набором обрывков. */
+      const HOURS = ', ежедневно с 9 до 22';   // неразрывные — иначе «22» повисает одна на строке
       const WAYS = {
-        'Позвонить': ['Перезвоним за 15 минут',            'Телефон'],
-        'Telegram':  ['Напишем в Telegram за 15 минут',    'Telegram'],
-        'MAX':       ['Напишем в MAX за 15 минут',         'MAX'],
-        'E-mail':    ['Ответим на почту за 15 минут',      'E-mail']
+        'Позвонить': ['Перезвоним в течение 15 минут' + HOURS,          'Телефон'],
+        'Telegram':  ['Напишем в Telegram в течение 15 минут' + HOURS,  'Telegram'],
+        'MAX':       ['Напишем в MAX в течение 15 минут' + HOURS,       'MAX'],
+        'E-mail':    ['Ответим на почту в течение 15 минут' + HOURS,    'E-mail']
       };
       const [lead, label] = WAYS[way] || WAYS['Позвонить'];
       const set = (sel, val) => { const el = doneWrap.querySelector(sel); if(el && val) el.textContent = val; };
