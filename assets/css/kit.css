@@ -187,6 +187,10 @@
   color:var(--text-secondary)}
 .mk-pcard__val{font-family:var(--font-head);font-weight:700;text-transform:uppercase;color:var(--text-primary);
   font-size:var(--t-h4);line-height:var(--t-h4-lh);letter-spacing:var(--t-h4-ls);margin-top:var(--sp-4)}
+/* Расшифровка под ценой: тираж и цена за штуку. Главная цифра — стоимость минимального ЗАКАЗА
+   (по ней клиент понимает порог входа), цена за штуку — вторым планом, для сравнения тиражей. */
+.mk-pcard__unit{font-family:var(--font-body);font-size:var(--t-caption);line-height:var(--t-caption-lh);
+  color:var(--text-secondary)}
 
 /* ---- Лента с горизонтальной прокруткой ----
    Нативный скролл + snap. Стрелки — вспомогательные: трекпад/колесо работают и без них.

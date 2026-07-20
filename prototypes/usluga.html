@@ -11,7 +11,7 @@
      (ловили 16.07: мобильная шкала уехала в токены, страница осталась на десктопной). -->
 <link rel="stylesheet" href="../assets/css/fonts.css?v=20260717l">
 <link rel="stylesheet" href="../assets/css/tokens.css?v=20260717l">
-<link rel="stylesheet" href="../assets/css/kit.css?v=20260717l">
+<link rel="stylesheet" href="../assets/css/kit.css?v=20260720a">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:var(--font-body);color:var(--text-primary);background:var(--surface-subtle);font-size:var(--t-small);line-height:1.45}
@@ -102,7 +102,8 @@
   /* сверху линию даёт .mk-statbar, снизу — своя (нужна, когда подменю прилипло) */
   /* низ липкой зоны = top подрубрикатора (54) + его высота (53) */
   .usl-req{--stack-top:107px}
-  .usl-subnav{position:sticky;top:54px;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:0!important}
+  /* фон плотный: сквозь rgba(...,.92) при скролле просвечивал контент под липкой полосой */
+  .usl-subnav{position:sticky;top:54px;z-index:30;background:var(--surface-card);border-bottom:1px solid var(--border);padding:0!important}
   .usl-subnav + section{border-top:none}
   .usl-subnav .wrap{display:flex;gap:28px;height:52px;align-items:stretch;overflow-x:auto}
   /* -webkit-tap-highlight-color: iOS рисует свою вспышку серым ПРЯМОУГОЛЬНИКОМ, игнорируя радиус.
@@ -537,9 +538,11 @@
        В ките карточка вертикальная (имя/срок/цена стопкой), тут строка прайс-листа: две колонки,
        правая по содержимому. */
     .usl-price .mk-pcard{display:grid;grid-template-columns:1fr auto;column-gap:var(--sp-12)}
+    /* Строка читается двумя колонками по строкам: слева «что / когда», справа «сколько за заказ /
+       почём за штуку». Поэтому цена и её расшифровка встают на те же строки, что имя и срок. */
     .usl-price .mk-pcard__name,.usl-price .mk-pcard__term{grid-column:1}
-    .usl-price .mk-pcard__val{grid-column:2;grid-row:1 / span 2;align-self:center;
-      text-align:right;margin-top:0}
+    .usl-price .mk-pcard__val{grid-column:2;grid-row:1;text-align:right;margin-top:0}
+    .usl-price .mk-pcard__unit{grid-column:2;grid-row:2;text-align:right}
     /* КАЛЬКУЛЯТОР без тёмной плашки: просто группа внутри бежевой секции, после кнопки.
        Отступы по правилу «внешние > внутренних»: внутри группы 12 (заголовок/подпись/кнопка),
        между группами 32 — граница групп держится расстоянием, раз её больше не держит фон.
@@ -1447,7 +1450,12 @@
        Номер и CTA временно убраны из шапки — живут в меню (согласуем с маркетологом). */
     header{position:fixed;top:0;left:0;right:0;z-index:1002}
     body{padding-top:58px}   /* компенсация fixed-шапки */
-    .usl-subnav{top:58px}
+    /* Отступ смотрел не в ту сторону: над навбаром 0, под ним до заголовка 88 — он читался как
+       подпись к блоку сверху, а не как навигация по тому, что снизу. Разворачиваем: воздух над
+       навбаром, сокращённый отступ под ним.
+       Фон плотный — в базовом правиле выше, для обеих сторон. */
+    .usl-subnav{top:58px;margin-top:var(--sp-24)}
+    .usl-subnav + section{padding-top:var(--sp-32)}
     /* лента режется по .wrap (поля 16px), поэтому пункты обрывались, не доходя до края экрана,
        и было неясно, что строка вообще прокручивается. Скроллер во всю ширину, поля переезжают
        внутрь ленты: первый пункт остаётся на сетке страницы, последний уходит за край экрана.
@@ -1459,7 +1467,7 @@
     .usl-subnav .wrap{scrollbar-width:none}
 
     /* --- HBAR: logo слева · [поиск · войти · корзина · меню] справа --- */
-    .hbar,body.scrolled .hbar{gap:2px;height:58px}   /* компакт-шапка при скролле — только десктоп, на мобилке ничего не меняется */
+    .hbar,body.scrolled .hbar{gap:var(--sp-4);height:58px}   /* компакт-шапка при скролле — только десктоп, на мобилке ничего не меняется */
     .logo{order:1;margin-right:auto}
     .logo img{height:22px}
     /* поле поиска убрано из шапки — оно внутри drawer (каталога) */
@@ -1467,14 +1475,18 @@
     /* телефон живёт в call-bar (2-й уровень) — из hbar убираем */
     .hphone{display:none}
     /* правый блок иконок: поиск + войти + корзина (все — плоские иконки одного размера) */
-    .hactions{order:2;gap:2px}
+    .hactions{order:2;gap:var(--sp-4)}
     .hactions>*{display:none!important}
     .hactions>.m-search,.hactions>.m-keep{display:flex!important}
     /* ЕДИНЫЙ СТИЛЬ иконок-кнопок шапки: поиск · войти · корзина · бургер —
-       40×40, плоские, глиф строго по центру (font-size:0 + flex-center вместо text-indent),
+       44×44, плоские, глиф строго по центру (font-size:0 + flex-center вместо text-indent),
        общий тёплый ховер (в т.ч. у бургера) */
+    /* 44×44 — минимум тач-цели (было 40 при зазоре 2: корзина кончалась на 332, бургер начинался
+       на 334, промах по бургеру уводил в корзину). Зазор 4, а не рекомендованные 8: порог норматива
+       — на РАЗМЕР цели, зазор лишь рекомендация, а при 8 кластер иконок визуально разъезжался.
+       Центры соседних целей разнесены на 48px, цели не слипаются. */
     .hbar .hcat,body.scrolled .hbar .hcat,.hactions .hbtn,body.scrolled .hactions .hbtn{
-      width:40px;min-width:40px;height:40px;min-height:40px;padding:0;gap:0;
+      width:44px;min-width:44px;height:44px;min-height:44px;padding:0;gap:0;
       display:flex;align-items:center;justify-content:center;font-size:0;line-height:0;
       background:none;border:none;border-radius:var(--radius-md);
       position:relative;flex-shrink:0;color:var(--text-primary);cursor:pointer;transition:background .15s}
@@ -1582,11 +1594,14 @@
        тональная заливка. Тут светлая сторона, потому --surface-on-light вместо --surface-on-dark.
        Тач-цель добирается полями до 44, сам контейнер остаётся 32 — как в футере. */
     .m-contactbar .mcb-ic{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;
-      border-radius:var(--radius-md);background:var(--surface-on-light);color:var(--text-secondary);
+      border-radius:var(--radius-md);background:var(--surface-on-light);color:var(--text-primary);
       -webkit-tap-highlight-color:transparent;transition:background .15s,color .15s}
     /* Иконки взяты из футера ЦЕЛИКОМ — те же svg (.usl-foot .fcontact__ic) и те же размеры:
        контейнер 32, глиф 16. Единственное отличие — сторона: футер тёмный, ряд светлый, поэтому
        --surface-on-dark → --surface-on-light. Больше ничего не трогаем.
+       Глиф — primary, а не secondary: на тёмной подложке футера серый глиф контрастен, а на светлой
+       плашке серое-на-сером читается как disabled. Цветными (брендовыми) их не делаем — это сломало
+       бы единый нейтральный стиль иконок; поднимаем только контраст.
        (До этого я тащил svg из drawer — другой набор, оттого почта и была огромной.) */
     .m-contactbar .mcb-ic svg{width:16px;height:16px;display:block}
     @media (hover:hover){.m-contactbar .mcb-ic:hover{background:var(--surface-on-light-2);color:var(--text-primary)}}
@@ -3104,17 +3119,20 @@
               <div class="mk-pcard">
                 <span class="mk-pcard__name">Визитки с тиснением</span>
                 <span class="mk-pcard__term">2–3 дня</span>
-                <span class="mk-pcard__val">от 18 ₽/шт</span>
+                <span class="mk-pcard__val">от 900 ₽</span>
+                <span class="mk-pcard__unit">за 50 шт · от 18 ₽/шт</span>
               </div>
               <div class="mk-pcard">
                 <span class="mk-pcard__name">Обложки каталогов</span>
                 <span class="mk-pcard__term">3–5 дней</span>
-                <span class="mk-pcard__val">от 60 ₽/шт</span>
+                <span class="mk-pcard__val">от 3 000 ₽</span>
+                <span class="mk-pcard__unit">за 50 шт · от 60 ₽/шт</span>
               </div>
               <div class="mk-pcard">
                 <span class="mk-pcard__name">Упаковка с фольгой</span>
                 <span class="mk-pcard__term">от 5 дней</span>
-                <span class="mk-pcard__val">от 120 ₽/шт</span>
+                <span class="mk-pcard__val">от 6 000 ₽</span>
+                <span class="mk-pcard__unit">за 50 шт · от 120 ₽/шт</span>
               </div>
             </div>
             <button class="tb-cta mk-btn mk-btn--primary">Оставить заявку на расчёт</button>
