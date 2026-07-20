@@ -1501,8 +1501,16 @@
        фокусе поля. Именно поэтому число, а не var(--t-body): если ступень body однажды уедет
        на 15, зум обязан не вернуться. */
     input,select,textarea{font-size:16px!important}
-    body.nav-open{overflow:hidden}
-    html:has(body.nav-open){overflow:hidden}   /* прокрутка часто на html — лочим и его, иначе фон скроллится за меню */
+    /* ЗАМОК СКРОЛЛА ПОД ДРАВЕРОМ.
+       overflow:hidden НЕ держит на iOS Safari, когда в дравере сфокусировано поле и поднята
+       клавиатура: страница и фиксированная шапка начинают ездить руббер-бэндом. Это и был
+       баг «в поиске скролится шапка и страница» — меню не фокусирует ничего, поэтому там
+       клавиатуры нет и overflow:hidden хватало.
+       Надёжный приём: фиксируем сам body (position:fixed) и держим его на месте через top,
+       равный прежней прокрутке; при закрытии прокрутку возвращаем из JS. Тогда странице
+       физически некуда ехать даже с клавиатурой. width:100% — иначе body схлопнется по
+       содержимому. */
+    body.nav-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 
     /* топбар (утилитарные ссылки) уезжает за экран — прячем */
     .topbar{display:none}
@@ -4077,6 +4085,24 @@
   function markQuick(sec){
     quick.forEach(a=>a.classList.toggle('active', sec!==undefined && a.dataset.open===sec));
   }
+  /* Замок скролла: фиксируем body и запоминаем прокрутку, при закрытии возвращаем её.
+     Только на мобилке — на десктопе дравер это hover-мегаменю, фон лочить не нужно, а
+     position:fixed на body сломал бы страницу. Флаг isMobileNav определён ниже по файлу,
+     но обе функции вызываются уже после инициализации, так что это безопасно. */
+  let lockedScrollY = 0;
+  function lockScroll(){
+    if(!window.matchMedia('(max-width:900px)').matches) return;
+    lockedScrollY = window.scrollY || 0;
+    document.body.style.top = -lockedScrollY + 'px';
+    document.body.classList.add('nav-open');
+  }
+  function unlockScroll(){
+    if(!document.body.classList.contains('nav-open')) return;
+    document.body.classList.remove('nav-open');
+    document.body.style.top = '';
+    window.scrollTo(0, lockedScrollY);   // вернуть туда, где были: без этого страница прыгнет наверх
+  }
+
   function openMega(sec){
     showSec(sec!==undefined ? sec : '0');
     markQuick(sec);
@@ -4086,7 +4112,7 @@
     hcat.classList.add('active');
     [catbtn, hcat].forEach(b => b.setAttribute('aria-expanded','true'));
     overlay.classList.add('show');
-    document.body.classList.add('nav-open');   // мобилка: блок скролла фона
+    lockScroll();   // мобилка: блок скролла фона (iOS-safe, см. CSS body.nav-open)
   }
   function closeMega(){
     mega.classList.remove('open');
@@ -4097,7 +4123,7 @@
     hcat.classList.remove('active');
     [catbtn, hcat].forEach(b => b.setAttribute('aria-expanded','false'));
     overlay.classList.remove('show');
-    document.body.classList.remove('nav-open');
+    unlockScroll();
     showSec('0');       // сброс панелей/рельсы к разделу по умолчанию
     markQuick();        // и гасим подсветку в навбаре
   }
