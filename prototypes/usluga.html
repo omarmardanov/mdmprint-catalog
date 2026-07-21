@@ -512,11 +512,21 @@
      Данные при этом приходят: JS виджета отрабатывает независимо от видимости. */
   .sw-app{display:none!important}
 
-  /* ЛИПКИЙ CTA — только мобилка: на десктопе настоящие кнопки и так в поле зрения.
-     Правило стоит ЗДЕСЬ, а не рядом с мобильными: включающее правило живёт в @media ниже,
-     и при одинаковой специфичности выигрывает то, что записано ПОЗЖЕ. Если поставить это
-     объявление под медиа-блоком, оно молча погасит бар на всех ширинах. */
+  /* ЛИПКИЙ CTA. База скрыта; включается и на мобилке (@media ниже — полоса снизу),
+     и на десктопе (правило прямо здесь — плавающая пилюля справа-снизу). Правило стоит
+     ЗДЕСЬ, а не рядом с мобильными: при равной специфичности выигрывает записанное ПОЗЖЕ. */
   .usl-stickycta{display:none}
+  /* ДЕСКТОП: при скролле шапка сворачивается и главной CTA не остаётся — плавающая пилюля
+     подхватывает. Показывается тем же условием, что мобильная (нет CTA на экране + проскроллили). */
+  @media(min-width:901px){
+    .usl-stickycta{display:block;position:fixed;right:28px;bottom:28px;left:auto;z-index:90;
+      opacity:0;transform:translateY(16px);pointer-events:none;
+      transition:opacity .22s ease,transform .22s ease}
+    .usl-stickycta.show{opacity:1;transform:translateY(0);pointer-events:auto}
+    .usl-stickycta .mk-btn{width:auto;padding:14px 26px;
+      box-shadow:0 10px 30px rgba(20,15,0,.18),0 2px 8px rgba(20,15,0,.08)}
+    @media (prefers-reduced-motion:reduce){.usl-stickycta{transition:opacity .01s;transform:none}}
+  }
 
   @media(max-width:900px){
     /* Мобильная типошкала уехала в tokens.css (@media там же): она нужна всему сайту, а не одной
@@ -5061,9 +5071,10 @@
     if(!bar || !('IntersectionObserver' in window)) return;
     const btn = bar.querySelector('.mk-btn');
 
+    const footAnchor = document.querySelector('.usl-foot');
     const anchors = [
       ...document.querySelectorAll('.usl-hero .tb-cta, .usl-price .tb-cta, .usl-final .tb-cta, .usl-req .req-cta .mk-btn--primary'),
-      document.querySelector('.usl-foot')
+      footAnchor
     ].filter(Boolean);
 
     const onScreen = new Set();
@@ -5079,8 +5090,15 @@
       /* Порог 240px: у самого верха кнопка героя может быть чуть ниже среза экрана
          на коротких телефонах, и бар выскакивал бы в паре свайпов от такой же
          жёлтой кнопки. */
-      const show = mq.matches && onScreen.size === 0 && scrollY > 240
-                   && !document.body.classList.contains('nav-open');
+      /* Условие показа разное по устройству:
+         — МОБИЛКА: полоса во всю ширину клашится с настоящей CTA → прячем, когда любая на экране.
+         — ДЕСКТОП: пилюля маленькая, в углу; держим ПОСТОЯННО (надёжный якорь «оставить заявку»),
+           прячем только у ФУТЕРА, чтобы не наезжать на футер/финальную CTA. */
+      const scrolled = scrollY > 240;
+      const footerVisible = footAnchor && onScreen.has(footAnchor);
+      const show = mq.matches
+        ? (onScreen.size === 0 && scrolled && !document.body.classList.contains('nav-open'))
+        : (scrolled && !footerVisible);
       bar.classList.toggle('show', show);
       /* Скрытый бар убираем и из доступности, иначе скринридер и Tab находят
          кнопку, которой на экране нет. */
