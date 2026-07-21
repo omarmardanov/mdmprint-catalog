@@ -1200,7 +1200,10 @@
   .group h4:hover .ha{opacity:1;transform:translateX(2px)}
   .group ul{list-style:none}
   .group li{padding:3.5px 0}
-  /* товар = конечная страница, легче заголовка. inline — чтобы бейдж/иконка липли к последнему слову при переносе */
+  /* товар = конечная страница, легче заголовка. inline — чтобы бейдж/иконка липли к последнему слову при переносе.
+     Плашку-на-весь-пункт пробовали (block): у двухстрочного она цельная, НО в column-count раскладке
+     любой hover пересчитывает колонки и весь контент дёргается (замер: сдвиг 7/8 пунктов, и без
+     отрицательных полей тоже). Неизбежно для многоколоночника — оставляем подчёркивание. */
   .group li a{color:var(--text-secondary);font-size:var(--t-small);line-height:var(--t-small-lh);transition:color .12s;display:inline}
   .group li a:hover{color:var(--text-primary);text-decoration:underline;text-underline-offset:2px}
   /* ссылка «показать весь список группы» — ФИКСИРОВАННАЯ строка «Показать все», не из CMS */
@@ -1407,7 +1410,11 @@
   .rail{border:0;border-radius:var(--radius-outside);background:var(--surface-panel);padding:8px 4px;margin:0 8px 0 0;height:100%;max-height:none;scrollbar-gutter:stable}
   .rail .lbl{padding:8px 10px 4px}
   .rail .ri{padding:9px 10px;border-radius:var(--radius-md);white-space:nowrap;gap:9px}/* одна строка + чуть плотнее иконка↔текст (было 12) */
-  .rail .ri:hover{background:var(--surface-card)}/* наведение = выбор раздела (mouseenter → active) */
+  /* Двухстадийный отклик под задержку намерения (140мс): быстрый hover — тональный серый
+     (сразу, «навёл»), а committed — белый .active ниже («переключилось»). Раньше оба были
+     белыми, и в долю секунды до переключения казалось, что ничего не происходит.
+     :not(.active) — чтобы у уже выбранного раздела серый не перебивал белый. */
+  .rail .ri:hover:not(.active){background:var(--surface-on-light)}
   /* активный/выбранный (он же — состояние наведения): белая карточка + бренд-бар слева.
      Светло-жёлтая заливка на тёплой панели читалась «грязно» → ушли от неё. */
   .rail .ri.active{background:var(--surface-card);border-radius:var(--radius-md);box-shadow:0 1px 4px rgba(20,15,0,.06)}
@@ -4159,12 +4166,24 @@
   // hover-выбор раздела — только для мыши. На тач-устройстве mouseenter менял бы панель по «наведению»,
   // и Safari трактует первый тап как ховер, откладывая переход на второй тап.
   const canHover = window.matchMedia('(hover:hover)').matches;
+  /* ПРОБЛЕМА ДИАГОНАЛИ. Раздел переключался мгновенно по mouseenter, и когда курсор шёл
+     по диагонали из рельсы к пунктам панели, он задевал соседние пункты рельсы — раздел
+     дёргался, приходилось вести курсор ровно. Лечим «задержкой намерения»: переключаем,
+     только если курсор ЗАДЕРЖАЛСЯ на пункте (140мс), а не пролетел мимо. А как только
+     курсор вошёл в панель — отменяем любое отложенное переключение, чтобы путь к пунктам
+     точно не сбивал раздел. Клик — всегда мгновенно. */
+  let aimTimer = 0;
+  const pane = document.getElementById('pane');
   ris.forEach(r=>{
     // ушли в другой раздел по рельсе — подсветка «откуда пришли» больше не верна
     const go = ()=>{ showSec(r.dataset.sec); markQuick(); };
-    if(canHover) r.addEventListener('mouseenter', go);
-    r.addEventListener('click', go);
+    if(canHover){
+      r.addEventListener('mouseenter', ()=>{ clearTimeout(aimTimer); aimTimer = setTimeout(go, 140); });
+      r.addEventListener('mouseleave', ()=> clearTimeout(aimTimer));
+    }
+    r.addEventListener('click', ()=>{ clearTimeout(aimTimer); go(); });
   });
+  if(canHover && pane) pane.addEventListener('mouseenter', ()=> clearTimeout(aimTimer));
 
   quick.forEach(a=>{
     a.addEventListener('click', e=>{e.preventDefault();e.stopPropagation();openMega(a.dataset.open);});

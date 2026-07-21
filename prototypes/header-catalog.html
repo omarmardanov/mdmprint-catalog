@@ -1692,10 +1692,18 @@
     mega.classList.contains('open') ? closeMega() : openMega();
   });
 
+  /* Проблема диагонали: раздел переключался мгновенно по mouseenter, и курсор на пути из рельсы
+     к пунктам панели задевал соседние разделы. «Задержка намерения» (140мс) + отмена при входе
+     в панель: переключаем, только если задержались на пункте; пролёт мимо — игнор. Клик — сразу. */
+  let aimTimer = 0;
+  const pane = document.getElementById('pane') || mega.querySelector('.pane');
   ris.forEach(r=>{
-    r.addEventListener('mouseenter', ()=>showSec(r.dataset.sec));
-    r.addEventListener('click', ()=>showSec(r.dataset.sec));
+    const go = ()=> showSec(r.dataset.sec);
+    r.addEventListener('mouseenter', ()=>{ clearTimeout(aimTimer); aimTimer = setTimeout(go, 140); });
+    r.addEventListener('mouseleave', ()=> clearTimeout(aimTimer));
+    r.addEventListener('click', ()=>{ clearTimeout(aimTimer); go(); });
   });
+  if(pane) pane.addEventListener('mouseenter', ()=> clearTimeout(aimTimer));
 
   quick.forEach(a=>{
     a.addEventListener('click', e=>{e.preventDefault();e.stopPropagation();openMega(a.dataset.open);});
