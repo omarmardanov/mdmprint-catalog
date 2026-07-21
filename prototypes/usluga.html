@@ -10,7 +10,7 @@
      При правке assets/css/* бампать число, иначе телефон покажет новый HTML со старым CSS
      (ловили 16.07: мобильная шкала уехала в токены, страница осталась на десктопной). -->
 <link rel="stylesheet" href="../assets/css/fonts.css?v=20260717l">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=20260717l">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=20260722b">
 <link rel="stylesheet" href="../assets/css/kit.css?v=20260720b">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
@@ -518,7 +518,7 @@
   .usl-stickycta{display:none}
   /* ДЕСКТОП: при скролле шапка сворачивается и главной CTA не остаётся — плавающая пилюля
      подхватывает. Показывается тем же условием, что мобильная (нет CTA на экране + проскроллили). */
-  @media(min-width:901px){
+  @media(min-width:1024px){
     .usl-stickycta{display:block;position:fixed;right:28px;bottom:28px;left:auto;z-index:90;
       opacity:0;transform:translateY(16px);pointer-events:none;
       transition:opacity .22s ease,transform .22s ease}
@@ -528,7 +528,7 @@
     @media (prefers-reduced-motion:reduce){.usl-stickycta{transition:opacity .01s;transform:none}}
   }
 
-  @media(max-width:900px){
+  @media(max-width:1023px){
     /* Мобильная типошкала уехала в tokens.css (@media там же): она нужна всему сайту, а не одной
        странице. Здесь жил только --t-lead — с него всё и началось. */
     .usl-hero .hero-grid,.usl-adv .adv-grid,.usl-price .price-grid{grid-template-columns:1fr}
@@ -1502,7 +1502,7 @@
   .m-dhead,.m-back,.m-dsearch,.m-root,.rail .ri-desc,.hactions .m-search,.m-contactbar{display:none}   /* по умолчанию (десктоп) скрыты; .ri-desc — только мобильная подсказка */
   @keyframes mDrawerFade{from{opacity:0}to{opacity:1}}
 
-  @media(max-width:900px){
+  @media(max-width:1023px){
     :root{--container-pad:16px}
     /* clip вместо hidden: клипует так же, но НЕ создаёт скролл-контейнер — а hidden его создавал
        и ломал position:sticky у подшапки (замер: top=-188 вместо 58, уезжала вместе со страницей).
@@ -1941,7 +1941,7 @@
     .usl-port .mk-mcard__body{gap:var(--sp-4);padding-top:var(--sp-8)}
   }
   /* тач-устройства: hover не существует — гасим, чтобы тап не оставлял «залипшую» подсветку на иконках шапки */
-  @media(max-width:900px) and (hover:none){
+  @media(max-width:1023px) and (hover:none){
     .hbar .hcat:hover,.hactions .hbtn:hover{background:none}
     .hactions .m-search.active{background:var(--surface-on-light)}   /* состояние «открыто» — сильнее гашения hover */
   }
@@ -4120,7 +4120,7 @@
   }
 
   // ===== Мобильный drawer, 3 уровня: Меню(корень) → Каталог(рельса) → Раздел(панель) =====
-  const isMobileNav = () => window.matchMedia('(max-width:900px)').matches;
+  const isMobileNav = () => window.matchMedia('(max-width:1023px)').matches;
   const dhTitle = document.getElementById('mDhTitle');
   const dhBackLbl = document.getElementById('mDhBackLbl');
   // шапка: заголовок = текущий экран, метка у «назад» = куда вернёт (родитель)
@@ -4532,7 +4532,7 @@
     if(sheet){
       let y0 = 0, dy = 0, drag = false;
       sheet.addEventListener('touchstart', e=>{
-        if(!matchMedia('(max-width:900px)').matches) return;
+        if(!matchMedia('(max-width:1023px)').matches) return;
         const t = e.touches[0];
         if(t.clientY - sheet.getBoundingClientRect().top > 56) return;   // ниже ручки не тянем
         drag = true; y0 = t.clientY; dy = 0;
@@ -4928,7 +4928,7 @@
      Вложенный скролл внутри карточки на тач-экране конфликтует с прокруткой страницы, поэтому там
      текст обрезан и раскрывается по тапу. Кнопку ставим ТОЛЬКО тем, кто реально не влез, и только
      на мобилке: на десктопе работает прежний скролл с растворяющимся низом. */
-  const REV_MOBILE = window.matchMedia('(max-width:900px)');
+  const REV_MOBILE = window.matchMedia('(max-width:1023px)');
   function markReviewClamp(scope){
     (scope || document).querySelectorAll('.usl-rev .mk-review__text').forEach(el => {
       const card = el.closest('.mk-review');
@@ -5084,7 +5084,7 @@
     }, {threshold:0});
     anchors.forEach(el=> io.observe(el));
 
-    const mq = matchMedia('(max-width:900px)');
+    const mq = matchMedia('(max-width:1023px)');
 
     function update(){
       /* Порог 240px: у самого верха кнопка героя может быть чуть ниже среза экрана
