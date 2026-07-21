@@ -3114,8 +3114,8 @@
               <span class="cbm-err">Укажите имя — минимум две буквы</span>
             </div>
             <div class="cbm-field">
-              <label class="cbm-lbl" for="reqEmail">E-mail <i>*</i></label>
-              <input type="email" class="cbm-tf" id="reqEmail" name="email" autocomplete="email" placeholder="you@example.ru" required aria-required="true">
+              <label class="cbm-lbl" for="reqEmail">E-mail <em>— необязательно</em></label>
+              <input type="email" class="cbm-tf" id="reqEmail" name="email" autocomplete="email" placeholder="you@example.ru">
               <span class="cbm-err">Проверьте адрес — нужен вид name@mail.ru</span>
             </div>
           </div>
@@ -4424,12 +4424,14 @@
     const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v||'').trim());
     function formValid(){
       if(!phoneValid() || !consent.checked) return false;
-      // все прочие поля с атрибутом required (имя, email, способ связи…)
+      // М2: e-mail НЕ обязателен, но если введён — должен быть валиден
+      const em = form.querySelector('input[type=email]');
+      if(em && em.value.trim() && !emailOk(em.value)) return false;
+      // все прочие поля с атрибутом required (имя, способ связи…)
       for(const el of form.querySelectorAll('[required]')){
         if(el===phone || el===consent) continue;
         if(el.type==='checkbox'){ if(!el.checked) return false; continue; }
         if(!el.value.trim()) return false;
-        if(el.type==='email' && !emailOk(el.value)) return false;
       }
       return true;
     }
@@ -4441,8 +4443,8 @@
     function fieldValid(el){
       if(el === phone) return phoneValid();
       if(el.type === 'checkbox') return el.checked;
+      if(el.type === 'email') return !el.value.trim() || emailOk(el.value);   // М2: пусто допустимо
       if(!el.value.trim()) return false;
-      if(el.type === 'email') return emailOk(el.value);
       /* Имя: требуем хотя бы одну БУКВУ и два знака, а цифры не запрещаем.
          Полный запрет цифр — классическая переусердствованная валидация: у нас B2B,
          и «Отдел 5» или «21 век» — законный ответ на «как к вам обращаться».
@@ -4459,7 +4461,8 @@
        ПУСТОЕ поле по уходу не ругается: модалка сама ставит фокус в телефон, и первый же
        тап в соседнее поле красил телефон, хотя человек в него не печатал. Про незаполненное
        сообщаем только по нажатию кнопки — там это уместно. */
-    form.querySelectorAll('[required]').forEach(el=>{
+    // М2: e-mail не required, но формат по уходу проверяем — поэтому добавлен в набор явно
+    form.querySelectorAll('[required], input[type=email]').forEach(el=>{
       if(el.type === 'checkbox') return;
       const softCheck = ()=> mark(el, el.value.trim() ? !fieldValid(el) : false);
       el.addEventListener('blur',   softCheck);
@@ -4571,6 +4574,9 @@
           mark(el, bad);
           if(bad && !first) first = el;
         });
+        // М2: e-mail не required, но если введён с ошибкой — тоже отметить
+        const em = form.querySelector('input[type=email]');
+        if(em && em.value.trim() && !emailOk(em.value)){ mark(em, true); if(!first) first = em; }
         if(!consent.checked) consent.closest('.cbm-check')?.classList.add('invalid');
         /* Доводим до первого проблемного поля явно. Внутри шторки свой скролл-контейнер,
            и одного focus() мало: поле могло остаться за экраном — человек жал кнопку,
