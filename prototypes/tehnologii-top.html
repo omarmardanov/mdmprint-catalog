@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Песочница: верхний блок «Технологии печати» — табы + плитки</title>
+<link rel="stylesheet" href="../assets/css/fonts.css?v=20260722a">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=20260722a">
+<link rel="stylesheet" href="../assets/css/kit.css?v=20260722a">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);color:var(--text-primary);background:var(--surface-page);-webkit-font-smoothing:antialiased}
+  /* 1200 — под живой контейнер (.container_small), не 1176 наш: шва по ширине не будет */
+  .wrap{width:min(100% - 48px, 1200px);margin-inline:auto}
+
+  /* Меняем ТОЛЬКО табы+плитки. Крошки и заголовок — существующие на старой странице,
+     фон белый как на старом. Ниже — только новый компонент, врезается на место 3 плиток-ссылок. */
+  .top{background:var(--surface-page);padding:24px 0 40px}
+  .stub{color:var(--text-tertiary);font-size:13px}
+  .stub .h{font-family:var(--font-head);font-size:30px;line-height:36px;text-transform:uppercase;color:var(--text-primary);margin:6px 0}
+
+  /* ТАБЫ = 3 группы */
+  .tabs{display:flex;gap:6px;margin:8px 0 22px;border-bottom:1px solid var(--border);overflow-x:auto}
+  .tabs button{border:0;background:none;font-family:inherit;font-size:var(--t-ui);font-weight:600;
+    color:var(--text-secondary);padding:12px 4px;margin-right:22px;cursor:pointer;white-space:nowrap;
+    border-bottom:2px solid transparent;transition:color .12s,border-color .12s}
+  .tabs button:hover{color:var(--text-primary)}
+  .tabs button.active{color:var(--text-primary);border-bottom-color:var(--brand)}
+
+  /* плитки — НАШ .mk-tilelink из кита + combo-раскладка (те же правила, что в usluga «Сочетается») */
+  .pane{display:none}
+  .pane.show{display:block}
+  .combo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap-card, 20px)}
+  .combo-grid .mk-tilelink__media{background:transparent;border-right:none}
+  .combo-grid .mk-tilelink__media img{mix-blend-mode:darken}
+  /* плейсхолдер-медиа для групп без снимков */
+  .ph{display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);font-size:11px;
+    background:linear-gradient(135deg,#efeae0,#e4ddcf)!important;width:100%;height:100%}
+
+  /* ссылка на страницу группы — НЕ теряем промежуточную страницу (SEO + обзор группы) */
+  .allgroup{display:inline-flex;align-items:center;gap:8px;margin-top:22px;font-size:var(--t-ui);font-weight:600;
+    color:var(--brand-text);text-decoration:none}
+  .allgroup:hover{color:var(--text-primary)}
+  .allgroup .arr-ico{color:currentColor}
+
+  .seam{padding:40px 0;text-align:center;color:var(--text-tertiary);font-size:13px}
+
+  @media(max-width:720px){
+    h1{font-size:26px;line-height:30px}
+    .combo-grid{grid-template-columns:1fr}
+    .wrap{width:min(100% - 32px, 1200px)}
+  }
+</style>
+</head>
+<body>
+<section class="top">
+  <div class="wrap">
+    <!-- крошки + заголовок остаются СТАРЫЕ (показаны бледным как контекст, мы их не трогаем) -->
+    <div class="stub">Главная / Каталог услуг / Технологии печати<div class="h">Услуги типографии</div>— существующие крошки и заголовок, НЕ меняем —</div>
+
+    <div class="tabs" id="tabs" style="margin-top:24px">
+      <button class="active" data-tab="brosh">Брошюровка и переплёт</button>
+      <button data-tab="post">Постпечатная обработка</button>
+      <button data-tab="print">Печать</button>
+    </div>
+
+    <!-- Брошюровка — реальные кадры -->
+    <div class="pane show" data-pane="brosh">
+      <div class="combo-grid">
+        <a href="https://mdmprint.ru/product/pur-kleevoe-skreplenie-broshyur-preimushhestva-i-osobennosti" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/tech/pur-kleevoe.webp" alt="" loading="lazy" width="1536" height="1024"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">ПУР-клеевое скрепление</span><span class="mk-tilelink__note">Прочный клеевой корешок</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/tech/pereplet-kbs.webp" alt="" loading="lazy" width="1536" height="1024"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Переплёт КБС</span><span class="mk-tilelink__note">Клеевое бесшвейное</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/tech/pereplet-kshs.webp" alt="" loading="lazy" width="1536" height="1024"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Переплёт КШС</span><span class="mk-tilelink__note">Клеешвейное</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/tech/pereplet-7bc.webp" alt="" loading="lazy" width="1536" height="1024"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Переплёт 7БЦ</span><span class="mk-tilelink__note">Твёрдая обложка</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/tech/broshurovka-skoba.webp" alt="" loading="lazy" width="1536" height="1024"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Брошюровка на скобу</span><span class="mk-tilelink__note">Быстро и недорого</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/tech/broshurovka-pruzhiny.webp" alt="" loading="lazy" width="1536" height="1024"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Брошюровка на пружину</span><span class="mk-tilelink__note">Раскрывается на 360°</span></span><i class="arr-ico"></i></a>
+      </div>
+      <a class="allgroup" href="https://mdmprint.ru/broshyurovka-i-pereplyot">Все услуги: Брошюровка и переплёт <i class="arr-ico"></i></a>
+    </div>
+
+    <!-- Постпечатная — часть кадров есть, часть плейсхолдер -->
+    <div class="pane" data-pane="post">
+      <div class="combo-grid">
+        <a href="#" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/tech/kongrev.webp" alt="" loading="lazy" width="1536" height="1024"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Тиснение фольгой</span><span class="mk-tilelink__note">Металлик и голография</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/tech/kongrev2.webp" alt="" loading="lazy" width="1536" height="1024"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Конгрев</span><span class="mk-tilelink__note">Рельеф без фольги</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/tech/uf-lak.webp" alt="" loading="lazy" width="1536" height="1024"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Выборочный УФ-лак</span><span class="mk-tilelink__note">Глянец на матовом</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink">
+          <span class="mk-tilelink__media"><span class="ph">кадр</span></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Ламинация</span><span class="mk-tilelink__note">Матовая, глянец, soft-touch</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink">
+          <span class="mk-tilelink__media"><span class="ph">кадр</span></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Скругление углов</span><span class="mk-tilelink__note">Радиус на выбор</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink">
+          <span class="mk-tilelink__media"><span class="ph">кадр</span></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Вырубка</span><span class="mk-tilelink__note">Фигурная форма</span></span><i class="arr-ico"></i></a>
+      </div>
+      <a class="allgroup" href="https://mdmprint.ru/postpechatnaya-obrabotka">Все услуги: Постпечатная обработка <i class="arr-ico"></i></a>
+    </div>
+
+    <!-- Печать — плейсхолдеры -->
+    <div class="pane" data-pane="print">
+      <div class="combo-grid">
+        <a href="#" class="mk-tilelink"><span class="mk-tilelink__media"><span class="ph">кадр</span></span><span class="mk-tilelink__txt"><span class="mk-tilelink__title">Офсетная печать</span><span class="mk-tilelink__note">Большие тиражи</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink"><span class="mk-tilelink__media"><span class="ph">кадр</span></span><span class="mk-tilelink__txt"><span class="mk-tilelink__title">Цифровая печать</span><span class="mk-tilelink__note">Малые тиражи, быстро</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink"><span class="mk-tilelink__media"><span class="ph">кадр</span></span><span class="mk-tilelink__txt"><span class="mk-tilelink__title">УФ-печать</span><span class="mk-tilelink__note">По любым материалам</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink"><span class="mk-tilelink__media"><span class="ph">кадр</span></span><span class="mk-tilelink__txt"><span class="mk-tilelink__title">Широкоформатная</span><span class="mk-tilelink__note">Баннеры, плакаты</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink"><span class="mk-tilelink__media"><span class="ph">кадр</span></span><span class="mk-tilelink__txt"><span class="mk-tilelink__title">Шелкография</span><span class="mk-tilelink__note">Плотный слой краски</span></span><i class="arr-ico"></i></a>
+        <a href="#" class="mk-tilelink"><span class="mk-tilelink__media"><span class="ph">кадр</span></span><span class="mk-tilelink__txt"><span class="mk-tilelink__title">Ризография</span><span class="mk-tilelink__note">Дёшево, большой тираж</span></span><i class="arr-ico"></i></a>
+      </div>
+      <a class="allgroup" href="https://mdmprint.ru/pechat">Все услуги: Печать <i class="arr-ico"></i></a>
+    </div>
+  </div>
+</section>
+
+<div class="seam">↓ ниже — старое тело страницы (Требования, Портфолио, FAQ, форма) — НЕ трогаем</div>
+
+<script>
+  const tabs = document.getElementById('tabs');
+  tabs.addEventListener('click', e=>{
+    const b = e.target.closest('button'); if(!b) return;
+    tabs.querySelectorAll('button').forEach(x=>x.classList.toggle('active', x===b));
+    document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('show', p.dataset.pane===b.dataset.tab));
+  });
+</script>
+</body>
+</html>
