@@ -50,14 +50,16 @@
   line-height:var(--t-label-lh);letter-spacing:var(--t-label-ls);text-transform:uppercase;color:var(--brand-text)}
 
 /* ---- Кнопки ------------------------------------------------
-   Форма: пилюля (--radius-pill) — единая для всего сайта.
+   Форма: скругление 8px (--radius-md) — единая для всего сайта.
+          Пилюля была первым вариантом и проиграла: решение принято на странице услуги
+          (там оно жило локальным оверрайдом) и теперь заведено сюда, в кит.
    Размеры: lg 48 (контент/hero) · md 36 (шапка) · sm 32 (топбар).
    Виды:    primary (жёлтая) · dark (чёрная) · ghost (белая с рамкой) · link (текст).
    Состояния: hover / active / focus-visible / disabled.
    Классы .is-hover, .is-active — только для витрины (buttons.html).
    ------------------------------------------------------------ */
 .mk-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  height:48px;padding:0 24px;border-radius:var(--radius-pill);
+  height:48px;padding:0 24px;border-radius:var(--radius-md);
   font-family:var(--font-body);font-size:var(--t-button);font-weight:var(--t-button-w);line-height:var(--t-button-lh);
   cursor:pointer;border:1px solid transparent;
   transition:background .15s,border-color .15s,color .15s,opacity .15s;white-space:nowrap;text-decoration:none}
@@ -354,11 +356,18 @@
   font-family:var(--font-body);font-size:var(--t-body);line-height:var(--t-body-lh);
   font-weight:600;color:var(--text-primary)}
 .mk-acc__q::-webkit-details-marker{display:none}
+/* Маркер +/× в тональном КРУЖКЕ. Круг, а не квадрат правила форм: форма несёт аффорданс —
+   округлость роднит элемент с кнопкой («нажимается»), квадрат читается как статичный контейнер.
+   Правило форм действует на НЕинтерактивные плашки (шапки карточек, галочки, бейджи),
+   а контролы круглые: этот маркер и стрелки скроллера. */
 .mk-acc__q::after{content:"+";flex-shrink:0;margin-left:auto;
-  font-size:24px;font-weight:400;line-height:1;color:var(--text-tertiary);
-  transition:transform .2s,color .2s}
-@media (hover:hover){.mk-acc__q:hover::after{color:var(--text-primary)}}
-.mk-acc__q:active::after{color:var(--text-primary)}
+  width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface-on-light);color:var(--text-secondary);
+  font-size:19px;font-weight:400;line-height:1;
+  transition:background .15s,color .15s,transform .2s}
+@media (hover:hover){.mk-acc__q:hover::after{background:var(--surface-on-light-2);color:var(--text-primary)}}
+.mk-acc__q:active::after{background:var(--surface-on-light-2);color:var(--text-primary)}
 .mk-acc[open] .mk-acc__q::after{transform:rotate(45deg)}
 /* открытый вопрос — ближе к своему ответу: гасим нижний отступ summary; закрытый ритм 20/20 не трогаем */
 .mk-acc[open] .mk-acc__q{padding-bottom:var(--sp-10)}
@@ -370,12 +379,20 @@
 /* Поля — на СОДЕРЖИМОМ, а не на карточке: с padding у .mk-acc--card summary оказывался на 40px
    уже карточки, и её левая с правой полосы не переключали аккордеон (замер: тап в 4px от края
    попадал в <details>, мимо цели). Теперь summary тянется во всю карточку — вся шапка тач-зона. */
-.mk-acc--card{border:1px solid var(--border);border-radius:var(--radius-outside);
-  background:var(--surface-card);transition:border-color .15s}
-.mk-acc--card > .mk-acc__q{padding-inline:var(--sp-20)}
+/* Тёплый фон БЕЗ обводки — тот же язык, что у формы рядом; отклик даёт фон, а не бордер.
+   Белая плашка с рамкой была первым вариантом: пять таких «коробок» подряд читались как пять
+   отдельных объектов, а не как один список. */
+/* border:1px transparent, а не none: обводка держит геометрию (без неё карточка ниже на 2px) и
+   оставляет крючок, если фокус/ошибка когда-нибудь захотят контур. */
+.mk-acc--card{border:1px solid transparent;border-radius:var(--radius-outside);
+  background:var(--surface-subtle);transition:background .15s}
+@media (hover:hover){.mk-acc--card:hover{background:var(--surface-gray)}}
+.mk-acc--card:active{background:var(--surface-gray)}
+/* Поля целиком, а не только боковые: у карточки свой вертикальный ритм 16/8, базовые 20/20
+   рассчитаны на линейный список без плашки. */
+.mk-acc--card > .mk-acc__q{padding:var(--sp-16) var(--sp-20)}
+.mk-acc--card[open] > .mk-acc__q{padding-bottom:var(--sp-8)}
 .mk-acc--card > .mk-acc__a{padding-inline:var(--sp-20)}
-.mk-acc--card:hover{border-color:var(--border-strong)}
-.mk-acc--card[open]{border-color:var(--border-strong)}
 @media (prefers-reduced-motion:reduce){.mk-acc__q::after{transition:none}
   .mk-acc--card{transition:none}}
 
@@ -402,25 +419,24 @@
 .mk-filerow__ico svg{width:16px;height:16px;display:block}
 
 /* ---- Список требований (галочка + заголовок + пояснение) ----
-   Белые плашки на серой карточке — тот же язык, что у прайс-листа. */
+   Белые плашки на серой карточке — тот же язык, что у прайс-листа.
+   СТАТИЧНЫЙ: галочка здесь маркер, а не чекбокс. Интерактивный вариант (чекбоксы + строка
+   прогресса «отмечено 3 из 6») был написан и отвергнут: страница только перечисляет требования,
+   отмечать их некому и незачем — макет всё равно проверяет препресс. Обводка прозрачная в покое,
+   hover нет: кликать не по чему (правило белых плашек, см. DESIGN_SYSTEM §5). */
 .mk-reqlist{display:flex;flex-direction:column;gap:var(--sp-8)}
-.mk-reqlist__item{display:flex;gap:var(--sp-14);align-items:flex-start;cursor:pointer;
-  background:var(--surface-card);border:1px solid transparent;border-radius:var(--radius-md);padding:var(--sp-16);
-  transition:border-color .15s,opacity .2s}
-.mk-reqlist__item:hover{border-color:var(--border-strong)}
-.mk-reqlist__item:has(.mk-check:checked){opacity:.6}
-.mk-reqlist__item:has(.mk-check:focus-visible){border-color:var(--brand-dark)}
-.mk-reqlist__item:has(.mk-check:checked) .mk-reqlist__title{text-decoration:line-through}
+.mk-reqlist__item{display:flex;gap:var(--sp-14);align-items:flex-start;
+  background:var(--surface-card);border:1px solid transparent;border-radius:var(--radius-md);
+  padding:var(--sp-14) var(--sp-16)}
+.mk-reqlist__ic{width:22px;height:22px;flex-shrink:0;margin-top:1px;border-radius:var(--radius-inside);
+  background:var(--surface-on-light);color:var(--success);display:flex;align-items:center;justify-content:center}
+.mk-reqlist__ic svg{width:13px;height:13px}
 .mk-reqlist__txt{display:flex;flex-direction:column;gap:3px;min-width:0}
-.mk-reqlist__title{font-family:var(--font-body);font-weight:500;font-size:15px;color:var(--text-primary)}
+.mk-reqlist__title{font-family:var(--font-body);font-weight:500;
+  font-size:var(--t-ui);line-height:var(--t-ui-lh);color:var(--text-primary)}
 .mk-reqlist__note{font-family:var(--font-body);font-size:var(--t-caption);line-height:1.45;color:var(--text-secondary)}
-
-/* строка прогресса чек-листа */
-.mk-reqlist__bar{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-12);
-  padding:0 var(--sp-4) var(--sp-4)}
-.mk-reqlist__count{font-family:var(--font-body);font-size:var(--t-caption);color:var(--text-secondary)}
-.mk-reqlist__count b{color:var(--text-primary);font-weight:600}
-.mk-reqlist__done{color:var(--success);font-weight:600}
+/* На узком экране плашки схлопываются в сплошной список с линиями от края до края — это делает
+   страница (приём общий с ценами, статбаром и подшапкой, он завязан на поля контейнера). */
 
 /* ---- Чекбокс ---- */
 .mk-check{appearance:none;-webkit-appearance:none;margin:0;flex-shrink:0;
@@ -459,8 +475,9 @@
 .mk-ph b{font-size:var(--t-small);font-weight:500;color:var(--text-secondary)}
 
 /* ---- Чип ---- */
+/* Форма — та же 8px, что у кнопок и полей: одна форма плашек на весь сайт, без исключений. */
 .mk-chip{display:inline-flex;align-items:center;gap:var(--sp-10);border:1px solid var(--border-strong);
-  border-radius:var(--radius-pill);padding:var(--sp-12) var(--sp-20);
+  border-radius:var(--radius-md);padding:var(--sp-12) var(--sp-20);
   font-family:var(--font-body);font-size:var(--t-small);line-height:var(--t-small-lh);font-weight:500;
   color:var(--text-primary);transition:border-color .15s,background .15s;cursor:pointer;text-decoration:none}
 .mk-chip:hover{border-color:var(--text-primary);background:var(--surface-subtle)}
@@ -519,20 +536,9 @@
   .mk-tabpanel.is-active,.mk-tabpanel.is-active .mk-mcard{animation:none}
 }
 
-/* ---- Переключатель вида (сегмент из иконок) ----
-   Не действие, а смена представления одного и того же — поэтому сегмент, а не две кнопки. */
-/* Размер: вся плашка = 36px, ступень --md шкалы кнопок (lg48/md36/sm32). Было 46 (кнопка 36 +
-   паддинг 4×2 + бордер 1×2) — вторичный переключатель ростом почти с lg-кнопку, то есть тяжелее
-   заголовка секции рядом. Внутренняя кнопка считается от плашки: 36 − 2×2 − 1×2 = 30. */
-.mk-segment{display:inline-flex;gap:var(--sp-4);padding:2px;flex-shrink:0;
-  background:var(--surface-card);border:1px solid var(--border);border-radius:var(--radius-pill)}
-.mk-segment__btn{display:flex;align-items:center;justify-content:center;width:30px;height:30px;
-  background:none;border:none;border-radius:var(--radius-pill);color:var(--text-secondary);cursor:pointer;
-  transition:background .15s,color .15s}
-.mk-segment__btn:hover{background:var(--surface-subtle);color:var(--text-primary)}
-.mk-segment__btn.is-active{background:var(--surface-dark);color:var(--text-on-dark)}
-.mk-segment__btn:focus-visible{outline:2px solid var(--brand-dark);outline-offset:2px}
-.mk-segment__btn svg{width:16px;height:16px;display:block}
+/* Переключатель вида (сегмент из иконок) удалён 22.07: ни одна страница им не пользуется.
+   Портфолио переключает фото/видео табами — переключатель там часть ЗАГОЛОВКА секции, а не
+   отдельный контрол, и сегмент-плашка рядом с ним читалась как «элемент дашборда». */
 
 /* ---- Разделитель ---- */
 .mk-divider{height:1px;background:var(--border);border:none}
@@ -545,5 +551,23 @@
    срабатывает от тапа и ЗАЛИПАЕТ — подсветка остаётся висеть после перехода. Обёртка честнее
    гашения: правило просто не существует там, где нет мыши, и нечего держать в синхроне.
    Список явный: гасить вспышку у всех a/button значило бы задеть и чужую разметку страниц. */
-.mk-btn,.mk-mcard--link,.mk-tilelink,.mk-acc__q,.mk-tab,.mk-segment__btn,.mk-filerow,
+.mk-btn,.mk-mcard--link,.mk-tilelink,.mk-acc__q,.mk-tab,.mk-filerow,
 .mk-chip,.mk-rowlink,.mk-scroller__nav,.mk-review__source{-webkit-tap-highlight-color:transparent}
+
+/* ---- Тач-зона: добор до 44px ----
+   Правило ДС (DESIGN_SYSTEM §Тач): палец промахивается по цели мельче 44px (Apple HIG; WCAG AA
+   допускает 24). Мелкие ТЕКСТОВЫЕ контролы 44px быть не могут: это набор 13–15px, и раздувать сам
+   элемент — значит ломать ритм строки. Поэтому зону добирает невидимая подложка: элемент не
+   меняется ни на пиксель, меняется только площадь нажатия.
+   Гейт (hover:none), а не ширина экрана: зона нужна там, где палец, а не там, где узко.
+   ГРАНИЦА ПРИЁМА: работает, только если у контрола нет интерактивного соседа ближе 44px по
+   вертикали. В плотных списках (колонки ссылок в футере: строка 28, зазор 0) подложки наложились
+   бы друг на друга и стали воровать нажатия у соседа — там зону растят настоящим padding, а это
+   уже видимая правка вёрстки. */
+@media (hover:none){
+  .mk-tab,.mk-review__source,.mk-btn--link,.mk-btn--sm,.mk-btn--md{position:relative}
+  .mk-tab::after,.mk-review__source::after,.mk-btn--link::after,
+  .mk-btn--sm::after,.mk-btn--md::after{
+    content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:max(100%,44px);height:44px}
+}

@@ -11,7 +11,7 @@
      (ловили 16.07: мобильная шкала уехала в токены, страница осталась на десктопной). -->
 <link rel="stylesheet" href="../assets/css/fonts.css?v=20260717l">
 <link rel="stylesheet" href="../assets/css/tokens.css?v=20260722b">
-<link rel="stylesheet" href="../assets/css/kit.css?v=20260720b">
+<link rel="stylesheet" href="../assets/css/kit.css?v=20260722d">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:var(--font-body);color:var(--text-primary);background:var(--surface-subtle);font-size:var(--t-small);line-height:1.45}
@@ -167,17 +167,7 @@
      и капс, и margin:0, и ступень --t-h3. Прежнее правило всё это дублировало ради font-size:19px —
      кегля, которого в шкале нет вовсе, отчего заголовок был мельче равного себе по уровню
      «Примерная стоимость и сроки» (.mk-h3 = 24), да ещё и с чужим леадингом 28. */
-  /* статичный чек-лист: галочки как маркеры (не интерактив) */
-  .usl-req .reqs-check{display:flex;flex-direction:column;gap:var(--sp-8)}
-  /* белая плашка на серой карточке: обводка прозрачная в покое (как .mk-filerow); статична — без hover */
-  .usl-req .reqs-check__item{display:flex;gap:var(--sp-14);align-items:flex-start;
-    padding:var(--sp-14) var(--sp-16);border:1px solid transparent;border-radius:var(--radius-md);background:var(--surface-card)}
-  .usl-req .reqs-check__ic{width:22px;height:22px;flex-shrink:0;margin-top:1px;border-radius:var(--radius-inside);
-    background:var(--surface-on-light);color:var(--success);display:flex;align-items:center;justify-content:center}
-  .usl-req .reqs-check__ic svg{width:13px;height:13px}
-  .usl-req .reqs-check__txt{display:flex;flex-direction:column;gap:3px;min-width:0}
-  .usl-req .reqs-check__title{font-weight:500;font-size:var(--t-ui);line-height:var(--t-ui-lh);color:var(--text-primary)}
-  .usl-req .reqs-check__note{font-size:var(--t-caption);line-height:1.45;color:var(--text-secondary)}
+  /* статичный чек-лист (.mk-reqlist) переехал в кит целиком — здесь только мобильный full-bleed */
   .usl-req .req-cta{margin-top:var(--sp-20);display:flex;flex-direction:column;align-items:center;gap:var(--sp-14)}
   .usl-req .req-cta .mk-btn--primary{width:100%}
   .usl-req .req-cta .mk-btn--link{display:inline-flex;align-items:center;gap:var(--sp-6)}
@@ -761,10 +751,10 @@
     /* чек-лист: плашки → строки. Разделители от края до края экрана — тот же приём, что у цен,
        статбара и подшапки: строка уезжает в отрицательные поля, свой padding возвращает текст
        на сетку 16. Первой строке верхняя линия не нужна: её отделяет заголовок. */
-    .usl-req .reqs-check{gap:0}
-    .usl-req .reqs-check__item{background:none;border:0;border-radius:0;
+    .usl-req .mk-reqlist{gap:0}
+    .usl-req .mk-reqlist__item{background:none;border:0;border-radius:0;
       margin-inline:calc(var(--container-pad) * -1);padding:var(--sp-12) var(--container-pad)}
-    .usl-req .reqs-check__item + .reqs-check__item{border-top:1px solid var(--border)}
+    .usl-req .mk-reqlist__item + .mk-reqlist__item{border-top:1px solid var(--border)}
     /* Линии между группами тут нет и не нужно: группу замыкает жёлтая кнопка во всю ширину —
        ровно как в «Ценах», где калькулятор отделён от цен ею же. Линия понадобилась, только пока
        после кнопки висела мелкая пунктирная ссылка; ссылка ушла выше CTA — граница снова читается
@@ -923,7 +913,7 @@
   .search-drop[data-state="none"] .sd-none{display:block}
   .sd-h{font-size:var(--t-label);line-height:var(--t-label-lh);text-transform:uppercase;letter-spacing:var(--t-label-ls);color:var(--text-secondary);font-weight:600;padding:9px 10px 7px}
   .sd-chips{display:flex;flex-wrap:wrap;gap:var(--sp-8);padding:0 8px 6px}
-  .sd-chip{font-family:var(--font-body);font-size:var(--t-small);line-height:var(--t-small-lh);color:var(--text-primary);background:transparent;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:var(--sp-6) var(--sp-14);cursor:pointer;transition:.15s;white-space:nowrap}
+  .sd-chip{font-family:var(--font-body);font-size:var(--t-small);line-height:var(--t-small-lh);color:var(--text-primary);background:transparent;border:1px solid var(--border-strong);border-radius:var(--radius-md);padding:var(--sp-6) var(--sp-14);cursor:pointer;transition:.15s;white-space:nowrap}
   .sd-chip:hover{background:var(--surface-subtle);border-color:var(--text-primary);color:var(--text-primary)}
   .sd-chip:focus-visible{outline:2px solid var(--brand-dark);outline-offset:2px}
   /* список подсказок прокручивается, футер «Все результаты» остаётся закреплённым ниже */
@@ -1322,21 +1312,39 @@
   body.scrolled .mega{top:100%}
   body.scrolled .navbar .nav{display:none}
 
-  /* ═══ ФОРМА КНОПОК/ПОЛЕЙ: скругление (--radius-md 8px) — выбранный вариант ═══
-     Включено классом (тумблер выбора убран, форма зафиксирована). */
-  /* :not(--link) — форма меняется только у кнопок-ПЛАШЕК. --link это текст с пунктирным
-     подчёркиванием, у него в ките border-radius:0, и скруглять там нечего: радиус загибал концы
-     пунктира. Раньше это гасили по месту (в «Требованиях» стояла локальная заплатка с таким же
-     комментарием) — лечили симптом, а не причину. */
-  .mk-btn:not(.mk-btn--link){border-radius:var(--radius-md)}
+  /* ═══ ФОРМА ПОЛЕЙ: скругление (--radius-md 8px) — как у кнопок ═══
+     Кнопки и сегмент свою форму получают из кита (там же и объяснение выбора);
+     ниже — только поля и плашки самой страницы, которых в ките нет. */
   .search{border-radius:var(--radius-md)}
   .search-drop{border-radius:var(--radius-md) var(--radius-md) var(--radius-outside) var(--radius-outside)}
   .usl-foot .fsub-form{border-radius:var(--radius-md)}
   /* кнопка ВНУТРИ поля: концентрический радиус = радиус поля − зазор, не пилюля-в-пилюле */
   .search .s-go,.usl-foot .fsub-form .mk-btn{border-radius:var(--radius-inside)}
-  /* сегмент фото/видео: контейнер 8px, тумблеры 8−4=4px (паддинг --sp-4 равномерный → строго концентрично) */
-  .mk-segment{border-radius:var(--radius-md)}
-  .mk-segment__btn{border-radius:var(--radius-inside)}
+
+  /* ═══ ТАЧ-ЗОНЫ страницы: добор до 44px ═══
+     Тот же приём, что в ките (см. kit.css, «Тач-зона»): невидимая подложка расширяет площадь
+     нажатия, сам элемент не меняется. Здесь — контролы, которых в ките нет.
+     Каждый проверен на отсутствие интерактивного соседа ближе 44px по вертикали:
+     крошки и иконки контакт-бара стоят в строку, у контактов футера зазоры 27–40. */
+  @media (hover:none){
+    /* .rev-more здесь НЕТ намеренно: свёрнутая «…ещё» уже position:absolute, и relative бы её
+       сорвал с места. Позиционированный элемент и так служит containing block для своего ::after.
+       Раскрытая «…ещё» зону добирает полями (12+20+12=44) — ей подложка не нужна вовсе. */
+    .logo,.m-contactbar .mcb-ic,
+    .usl-foot .fcontact a,.usl-foot .flogo{position:relative}
+    .logo::after,.m-contactbar .mcb-ic::after,
+    .usl-rev .rev-more::after,.usl-foot .fcontact a::after,.usl-foot .flogo::after{
+      content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+      width:max(100%,44px);height:44px}
+    /* КРОШКИ — исключение, и вот почему. Прямо над ними стоит контакт-бар, где строка с телефоном
+       сама держит 44px тач-цели. Зона крошек в 44 налезла бы на неё и начала воровать нажатия у
+       звонка — то есть у самого дорогого действия страницы. Поэтому здесь нижняя граница WCAG AA
+       (24), а не рекомендация Apple: 24 > нынешних 16, и соседа не задевает.
+       inline-block обязателен: у строчного бокса подложка не считает 100% ширины. */
+    .usl .crumbs a{position:relative;display:inline-block}
+    .usl .crumbs a::after{content:"";position:absolute;top:50%;left:50%;
+      transform:translate(-50%,-50%);width:100%;height:24px}
+  }
 </style>
 <style id="port-after">
 /* ═══ Правки редизайна (запечены 17.07) ═══
@@ -1356,9 +1364,7 @@
   @media (prefers-reduced-motion:reduce){.usl-art .art-card .mk-arr{transition:none}.usl-art .art-card:hover .mk-arr{transform:none}}
   .usl-art .art-grid{grid-template-columns:repeat(5,1fr)}
 
-  /* КАЛЬКУЛЯТОР — прозрачный, 36px, иконка 20px, кружок «%» */
-  .calcbtn{background:transparent;border-color:transparent;padding:0 12px;height:36px}
-  .calcbtn:hover{background:var(--surface-subtle);border-color:transparent}
+  /* КАЛЬКУЛЯТОР = .mk-btn--ghost --md как в ките (белая плашка + рамка); своё — только иконка */
   .calcbtn .calc-ic{display:inline-flex;flex-shrink:0}
   .calcbtn .calc-ic svg{width:20px;height:20px;color:currentColor}
 
@@ -1385,25 +1391,8 @@
   /* ЧАВО — форма как тёплая карточка (не терялась), аккордеоны из «коробок» в тихий список
      с разделителями (карточный вариант кита — «для коротких/одиночных», а не для списка из 5) */
   .faq-form{background:var(--surface-subtle);border-color:transparent}
-  /* отдельные карточки: тёплый фон БЕЗ обводки (как у форм); компактнее и hover фоном, а не бордером */
-  .usl-faq .mk-acc--card,
-  .usl-faq .mk-acc--card:hover,
-  .usl-faq .mk-acc--card[open]{border-color:transparent}
-  .usl-faq .mk-acc--card{background:var(--surface-subtle)}
-  .usl-faq .mk-acc--card:hover{background:var(--surface-gray)}
-  /* боковые поля обязаны остаться: шорткат padding:16px 0 обнулял их и бил китовое
-     .mk-acc--card > .mk-acc__q — текст ложился на самый край карточки */
-  .usl-faq .mk-acc__q{padding:var(--sp-16) var(--sp-20)}
-  .usl-faq .mk-acc[open] .mk-acc__q{padding-bottom:var(--sp-8)}
-  /* Маркер +/× в тональном КРУЖКЕ. Круг, а не квадрат правила форм: форма несёт аффорданс —
-     округлость роднит элемент с кнопкой-пилюлей («нажимается»), квадрат читается как статичный
-     контейнер. Поэтому правило форм действует на НЕинтерактивные плашки (шапки карточек, галочки,
-     бейджи), а контролы — круглые: этот маркер и стрелки скроллера. */
-  .usl-faq .mk-acc__q::after{width:26px;height:26px;flex-shrink:0;border-radius:50%;
-    background:var(--surface-on-light);color:var(--text-secondary);
-    display:flex;align-items:center;justify-content:center;font-size:19px;line-height:1;
-    transition:background .15s,color .15s,transform .2s}
-  .usl-faq .mk-acc__q:hover::after{background:var(--surface-on-light-2);color:var(--text-primary)}
+  /* Вид аккордеона (тёплый фон без обводки, маркер в кружке) переехал в кит целиком — это и есть
+     канон .mk-acc--card, а не местная правка. */
   /* disabled CTA на тёплой подложке: gray сливается с subtle → плотнее (gray-2) */
   .faq-form .cbm-submit:disabled{background:var(--surface-gray-2)}
 
@@ -3406,8 +3395,8 @@
       <div class="wrap">
         <div class="sec-head port-head">
           <h2>Портфолио</h2>
-          <!-- табы, а не сегмент: переключатель — часть заголовка. Компонент китовый (.mk-tabs),
-               JS ищет кнопки как '.mk-tab, .mk-segment__btn' — менять его не требуется -->
+          <!-- табы, а не сегмент: переключатель — часть заголовка. Компонент китовый (.mk-tabs);
+               сегмент из кита удалён 22.07 как невостребованный -->
           <div class="port-tabs mk-tabs" role="tablist" aria-label="Вид портфолио" data-tabs>
             <button type="button" class="mk-tab is-active" role="tab" aria-selected="true" data-tab="video">Видео</button>
             <button type="button" class="mk-tab" role="tab" aria-selected="false" data-tab="photo">Фото</button>
@@ -3537,33 +3526,33 @@
           <div class="req-main mk-card mk-card--gray">
             <div class="req-head"><h3>Проверьте макет перед отправкой</h3></div>
 
-            <div class="reqs-check">
-              <div class="reqs-check__item">
-                <span class="reqs-check__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                <span class="reqs-check__txt">
-                  <span class="reqs-check__title">Поля и вылеты</span>
-                  <span class="reqs-check__note">3–5 мм с каждой стороны под обрезку. Важные элементы — не ближе 5 мм от края.</span>
+            <div class="mk-reqlist">
+              <div class="mk-reqlist__item">
+                <span class="mk-reqlist__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="mk-reqlist__txt">
+                  <span class="mk-reqlist__title">Поля и вылеты</span>
+                  <span class="mk-reqlist__note">3–5 мм с каждой стороны под обрезку. Важные элементы — не ближе 5 мм от края.</span>
                 </span>
               </div>
-              <div class="reqs-check__item">
-                <span class="reqs-check__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                <span class="reqs-check__txt">
-                  <span class="reqs-check__title">Слой под фольгу</span>
-                  <span class="reqs-check__note">Отдельным слоем, плашка 100% Magenta. Без градиентов и полутонов.</span>
+              <div class="mk-reqlist__item">
+                <span class="mk-reqlist__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="mk-reqlist__txt">
+                  <span class="mk-reqlist__title">Слой под фольгу</span>
+                  <span class="mk-reqlist__note">Отдельным слоем, плашка 100% Magenta. Без градиентов и полутонов.</span>
                 </span>
               </div>
-              <div class="reqs-check__item">
-                <span class="reqs-check__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                <span class="reqs-check__txt">
-                  <span class="reqs-check__title">Изображения</span>
-                  <span class="reqs-check__note">Разрешение 300 dpi, цветовая модель CMYK.</span>
+              <div class="mk-reqlist__item">
+                <span class="mk-reqlist__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="mk-reqlist__txt">
+                  <span class="mk-reqlist__title">Изображения</span>
+                  <span class="mk-reqlist__note">Разрешение 300 dpi, цветовая модель CMYK.</span>
                 </span>
               </div>
-              <div class="reqs-check__item">
-                <span class="reqs-check__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                <span class="reqs-check__txt">
-                  <span class="reqs-check__title">Шрифты</span>
-                  <span class="reqs-check__note">Переведите в кривые или вложите в файл.</span>
+              <div class="mk-reqlist__item">
+                <span class="mk-reqlist__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="mk-reqlist__txt">
+                  <span class="mk-reqlist__title">Шрифты</span>
+                  <span class="mk-reqlist__note">Переведите в кривые или вложите в файл.</span>
                 </span>
               </div>
             </div>
@@ -4816,7 +4805,7 @@
     // в таб-порядке ровно один таб (roving tabindex), переключение — стрелками.
     let uid = 0;
     document.querySelectorAll('[data-tabs]').forEach(bar => {
-      const btns   = [...bar.querySelectorAll('.mk-tab, .mk-segment__btn')];
+      const btns   = [...bar.querySelectorAll('.mk-tab')];
       const scope  = bar.closest('section') || document;
       const panels = [...scope.querySelectorAll('.mk-tabpanel')];
       const box = scope.querySelector('.mk-tabpanels');

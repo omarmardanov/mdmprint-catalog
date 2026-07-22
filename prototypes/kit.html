@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI kit — MDMprint</title>
+<link rel="stylesheet" href="../assets/css/fonts.css?v=20260722a">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=20260722b">
+<link rel="stylesheet" href="../assets/css/kit.css?v=20260722d">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--surface-subtle);color:var(--text-primary);font-family:var(--font-body);
+    font-size:var(--t-body);line-height:var(--t-body-lh)}
+  svg{display:block}
+  /* тот же базовый сброс, что на страницах сайта: цвет и подчёркивание ссылки задаёт компонент */
+  a{color:inherit;text-decoration:none}
+  .page > header a{color:var(--brand-text);text-decoration:underline}
+
+  .page{max-width:1240px;margin:0 auto;padding:56px 24px 120px;
+    display:grid;grid-template-columns:212px 1fr;gap:40px;align-items:start}
+  .page > header{grid-column:1 / -1;margin-bottom:8px}
+  .page > header p{color:var(--text-secondary);max-width:660px;margin:12px 0 0}
+
+  /* ---- боковое оглавление ---- */
+  .toc{position:sticky;top:24px;font-size:var(--t-small);line-height:1.35}
+  .toc b{display:block;font-size:var(--t-label);letter-spacing:var(--t-label-ls);text-transform:uppercase;
+    color:var(--text-tertiary);font-weight:500;margin:20px 0 8px}
+  .toc b:first-child{margin-top:0}
+  .toc a{display:block;padding:4px 0;color:var(--text-secondary);text-decoration:none}
+  .toc a:hover{color:var(--text-primary)}
+
+  .body{min-width:0}
+  section{background:var(--surface-card);border:1px solid var(--border);border-radius:var(--radius-outside);
+    padding:32px;margin-bottom:24px;scroll-margin-top:24px}
+  section > h2{margin:0 0 4px}
+  section > .note{color:var(--text-secondary);font-size:var(--t-small);line-height:var(--t-small-lh);margin:0 0 28px}
+
+  /* таблица-сетка: подпись строки слева, образцы справа */
+  .row{display:grid;grid-template-columns:150px 1fr;gap:24px;align-items:center;
+    padding:20px 0;border-top:1px solid var(--border)}
+  .row:first-of-type{border-top:none}
+  .row--top{align-items:start}
+  .row > .k{font-size:var(--t-small);line-height:1.35}
+  .row > .k b{display:block;font-weight:600}
+  .row > .k span{color:var(--text-tertiary);font-size:var(--t-caption)}
+  .row > .v{display:flex;flex-wrap:wrap;gap:12px;align-items:center;min-width:0}
+  /* селектор с .row обязателен: у `.row > .v` специфичность выше, одиночный класс её не перебьёт.
+     align-items:stretch снимаем оттуда же — оно действует и на grid-раскладку из инлайна,
+     и образцы-карточки вставали по центру вместо одинаковой высоты. */
+  .row > .v.v--block{display:block;align-items:stretch}
+
+  .dark-bg{background:var(--surface-dark);border-radius:var(--radius-md);padding:20px}
+  .gray-bg{background:var(--surface-gray);border-radius:var(--radius-outside);padding:20px}
+
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;
+    background:var(--surface-subtle);border:1px solid var(--border);border-radius:var(--radius-inside);padding:1px 5px}
+  .usage{margin:28px 0 0;padding:20px 0 0;border-top:1px solid var(--border);
+    font-size:var(--t-small);line-height:1.7;color:var(--text-secondary)}
+  .usage b{color:var(--text-primary);font-weight:600}
+  .usage--flat{border:none;padding-top:0;margin-top:0}
+  .warn{background:var(--brand-soft);border:1px solid var(--brand-soft-2);border-radius:var(--radius-md);
+    padding:14px 16px;font-size:var(--t-small);line-height:1.6;margin-top:28px}
+  /* статус компонента: стоит ли он в разметке хоть одной страницы */
+  .st{display:inline-block;vertical-align:2px;margin-left:8px;padding:2px 7px;border-radius:var(--radius-inside);
+    font-family:var(--font-body);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  .st--off{background:var(--surface-gray);color:var(--text-tertiary)}
+
+  /* заглушка вместо фото — витрине картинки не нужны */
+  .demo-img{width:100%;height:100%;background:
+    repeating-linear-gradient(135deg,var(--surface-gray-2) 0 10px,var(--surface-gray) 10px 20px)}
+  .demo-w{max-width:280px}
+
+  @media (max-width:900px){
+    .page{grid-template-columns:1fr;gap:24px}
+    .toc{position:static;display:flex;flex-wrap:wrap;gap:4px 16px;
+      background:var(--surface-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px}
+    .toc b{margin:0;width:100%}
+    .row{grid-template-columns:1fr;gap:12px}
+    section{padding:20px}
+  }
+</style>
+</head>
+<body>
+<a class="mk-skip" href="#buttons">К содержимому</a>
+<div class="page">
+
+  <header>
+    <span class="mk-eyebrow">MDMprint</span>
+    <h1 class="mk-h1" style="margin-top:8px">UI kit</h1>
+    <p>Все компоненты, которые живут в <code>assets/css/kit.css</code> — на токенах из
+       <code>tokens.css</code>. Страница показывает кит как он есть в коде: если здесь чего-то нет,
+       значит этого нет и в ките. Эталон применения — <a href="usluga.html">usluga.html</a>,
+       описание решений — <code>docs/DESIGN_SYSTEM.md</code>.</p>
+    <p style="margin-top:12px"><span class="st st--off">не в разметке</span> — компонент есть в
+       ките, но ни одна страница им пока не пользуется. Это не «выкинуть»: типографические классы
+       и раскладка понадобятся, когда страницы поедут на кит с элементных селекторов. Но и не
+       «готово»: живьём такой компонент никто не проверял.</p>
+  </header>
+
+  <nav class="toc" aria-label="Разделы">
+    <b>Основы</b>
+    <a href="#type">Типографика</a>
+    <a href="#misc">Стрелка, линия, заглушка</a>
+    <b>Действия</b>
+    <a href="#buttons">Кнопки</a>
+    <a href="#chip">Чип</a>
+    <a href="#rowlink">Строка-действие</a>
+    <a href="#check">Чекбокс</a>
+    <a href="#badge">Бейдж</a>
+    <b>Контейнеры</b>
+    <a href="#card">Карточка</a>
+    <a href="#tile">Плитка преимущества</a>
+    <a href="#statbar">Полоса доверия</a>
+    <b>Контент</b>
+    <a href="#mcard">Медиа-карточка</a>
+    <a href="#tilelink">Плитка-ссылка</a>
+    <a href="#review">Отзыв</a>
+    <a href="#price">Прайс-лист</a>
+    <b>Списки и данные</b>
+    <a href="#lists">Списки</a>
+    <a href="#kv">Ключ — значение</a>
+    <a href="#filerow">Строка файла</a>
+    <a href="#reqlist">Список требований</a>
+    <b>Навигация</b>
+    <a href="#tabs">Табы</a>
+    <a href="#acc">Аккордеон</a>
+    <a href="#scroller">Лента</a>
+    <b>Прочее</b>
+    <a href="#a11y">Доступность</a>
+    <a href="#open">Решения 22.07</a>
+  </nav>
+
+  <div class="body">
+
+  <!-- ═══════════ ТИПОГРАФИКА ═══════════ -->
+  <section id="type">
+    <h2 class="mk-h3">Типографика</h2>
+    <p class="note">Заголовки — AttractiveCond, капс. Текст — Roboto. Ступень выбирается по роли,
+      а не по желаемому размеру.</p>
+
+    <div class="row"><div class="k"><b>Display</b><span>50/54 · <code>.mk-display</code></span></div>
+      <div class="v"><span class="mk-display">Тиснение</span></div></div>
+    <div class="row"><div class="k"><b>H1</b><span>40/44 · <code>.mk-h1</code></span></div>
+      <div class="v"><span class="mk-h1">Тиснение фольгой</span></div></div>
+    <div class="row"><div class="k"><b>H2</b><span>32/44 · <code>.mk-h2</code></span></div>
+      <div class="v"><span class="mk-h2">Заголовок секции</span></div></div>
+    <div class="row"><div class="k"><b>H3</b><span>24/28 · <code>.mk-h3</code></span></div>
+      <div class="v"><span class="mk-h3">Подзаголовок</span></div></div>
+    <div class="row"><div class="k"><b>H4</b><span>18/22 · <code>.mk-h4</code></span></div>
+      <div class="v"><span class="mk-h4">Заголовок плитки</span></div></div>
+    <div class="row"><div class="k"><b>Lead</b><span>18/27 · <code>.mk-lead</code></span></div>
+      <div class="v"><span class="mk-lead">Вводный абзац под заголовком — крупнее основного текста.</span></div></div>
+    <div class="row"><div class="k"><b>Body</b><span>16/24 · <code>.mk-body</code></span></div>
+      <div class="v"><span class="mk-body">Основной текст страницы.</span></div></div>
+    <div class="row"><div class="k"><b>Small</b><span>14/20 · <code>.mk-small</code></span></div>
+      <div class="v"><span class="mk-small">Пояснение, подпись под карточкой.</span></div></div>
+    <div class="row"><div class="k"><b>Caption</b><span>13/16 · <code>.mk-caption</code></span></div>
+      <div class="v"><span class="mk-caption">Мелкая сноска.</span></div></div>
+    <div class="row"><div class="k"><b>Label</b><span>12/16 капс · <code>.mk-label</code></span></div>
+      <div class="v"><span class="mk-label">Тег карточки</span></div></div>
+    <div class="row"><div class="k"><b>Eyebrow</b><span>label брендом · <code>.mk-eyebrow</code></span></div>
+      <div class="v"><span class="mk-eyebrow">Постпечатная обработка</span></div></div>
+
+    <div class="usage">
+      <b>Бренд как цвет текста</b> — <code>--brand-text</code> (#A87D00), а не <code>--brand</code>:
+      жёлтый на белом даёт 1.7:1 и нечитаем.
+      <b>Трекинг</b> задан в <code>em</code>, а не в px — в Figma он в процентах, перенос числом
+      разрядил бы буквы в 3–6 раз.
+    </div>
+  </section>
+
+  <!-- ═══════════ МЕЛОЧЬ ═══════════ -->
+  <section id="misc">
+    <h2 class="mk-h3">Стрелка, линия, заглушка</h2>
+    <p class="note">Три ассета кита, которые сами по себе не компоненты, но встречаются везде.</p>
+
+    <div class="row"><div class="k"><b>Стрелка</b><span><code>.mk-arr</code> (legacy <code>.arr-ico</code>)</span></div>
+      <div class="v"><i class="mk-arr"></i><span class="mk-small" style="color:var(--text-secondary)">SVG-маска, наследует цвет текста</span></div></div>
+
+    <div class="row"><div class="k"><b>Разделитель</b><span><code>.mk-divider</code><span class="st st--off">не в разметке</span></span></div>
+      <div class="v v--block"><hr class="mk-divider"></div></div>
+
+    <div class="row row--top"><div class="k"><b>Плейсхолдер</b><span><code>.mk-ph</code> — только прототип</span></div>
+      <div class="v"><div class="mk-ph" style="width:220px;height:120px"><b>Фото 4:3</b>1200×900</div></div></div>
+  </section>
+
+  <!-- ═══════════ КНОПКИ ═══════════ -->
+  <section id="buttons">
+    <h2 class="mk-h3">Кнопки</h2>
+    <p class="note">Форма — скругление 8&nbsp;px (<code>--radius-md</code>), единая для всего сайта.
+      Вид выбирается по весу действия, не по вкусу. На экране — одна primary.</p>
+
+    <div class="row">
+      <div class="k"><b>Primary</b><span>главное действие</span></div>
+      <div class="v">
+        <button class="mk-btn mk-btn--primary">Оставить заявку</button>
+        <button class="mk-btn mk-btn--primary">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h12M2 8h12M2 12h8"/></svg>
+          С иконкой
+        </button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="k"><b>Dark</b><span>действие интерфейса</span></div>
+      <div class="v">
+        <button class="mk-btn mk-btn--dark">Найти</button>
+        <button class="mk-btn mk-btn--dark">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+          Каталог
+        </button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="k"><b>Ghost</b><span>вторичное действие</span></div>
+      <div class="v">
+        <button class="mk-btn mk-btn--ghost">Заказать образец</button>
+        <button class="mk-btn mk-btn--ghost">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="2.5" width="14" height="19" rx="2.2" stroke="currentColor" stroke-width="1.7"/><rect x="8" y="5.5" width="8" height="3.4" rx="1" stroke="currentColor" stroke-width="1.5"/><circle cx="9.5" cy="13.5" r="1" fill="currentColor"/><circle cx="14.5" cy="13.5" r="1" fill="currentColor"/><circle cx="9.5" cy="17.3" r="1" fill="currentColor"/><circle cx="14.5" cy="17.3" r="1" fill="currentColor"/></svg>
+          Калькулятор
+          <span class="mk-btn__badge">−5%</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="k"><b>Link</b><span>третьестепенное</span></div>
+      <div class="v">
+        <button class="mk-btn mk-btn--link">Заказать звонок</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="k"><b>Со стрелкой</b><span>уход со страницы</span></div>
+      <div class="v">
+        <a class="mk-btn mk-btn--ghost" href="#buttons">Смотреть портфолио <i class="mk-arr"></i></a>
+      </div>
+    </div>
+
+    <div class="usage">
+      <b>Где применяется.</b>
+      Primary — CTA в hero, финальный CTA, отправка формы, «Оставить заявку» в топбаре.
+      Dark — «Каталог», «Найти» в поиске.
+      Ghost — «Заказать образец», «Калькулятор», второй CTA рядом с primary.
+      Link — «Заказать звонок» и всё, что не должно перетягивать внимание.<br>
+      <b>Стрелка в кнопке = уход со страницы, и только он.</b> Открыть модалку, отправить форму,
+      раскрыть каталог — без стрелки, даже если это <code>&lt;a href&gt;</code>.
+    </div>
+  </section>
+
+  <!-- РАЗМЕРЫ -->
+  <section>
+    <h2 class="mk-h3">Размеры кнопок</h2>
+    <p class="note">Три штуки. Размер задаёт контейнер, а не важность действия.</p>
+
+    <div class="row">
+      <div class="k"><b>lg — 48px</b><span>по умолчанию</span></div>
+      <div class="v">
+        <button class="mk-btn mk-btn--primary">Оставить заявку</button>
+        <button class="mk-btn mk-btn--ghost">Заказать образец</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="k"><b>md — 36px</b><span><code>.mk-btn--md</code></span></div>
+      <div class="v">
+        <button class="mk-btn mk-btn--dark mk-btn--md">Каталог</button>
+        <button class="mk-btn mk-btn--ghost mk-btn--md">Калькулятор <span class="mk-btn__badge">−5%</span></button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="k"><b>sm — 32px</b><span><code>.mk-btn--sm</code></span></div>
+      <div class="v">
+        <button class="mk-btn mk-btn--primary mk-btn--sm">Оставить заявку</button>
+        <button class="mk-btn mk-btn--dark mk-btn--sm">Найти</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="k"><b>Только иконка</b><span><code>.mk-btn--icon</code></span></div>
+      <div class="v">
+        <button class="mk-btn mk-btn--ghost mk-btn--icon" aria-label="Закрыть">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>
+        </button>
+        <button class="mk-btn mk-btn--dark mk-btn--icon mk-btn--md" aria-label="Играть">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M5 3l8 5-8 5z"/></svg>
+        </button>
+        <button class="mk-btn mk-btn--primary mk-btn--icon mk-btn--sm" aria-label="Дальше">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3l5 5-5 5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="usage">
+      <b>Правило.</b> lg — контент страницы. md — панель шапки (высота 36 при полосе 54).
+      sm — топбар (высота 32 при полосе 40) и кнопка внутри поля поиска.<br>
+      <b>Кнопка внутри поля</b> берёт концентрический радиус <code>--radius-inside</code> (4):
+      радиус поля минус зазор, а не тот же радиус ещё раз.
+    </div>
+  </section>
+
+  <!-- СОСТОЯНИЯ -->
+  <section>
+    <h2 class="mk-h3">Состояния кнопок</h2>
+    <p class="note">Наведите мышь — живой hover. Ниже те же состояния зафиксированы классами
+      <code>.is-hover</code> / <code>.is-active</code>, чтобы их было видно на скриншоте.</p>
+
+    <div class="row">
+      <div class="k"><b>Primary</b><span>#FFC100 → #E6A800 → #CC9E00</span></div>
+      <div class="v">
+        <button class="mk-btn mk-btn--primary">Default</button>
+        <button class="mk-btn mk-btn--primary is-hover">Hover</button>
+        <button class="mk-btn mk-btn--primary is-active">Active</button>
+        <button class="mk-btn mk-btn--primary is-disabled">Disabled</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="k"><b>Dark</b><span>#222220 → #000 → #2B2B29</span></div>
+      <div class="v">
+        <button class="mk-btn mk-btn--dark">Default</button>
+        <button class="mk-btn mk-btn--dark is-hover">Hover</button>
+        <button class="mk-btn mk-btn--dark is-active">Active</button>
+        <button class="mk-btn mk-btn--dark is-disabled">Disabled</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="k"><b>Ghost</b><span>рамка → чёрная, фон → #f6f5f0</span></div>
+      <div class="v">
+        <button class="mk-btn mk-btn--ghost">Default</button>
+        <button class="mk-btn mk-btn--ghost is-hover">Hover</button>
+        <button class="mk-btn mk-btn--ghost is-active">Active</button>
+        <button class="mk-btn mk-btn--ghost is-disabled">Disabled</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="k"><b>Link</b><span>пунктир → сплошная</span></div>
+      <div class="v">
+        <button class="mk-btn mk-btn--link">Default</button>
+        <button class="mk-btn mk-btn--link is-hover">Hover</button>
+        <button class="mk-btn mk-btn--link is-disabled">Disabled</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="k"><b>Focus</b><span>только с клавиатуры</span></div>
+      <div class="v">
+        <button class="mk-btn mk-btn--primary">Нажмите Tab →</button>
+        <button class="mk-btn mk-btn--ghost">…и ещё раз</button>
+      </div>
+    </div>
+
+    <div class="usage">
+      <b>Focus-ring</b> — 2px <code>--brand-dark</code> с отступом 2px, показывается только при
+      навигации с клавиатуры (<code>:focus-visible</code>), мышь его не вызывает.
+      <b>Disabled</b> — плоский серый <code>--surface-gray</code> для всех видов (не прозрачность:
+      полупрозрачный жёлтый читается как активная кнопка). Клики не проходят.
+    </div>
+  </section>
+
+  <!-- НА ТЁМНОМ -->
+  <section>
+    <h2 class="mk-h3">Кнопки на тёмном</h2>
+    <p class="note">Финальный CTA и футер. Dark-кнопка здесь не работает — три отдельных вида.</p>
+
+    <div class="row row--top">
+      <div class="k"><b>Ghost-inverse</b><span><code>.mk-btn--ghost-inverse</code></span></div>
+      <div class="v v--block"><div class="dark-bg" style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="mk-btn mk-btn--primary">Оставить заявку</button>
+        <button class="mk-btn mk-btn--ghost-inverse">Заказать образец</button>
+        <button class="mk-btn mk-btn--ghost-inverse is-hover">Hover</button>
+      </div></div>
+    </div>
+
+    <div class="row row--top">
+      <div class="k"><b>Soft-inverse</b><span><code>.mk-btn--soft-inverse</code> — заливка вместо контура</span></div>
+      <div class="v v--block"><div class="dark-bg" style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="mk-btn mk-btn--soft-inverse">Скачать шаблон</button>
+        <button class="mk-btn mk-btn--soft-inverse is-hover">Hover</button>
+      </div></div>
+    </div>
+
+    <div class="row row--top">
+      <div class="k"><b>Inverse</b><span><code>.mk-btn--inverse</code> — белая сплошная</span></div>
+      <div class="v v--block"><div class="dark-bg" style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="mk-btn mk-btn--inverse">Смотреть цены</button>
+        <button class="mk-btn mk-btn--inverse is-hover">Hover</button>
+      </div></div>
+    </div>
+
+    <div class="usage">
+      <b>Светлого близнеца у soft нет намеренно.</b> <code>--surface-on-light</code> поверх белого
+      даёт #f5f4f1, а disabled-кнопка — #f5f3ed: вторичная была бы неотличима от выключенной.
+      Вторичная на светлом — это ghost, контур и есть аффорданс.
+    </div>
+  </section>
+
+  <!-- ═══════════ ЧИП ═══════════ -->
+  <section id="chip">
+    <h2 class="mk-h3">Чип<span class="st st--off">не в разметке</span></h2>
+    <p class="note">Ссылка-таблетка: переход в раздел, быстрый фильтр. Не кнопка — форма другая
+      намеренно (см. «Открытые вопросы»).</p>
+    <div class="row">
+      <div class="k"><b>Чип</b><span><code>.mk-chip</code></span></div>
+      <div class="v">
+        <a class="mk-chip" href="#chip">Визитки <i class="arr-ico"></i></a>
+        <a class="mk-chip" href="#chip">Календари 2027 <i class="arr-ico"></i></a>
+        <a class="mk-chip" href="#chip">Наклейки</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ СТРОКА-ДЕЙСТВИЕ ═══════════ -->
+  <section id="rowlink">
+    <h2 class="mk-h3">Строка-действие<span class="st st--off">не в разметке</span></h2>
+    <p class="note">«Смотреть все», «Все результаты по…» — во всю ширину, стрелка прижата вправо.
+      Линию-разделитель и отступы даёт контекст, не компонент.</p>
+    <div class="row row--top">
+      <div class="k"><b>Rowlink</b><span><code>.mk-rowlink</code></span></div>
+      <div class="v v--block" style="max-width:420px">
+        <a class="mk-rowlink" href="#rowlink">Все результаты по «визитки» <b>(28)</b><i class="mk-arr"></i></a>
+        <hr class="mk-divider" style="margin:12px 0">
+        <a class="mk-rowlink" href="#rowlink">Смотреть все работы<i class="mk-arr"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ ЧЕКБОКС ═══════════ -->
+  <section id="check">
+    <h2 class="mk-h3">Чекбокс</h2>
+    <p class="note">Свой, не системный: галочка рисуется псевдоэлементом, залив — бренд.</p>
+    <div class="row">
+      <div class="k"><b>22px</b><span><code>.mk-check</code></span></div>
+      <div class="v">
+        <input class="mk-check" type="checkbox" aria-label="Пример">
+        <input class="mk-check" type="checkbox" checked aria-label="Пример отмеченный">
+      </div>
+    </div>
+    <div class="row">
+      <div class="k"><b>18px</b><span><code>.mk-check--sm</code> — строки согласий</span></div>
+      <div class="v">
+        <input class="mk-check mk-check--sm" type="checkbox" aria-label="Пример мелкий">
+        <input class="mk-check mk-check--sm" type="checkbox" checked aria-label="Пример мелкий отмеченный">
+        <span class="mk-caption">Базовые 22px давят набор в 12px.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ БЕЙДЖ ═══════════ -->
+  <section id="badge">
+    <h2 class="mk-h3">Бейдж</h2>
+    <p class="note">Компактный ярлык статуса или скидки. Одна форма (<code>--radius-inside</code>),
+      цвет — под фон.</p>
+    <div class="row">
+      <div class="k"><b>Виды</b><span><code>.mk-badge</code></span></div>
+      <div class="v">
+        <span class="mk-badge">Хит</span>
+        <span class="mk-badge mk-badge--dark">Новое</span>
+        <span class="mk-badge mk-badge--soft">−15%</span>
+        <span class="mk-badge mk-badge--lg">Акция</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="k"><b>Inline</b><span><code>.mk-badge--inline</code></span></div>
+      <div class="v"><span class="mk-body">Календари 2027<span class="mk-badge mk-badge--inline">Хит</span></span></div>
+    </div>
+    <div class="row">
+      <div class="k"><b>Внутри кнопки</b><span><code>.mk-btn__badge</code></span></div>
+      <div class="v"><button class="mk-btn mk-btn--ghost mk-btn--md">Калькулятор <span class="mk-btn__badge">−5%</span></button></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ КАРТОЧКА ═══════════ -->
+  <section id="card">
+    <h2 class="mk-h3">Карточка</h2>
+    <p class="note">Только поверхность: фон, рамка, радиус. Внутреннюю раскладку даёт содержимое
+      (<code>.mk-review</code>, форма, прайс-лист).</p>
+    <div class="row row--top">
+      <div class="k"><b>Виды</b><span><code>.mk-card</code> + модификаторы</span></div>
+      <div class="v v--block" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:520px">
+        <div class="mk-card" style="padding:20px"><b class="mk-small">.mk-card</b><br><span class="mk-caption">белая + рамка</span></div>
+        <div class="mk-card mk-card--subtle" style="padding:20px"><b class="mk-small">--subtle</b><br><span class="mk-caption">фон секции, без рамки</span></div>
+        <div class="mk-card mk-card--gray" style="padding:20px"><b class="mk-small">--gray</b><br><span class="mk-caption">подложка под белые плашки</span></div>
+        <div class="mk-card mk-card--dark" style="padding:20px"><b class="mk-small">--dark</b><br><span class="mk-caption" style="color:var(--text-on-dark-2)">тёмная, текст белый</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ ПЛИТКА ПРЕИМУЩЕСТВА ═══════════ -->
+  <section id="tile">
+    <h2 class="mk-h3">Плитка преимущества</h2>
+    <p class="note">Иконка + заголовок + текст на бренд-тинте. Ряд из 3–4 под героем.</p>
+    <div class="row row--top">
+      <div class="k"><b>Плитка</b><span><code>.mk-tile</code></span></div>
+      <div class="v v--block" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:520px">
+        <div class="mk-tile">
+          <span class="mk-tile__ico"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg></span>
+          <h3 class="mk-tile__title">Свой парк</h3>
+          <p class="mk-tile__text">Печать, тиснение и постпечать в одном цеху — без подрядчиков.</p>
+        </div>
+        <div class="mk-tile">
+          <span class="mk-tile__ico"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4v4l2.5 2"/><circle cx="8" cy="8" r="6"/></svg></span>
+          <h3 class="mk-tile__title">Срок от 1 дня</h3>
+          <p class="mk-tile__text">Срочный тираж считаем отдельно и говорим срок сразу.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ ПОЛОСА ДОВЕРИЯ ═══════════ -->
+  <section id="statbar">
+    <h2 class="mk-h3">Полоса доверия</h2>
+    <p class="note">Цифра + подпись, четыре колонки, разделители на всю высоту. Во всю ширину экрана,
+      контейнер — внутри.</p>
+    <div class="mk-statbar" style="margin:0 -32px">
+      <div class="mk-statbar__row" style="padding:0 32px">
+        <div class="mk-statbar__item"><span class="mk-statbar__value">19 лет</span><span class="mk-statbar__label">на рынке печати</span></div>
+        <div class="mk-statbar__item"><span class="mk-statbar__value">2000+</span><span class="mk-statbar__label">видов продукции</span></div>
+        <div class="mk-statbar__item"><span class="mk-statbar__value">от 1 дня</span><span class="mk-statbar__label">срок изготовления</span></div>
+        <div class="mk-statbar__item"><span class="mk-statbar__value">4.9</span><span class="mk-statbar__label">рейтинг на картах</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ МЕДИА-КАРТОЧКА ═══════════ -->
+  <section id="mcard">
+    <h2 class="mk-h3">Медиа-карточка</h2>
+    <p class="note">Виды, статьи, продукты, портфолио — один компонент. Кадр 4:3 (у сторис 9:16),
+      тег, заголовок, текст.</p>
+
+    <div class="row row--top">
+      <div class="k"><b>С подложкой</b><span><code>.mk-mcard</code></span></div>
+      <div class="v v--block" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:520px">
+        <a class="mk-mcard mk-mcard--link" href="#mcard">
+          <div class="mk-mcard__media"><div class="demo-img"></div></div>
+          <div class="mk-mcard__body">
+            <span class="mk-mcard__tag">Портфолио</span>
+            <h3 class="mk-mcard__title">Визитки с золотым тиснением для сети клиник</h3>
+          </div>
+        </a>
+        <a class="mk-mcard mk-mcard--link" href="#mcard">
+          <div class="mk-mcard__media"><div class="demo-img"></div></div>
+          <div class="mk-mcard__body">
+            <span class="mk-mcard__tag">Продукция</span>
+            <h3 class="mk-mcard__title mk-mcard__title--label">Папки</h3>
+            <p class="mk-mcard__text">От 100 шт · от 4 900 ₽</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="row row--top">
+      <div class="k"><b>Без подложки</b><span><code>--bare</code> — текст на фоне секции</span></div>
+      <div class="v v--block" style="max-width:250px">
+        <a class="mk-mcard mk-mcard--bare mk-mcard--link" href="#mcard">
+          <div class="mk-mcard__media"><div class="demo-img"></div></div>
+          <div class="mk-mcard__body">
+            <h3 class="mk-mcard__title">Как выбрать плотность бумаги</h3>
+            <p class="mk-mcard__text">7 минут чтения</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="row row--top">
+      <div class="k"><b>Видео</b><span><code>--video</code> + <code>__play</code> / <code>__dur</code></span></div>
+      <div class="v v--block" style="max-width:250px">
+        <a class="mk-mcard mk-mcard--bare mk-mcard--video mk-mcard--link" href="#mcard">
+          <div class="mk-mcard__media">
+            <div class="demo-img"></div>
+            <span class="mk-mcard__play"><svg viewBox="0 0 48 48" fill="currentColor"><circle cx="24" cy="24" r="24" opacity=".92"/><path d="M19 15l14 9-14 9z" fill="#222220"/></svg></span>
+            <span class="mk-mcard__dur">0:42</span>
+          </div>
+          <div class="mk-mcard__body"><h3 class="mk-mcard__title">Как мы делаем тиснение</h3></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="usage">
+      <b>Заголовок</b> по умолчанию наборный (Roboto 600/20) — это уникальный текст, который читают.
+      Модификатор <code>--label</code> — фирменный капс для ярлыков из закрытого списка (продукт,
+      вид тиснения): их скользят взглядом, а капс замедляет чтение.<br>
+      <b><code>--knockout</code></b> (<code>mix-blend-mode:darken</code>) — для фото на белом фоне.
+      К PNG с прозрачностью не применять: у прозрачных пикселей RGB=0, darken зальёт их чёрным.
+    </div>
+  </section>
+
+  <!-- ═══════════ ПЛИТКА-ССЫЛКА ═══════════ -->
+  <section id="tilelink">
+    <h2 class="mk-h3">Плитка-ссылка</h2>
+    <p class="note">Горизонтальная: миниатюра + название + пояснение + стрелка. Форма отличается от
+      вертикальной <code>.mk-mcard</code> намеренно — продукт это витрина, технология это навигация.</p>
+    <div class="row row--top">
+      <div class="k"><b>Tilelink</b><span><code>.mk-tilelink</code></span></div>
+      <div class="v v--block" style="display:grid;gap:12px;max-width:520px">
+        <a class="mk-tilelink" href="#tilelink">
+          <span class="mk-tilelink__media"><span class="demo-img" style="display:block"></span></span>
+          <span class="mk-tilelink__txt">
+            <span class="mk-tilelink__title">Офсетная печать</span>
+            <span class="mk-tilelink__note">Большие тиражи, точный цвет, от 1000 экземпляров</span>
+          </span>
+          <i class="arr-ico"></i>
+        </a>
+        <a class="mk-tilelink" href="#tilelink">
+          <span class="mk-tilelink__media"><span class="demo-img" style="display:block"></span></span>
+          <span class="mk-tilelink__txt">
+            <span class="mk-tilelink__title">УФ-печать</span>
+            <span class="mk-tilelink__note">По любым материалам, включая пластик и металл</span>
+          </span>
+          <i class="arr-ico"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ ОТЗЫВ ═══════════ -->
+  <section id="review">
+    <h2 class="mk-h3">Отзыв</h2>
+    <p class="note">Рамку и радиус даёт <code>.mk-card</code> — компонент отвечает только за
+      внутреннюю раскладку. Источник обязателен: отзывы приходят из Яндекс.Карт, 2ГИС и с сайта.</p>
+    <div class="row row--top">
+      <div class="k"><b>Отзыв</b><span><code>.mk-review</code></span></div>
+      <div class="v v--block" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <article class="mk-card mk-review">
+          <div class="mk-review__head">
+            <span class="mk-review__stars">★★★★★</span>
+            <a class="mk-review__source mk-review__source--yandex" href="#review">Яндекс.Карты</a>
+          </div>
+          <p class="mk-review__text">Заказывали визитки с тиснением — сделали за два дня, цвет один
+            в один с макетом. Отдельное спасибо за то, что предупредили про вылеты до печати.</p>
+          <div class="mk-review__author">
+            <span class="mk-review__avatar">АК</span>
+            <span class="mk-review__who">
+              <span class="mk-review__name">Анна К.</span>
+              <span class="mk-review__role">Маркетолог, сеть клиник</span>
+            </span>
+          </div>
+        </article>
+        <article class="mk-card mk-review">
+          <div class="mk-review__head">
+            <span class="mk-review__stars">★★★★★</span>
+            <a class="mk-review__source mk-review__source--2gis" href="#review">2ГИС</a>
+          </div>
+          <p class="mk-review__text">Печатаем здесь каталоги третий год. Ни разу не сорвали срок.</p>
+          <div class="mk-review__author">
+            <span class="mk-review__avatar">ДМ</span>
+            <span class="mk-review__who">
+              <span class="mk-review__name">Дмитрий М.</span>
+              <span class="mk-review__role">Производственная компания</span>
+            </span>
+          </div>
+        </article>
+      </div>
+    </div>
+    <div class="usage">
+      <b>Три источника — один поток.</b> Различаются только точкой бейджа:
+      <code>--yandex</code> (#fc3f1d), <code>--2gis</code> (#19aa1e), <code>--site</code> (бренд).
+      Это единственные чужие бренд-цвета в системе, подменять их нельзя.
+    </div>
+  </section>
+
+  <!-- ═══════════ ПРАЙС-ЛИСТ ═══════════ -->
+  <section id="price">
+    <h2 class="mk-h3">Прайс-лист</h2>
+    <p class="note">Ряд белых плашек на серой карточке. В каждой: услуга, срок плашкой, цена
+      минимального заказа и расшифровка.</p>
+    <div class="gray-bg">
+      <div class="mk-pricelist">
+        <div class="mk-pcard">
+          <span class="mk-pcard__name">Тиснение фольгой</span>
+          <span class="mk-pcard__term">от 2 дней</span>
+          <span class="mk-pcard__val">от 4 900 ₽</span>
+          <span class="mk-pcard__unit">100 шт · 49 ₽/шт</span>
+        </div>
+        <div class="mk-pcard">
+          <span class="mk-pcard__name">Блинтовое тиснение</span>
+          <span class="mk-pcard__term">от 2 дней</span>
+          <span class="mk-pcard__val">от 3 600 ₽</span>
+          <span class="mk-pcard__unit">100 шт · 36 ₽/шт</span>
+        </div>
+        <div class="mk-pcard">
+          <span class="mk-pcard__name">Голографическая фольга</span>
+          <span class="mk-pcard__term">от 3 дней</span>
+          <span class="mk-pcard__val">от 6 200 ₽</span>
+          <span class="mk-pcard__unit">100 шт · 62 ₽/шт</span>
+        </div>
+      </div>
+    </div>
+    <div class="usage">
+      <b>Ритм задают margin, а не gap.</b> Карточка распадается на две группы — «что и когда» и
+      «сколько»: внутри группы 2–6px, между группами 16. Без этого четыре строки читались как
+      четыре равнозначные.
+    </div>
+  </section>
+
+  <!-- ═══════════ СПИСКИ ═══════════ -->
+  <section id="lists">
+    <h2 class="mk-h3">Списки</h2>
+    <p class="note">Два вида буллетов: галочка — это обещание, точка — просто перечисление.</p>
+    <div class="row row--top">
+      <div class="k"><b>Чек-лист</b><span><code>.mk-checklist</code></span></div>
+      <div class="v v--block">
+        <ul class="mk-checklist">
+          <li>Делаем тиснение с клише и без (слепое тиснение)</li>
+          <li>Помогаем с дизайном и вёрсткой</li>
+          <li>Гарантируем стойкость к стиранию</li>
+        </ul>
+      </div>
+    </div>
+    <div class="row row--top">
+      <div class="k"><b>Маркированный</b><span><code>.mk-list</code><span class="st st--off">не в разметке</span></span></div>
+      <div class="v v--block">
+        <ul class="mk-list">
+          <li>Формат: до 720×1020 мм</li>
+          <li>Плотность материала: 90–350 г/м²</li>
+          <li>Минимальный тираж: 100 шт</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ КЛЮЧ-ЗНАЧЕНИЕ ═══════════ -->
+  <section id="kv">
+    <h2 class="mk-h3">Таблица «ключ — значение»<span class="st st--off">не в разметке</span></h2>
+    <p class="note">Характеристики: слева серым свойство, справа значение. Белые строки на серой
+      карточке — тот же язык, что у прайс-листа.</p>
+    <div class="gray-bg">
+      <div class="mk-kv">
+        <div class="mk-kv__row"><span class="mk-kv__k">Максимальный формат</span><span class="mk-kv__v">720×1020 мм</span></div>
+        <div class="mk-kv__row"><span class="mk-kv__k">Плотность материала</span><span class="mk-kv__v">90–350 г/м²</span></div>
+        <div class="mk-kv__row"><span class="mk-kv__k">Виды фольги</span><span class="mk-kv__v">золото, серебро, голография</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ СТРОКА ФАЙЛА ═══════════ -->
+  <section id="filerow">
+    <h2 class="mk-h3">Строка файла</h2>
+    <p class="note">Вся строка — ссылка: цель для клика во всю ширину, а не слово «Скачать».
+      Иконка справа — аффорданс, загорается брендом при наведении на строку.</p>
+    <div class="gray-bg" style="display:grid;gap:8px">
+      <a class="mk-filerow" href="#filerow">
+        <span class="mk-filerow__txt">
+          <span class="mk-filerow__name">Требования к макетам для тиснения</span>
+          <span class="mk-filerow__meta">PDF · 1,2 МБ</span>
+        </span>
+        <span class="mk-filerow__ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2v9M4.5 7.5L8 11l3.5-3.5M3 13.5h10"/></svg></span>
+      </a>
+      <a class="mk-filerow" href="#filerow">
+        <span class="mk-filerow__txt">
+          <span class="mk-filerow__name">Шаблон визитки 90×50</span>
+          <span class="mk-filerow__meta">AI · 340 КБ</span>
+        </span>
+        <span class="mk-filerow__ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2v9M4.5 7.5L8 11l3.5-3.5M3 13.5h10"/></svg></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══════════ СПИСОК ТРЕБОВАНИЙ ═══════════ -->
+  <section id="reqlist">
+    <h2 class="mk-h3">Список требований</h2>
+    <p class="note">«Проверьте макет перед отправкой». Галочка здесь — <b>маркер, а не чекбокс</b>:
+      список читают, отмечать в нём нечего.</p>
+    <div class="gray-bg">
+      <div class="mk-reqlist">
+        <div class="mk-reqlist__item">
+          <span class="mk-reqlist__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="mk-reqlist__txt">
+            <span class="mk-reqlist__title">Поля и вылеты</span>
+            <span class="mk-reqlist__note">3–5 мм с каждой стороны под обрезку. Важные элементы — не ближе 5 мм от края.</span>
+          </span>
+        </div>
+        <div class="mk-reqlist__item">
+          <span class="mk-reqlist__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="mk-reqlist__txt">
+            <span class="mk-reqlist__title">Слой под фольгу</span>
+            <span class="mk-reqlist__note">Отдельным слоем, плашка 100% Magenta. Без градиентов и полутонов.</span>
+          </span>
+        </div>
+        <div class="mk-reqlist__item">
+          <span class="mk-reqlist__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="mk-reqlist__txt">
+            <span class="mk-reqlist__title">Изображения</span>
+            <span class="mk-reqlist__note">Разрешение 300 dpi, цветовая модель CMYK.</span>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="usage">
+      <b>Интерактивный вариант был и отвергнут (22.07).</b> Чекбоксы + строка прогресса «отмечено
+      3 из 6» выглядели полезно, но состояние никуда не сохраняется, а макет всё равно проверяет
+      препресс — интерактив обещал больше, чем делал. Осталась статика.<br>
+      <b>Обводка прозрачная в покое, hover нет</b> — по правилу белых плашек: подсвечивается только
+      кликабельное, а здесь кликать не по чему.<br>
+      <b>На узком экране</b> плашки схлопываются в сплошной список с линиями от края до края.
+      Это делает страница, а не кит: приём завязан на поля контейнера и общий с ценами и статбаром.
+    </div>
+  </section>
+
+  <!-- ═══════════ ТАБЫ ═══════════ -->
+  <section id="tabs">
+    <h2 class="mk-h3">Табы</h2>
+    <p class="note">Подчёркивание активного — единый паттерн с навигацией. Обёртка панелей плавно
+      тянется под высоту активной, без скачка.</p>
+    <div class="mk-tabs" role="tablist">
+      <button class="mk-tab is-active" role="tab" aria-selected="true" data-tab="0">Офсет</button>
+      <button class="mk-tab" role="tab" aria-selected="false" data-tab="1">Цифра</button>
+      <button class="mk-tab" role="tab" aria-selected="false" data-tab="2">УФ-печать</button>
+    </div>
+    <div class="mk-tabpanels" style="padding-top:20px">
+      <div class="mk-tabpanel is-active" role="tabpanel" tabindex="0">
+        <p class="mk-body" style="margin:0">Большие тиражи, точный цвет, от 1000 экземпляров.</p>
+      </div>
+      <div class="mk-tabpanel" role="tabpanel" tabindex="0">
+        <p class="mk-body" style="margin:0">Малые тиражи и срочные заказы — от 1 экземпляра.</p>
+      </div>
+      <div class="mk-tabpanel" role="tabpanel" tabindex="0">
+        <p class="mk-body" style="margin:0">По любым материалам, включая пластик, металл и дерево.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ АККОРДЕОН ═══════════ -->
+  <section id="acc">
+    <h2 class="mk-h3">Аккордеон</h2>
+    <p class="note">Маркер «+» поворотом на 45° превращается в «×» — один символ на оба состояния.
+      Нативный <code>&lt;details&gt;</code>: работает без JS.</p>
+
+    <div class="row row--top">
+      <div class="k"><b>Карточный</b><span><code>.mk-acclist--card</code> +<br><code>.mk-acc--card</code></span></div>
+      <div class="v v--block">
+        <div class="mk-acclist--card">
+          <details name="kitfaq" class="mk-acc mk-acc--card" open>
+            <summary class="mk-acc__q">Чем тиснение отличается от печати золотой краской?</summary>
+            <div class="mk-acc__a">Тиснение — это перенос металлизированной фольги под давлением и
+              температурой. В отличие от краски, оно даёт настоящий металлический блеск, рельеф и
+              стойкость к истиранию.</div>
+          </details>
+          <details name="kitfaq" class="mk-acc mk-acc--card">
+            <summary class="mk-acc__q">Какой минимальный тираж?</summary>
+            <div class="mk-acc__a">От 50 штук. На меньших тиражах стоимость за штуку выше из-за
+              подготовки штампа.</div>
+          </details>
+          <details name="kitfaq" class="mk-acc mk-acc--card">
+            <summary class="mk-acc__q">Нужен ли отдельный макет под фольгу?</summary>
+            <div class="mk-acc__a">Да. Зону тиснения выносят отдельным слоем и заливают плашкой
+              100% Magenta или spot-цветом. Мы пришлём шаблон.</div>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <div class="row row--top">
+      <div class="k"><b>Линейный</b><span><code>.mk-acc</code> без карточки<span class="st st--off">не в разметке</span></span></div>
+      <div class="v v--block">
+        <details class="mk-acc">
+          <summary class="mk-acc__q">Сколько стоит тиснение?</summary>
+          <div class="mk-acc__a">База, на которой построен карточный вариант: линии вместо плашек.
+            Пригодится для длинного ЧАВО во всю ширину.</div>
+        </details>
+        <details class="mk-acc">
+          <summary class="mk-acc__q">Нужно ли делать клише?</summary>
+          <div class="mk-acc__a">Пока такой страницы нет — на услуге ЧАВО всегда карточный.</div>
+        </details>
+      </div>
+    </div>
+
+    <div class="usage">
+      <b>Открыт ровно один.</b> На странице услуги у всех <code>&lt;details&gt;</code> общий
+      атрибут <code>name="faq"</code> — браузер сам закрывает предыдущий, JS для этого не нужен.
+      Здесь то же самое (<code>name="kitfaq"</code>), проверьте: откройте второй вопрос.<br>
+      <b>Поля — на содержимом, а не на карточке.</b> С <code>padding</code> у карточки summary
+      оказывался на 40px уже её самой, и левая с правой полосы не переключали аккордеон
+      (замер: тап в 4px от края попадал мимо цели).
+    </div>
+  </section>
+
+  <!-- ═══════════ ЛЕНТА ═══════════ -->
+  <section id="scroller">
+    <h2 class="mk-h3">Лента с прокруткой</h2>
+    <p class="note">Нативный скролл + snap. Стрелки вспомогательные — трекпад и колесо работают и
+      без них, поэтому они появляются только при наведении. <code>--item-w</code> задаёт, сколько
+      карточек влезает в кадр.</p>
+    <div class="mk-scroller" style="--item-w:calc((100% - 2 * var(--gap-card)) / 3)">
+      <div class="mk-scroller__track" tabindex="0">
+        <a class="mk-mcard mk-mcard--bare mk-mcard--link" href="#scroller">
+          <div class="mk-mcard__media"><div class="demo-img"></div></div>
+          <div class="mk-mcard__body"><h3 class="mk-mcard__title">Визитки с тиснением</h3></div>
+        </a>
+        <a class="mk-mcard mk-mcard--bare mk-mcard--link" href="#scroller">
+          <div class="mk-mcard__media"><div class="demo-img"></div></div>
+          <div class="mk-mcard__body"><h3 class="mk-mcard__title">Папки для документов</h3></div>
+        </a>
+        <a class="mk-mcard mk-mcard--bare mk-mcard--link" href="#scroller">
+          <div class="mk-mcard__media"><div class="demo-img"></div></div>
+          <div class="mk-mcard__body"><h3 class="mk-mcard__title">Приглашения</h3></div>
+        </a>
+        <a class="mk-mcard mk-mcard--bare mk-mcard--link" href="#scroller">
+          <div class="mk-mcard__media"><div class="demo-img"></div></div>
+          <div class="mk-mcard__body"><h3 class="mk-mcard__title">Обложки каталогов</h3></div>
+        </a>
+        <a class="mk-mcard mk-mcard--bare mk-mcard--link" href="#scroller">
+          <div class="mk-mcard__media"><div class="demo-img"></div></div>
+          <div class="mk-mcard__body"><h3 class="mk-mcard__title">Упаковка</h3></div>
+        </a>
+      </div>
+      <button class="mk-scroller__nav mk-scroller__nav--prev" aria-label="Назад" data-dir="-1" style="--nav-top:38%">
+        <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 3.5L5.5 9l5.5 5.5"/></svg>
+      </button>
+      <button class="mk-scroller__nav mk-scroller__nav--next" aria-label="Вперёд" data-dir="1" style="--nav-top:38%">
+        <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3.5L12.5 9 7 14.5"/></svg>
+      </button>
+    </div>
+    <div class="usage">
+      <b>Трек обязан принимать фокус</b> (<code>tabindex="0"</code>): без стрелок мыши до
+      прокрутки не добраться с клавиатуры.
+    </div>
+  </section>
+
+  <!-- ═══════════ ДОСТУПНОСТЬ ═══════════ -->
+  <section id="a11y">
+    <h2 class="mk-h3">Служебные классы</h2>
+    <p class="note">Не видны на макете, но без них кит неполный.</p>
+    <div class="row">
+      <div class="k"><b>Для скринридера</b><span><code>.mk-sr</code></span></div>
+      <div class="v"><span class="mk-small" style="color:var(--text-secondary)">Есть в дереве доступности, не занимает места. <code>clip-path</code>, а не <code>display:none</code> — скрытое через display скринридер не читает.</span></div>
+    </div>
+    <div class="row">
+      <div class="k"><b>Скип-ссылка</b><span><code>.mk-skip</code></span></div>
+      <div class="v"><span class="mk-small" style="color:var(--text-secondary)">«К содержимому» — выезжает сверху только по фокусу с клавиатуры. Есть на этой странице: нажмите Tab с самого верха.</span></div>
+    </div>
+    <div class="row">
+      <div class="k"><b>Раскладка</b><span><code>.mk-container</code> / <code>.mk-section</code><span class="st st--off">не в разметке</span></span></div>
+      <div class="v"><span class="mk-small" style="color:var(--text-secondary)">Контейнер 1176px с полями 24 и вертикальный ритм секции 80px.</span></div>
+    </div>
+    <div class="usage">
+      <b>Тач-правила.</b> Все <code>:hover</code> в ките обёрнуты в <code>@media (hover:hover)</code> —
+      на тач-экране hover срабатывает от тапа и залипает. Взамен у каждого кликабельного компонента
+      есть свой <code>:active</code>, а нативная серая вспышка iOS погашена (она игнорирует
+      border-radius и на скруглённых карточках читается как дефект).
+    </div>
+  </section>
+
+  <!-- ═══════════ ОТКРЫТЫЕ ВОПРОСЫ ═══════════ -->
+  <section id="open">
+    <h2 class="mk-h3">Решения 22.07</h2>
+    <p class="note">Что было «зафиксировано, но не исправлено» — и чем закончилось.</p>
+    <div class="usage usage--flat">
+      <b>Форма — 8px, пилюля отвергнута.</b> Решение принималось на странице услуги и жило там
+      локальным оверрайдом; кит и витрина показывали пилюлю. Перенесено в <code>kit.css</code>.<br>
+      <b>Чипы тоже 8px.</b> Одна форма плашек на весь сайт, исключений нет:
+      <code>.mk-chip</code> и <code>.sd-chip</code> в подсказках поиска приведены к
+      <code>--radius-md</code>.<br>
+      <b>Круглые стрелки ленты — так и надо.</b> <code>.mk-scroller__nav</code> 40×40 остаётся
+      кругом: правило форм разрешает круг там, где круг и есть суть элемента (иконка, а не плашка).<br>
+      <b>Переключатель вида удалён.</b> <code>.mk-segment</code> не стоял ни на одной странице:
+      портфолио переключает фото/видео табами, где переключатель — часть заголовка секции.<br>
+      <b>Список требований: победила статика.</b> Интерактивный вариант с чекбоксами и прогрессом
+      удалён, живой статичный <code>.reqs-check</code> со страницы услуги переехал в кит под именем
+      <code>.mk-reqlist</code>.
+    </div>
+
+    <div class="warn">
+      <b>Бэклог дизайн-системы — ведёт дизайн, не команда вёрстки.</b> В тикеты это не входит и
+      сроки спринта не двигает: пункты попадут в кит по мере готовности, вёрстка получит их уже
+      компонентами. Если удобнее сделать по ходу своей задачи — не возбраняется, но тогда
+      напишите, чтобы не разошлись две версии.<br>
+      · <b>Подшапка</b> <code>.usl-subnav</code> — дубль <code>.mk-tab</code> под другим именем.
+      Вынести как <code>.mk-subnav</code>.<br>
+      · <b>Кнопки шапки</b> <code>.hbtn</code> (иконка + подпись: «Войти», «Корзина», компактный
+      «Калькулятор») — отдельный тип, а не <code>.mk-btn</code>. Часть компонента «шапка»;
+      заводить в кит имеет смысл вместе с ней.<br>
+      · <b>Формы</b> — поля, лейблы, ошибки валидации. Три почти одинаковые формы, каждая со своим
+      CSS. Свести в один компонент до переезда на WordPress.
+    </div>
+  </section>
+
+  </div>
+</div>
+
+<script>
+  // табы: переключение панели + высота обёртки без скачка
+  document.querySelectorAll('.mk-tabs').forEach(function(tabs){
+    var panels = tabs.parentNode.querySelector('.mk-tabpanels');
+    tabs.addEventListener('click', function(e){
+      var btn = e.target.closest('.mk-tab');
+      if (!btn) return;
+      tabs.querySelectorAll('.mk-tab').forEach(function(b){
+        b.classList.toggle('is-active', b === btn);
+        b.setAttribute('aria-selected', b === btn);
+      });
+      panels.querySelectorAll('.mk-tabpanel').forEach(function(p, i){
+        p.classList.toggle('is-active', i === +btn.dataset.tab);
+      });
+    });
+  });
+
+  // стрелки ленты: шаг на ширину кадра
+  document.querySelectorAll('.mk-scroller__nav').forEach(function(nav){
+    nav.addEventListener('click', function(){
+      var track = nav.parentNode.querySelector('.mk-scroller__track');
+      track.scrollBy({left: +nav.dataset.dir * track.clientWidth, behavior: 'smooth'});
+    });
+  });
+</script>
+</body>
+</html>
