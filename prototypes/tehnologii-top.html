@@ -19,17 +19,20 @@
   .stub{color:var(--text-tertiary);font-size:13px}
   .stub .h{font-family:var(--font-head);font-size:30px;line-height:36px;text-transform:uppercase;color:var(--text-primary);margin:6px 0}
 
-  /* ТАБЫ = 3 группы */
-  .tabs{display:flex;gap:6px;margin:8px 0 22px;border-bottom:1px solid var(--border);overflow-x:auto}
-  .tabs button{border:0;background:none;font-family:inherit;font-size:var(--t-ui);font-weight:600;
-    color:var(--text-secondary);padding:12px 4px;margin-right:22px;cursor:pointer;white-space:nowrap;
-    border-bottom:2px solid transparent;transition:color .12s,border-color .12s}
-  .tabs button:hover{color:var(--text-primary)}
-  .tabs button.active{color:var(--text-primary);border-bottom-color:var(--brand)}
+  /* ТАБЫ = 3 группы. Компонент КИТОВЫЙ (.mk-tabs/.mk-tab) — раньше здесь был третий по счёту
+     самописный вариант тех же табов (первый в ките, второй в подшапке услуги). Своё тут только
+     горизонтальная прокрутка: групп может стать больше, чем влезает в строку на телефоне. */
+  .mk-tabs{margin:8px 0 22px;overflow-x:auto;scrollbar-width:none}
+  .mk-tabs::-webkit-scrollbar{display:none}
+  .mk-tab{white-space:nowrap}
 
   /* плитки — НАШ .mk-tilelink из кита + combo-раскладка (те же правила, что в usluga «Сочетается») */
   .pane{display:none}
   .pane.show{display:block}
+  /* Сетка 3 / 2 / 1. Средняя ступень появилась 23.07: на планшете три плитки в ряд сжимались
+     так, что подпись под названием обрезалась на втором слове — плитка горизонтальная, ей нужна
+     ширина. Ступени взяты по канону проекта: мобилка начинается с 1023 (как в токенах и на
+     странице услуги), одна колонка — с 767, это ширина, на которой проверяем вёрстку. */
   .combo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap-card, 20px)}
   .combo-grid .mk-tilelink__media{background:transparent;border-right:none}
   .combo-grid .mk-tilelink__media img{mix-blend-mode:darken}
@@ -43,9 +46,19 @@
   .allgroup:hover{color:var(--text-primary)}
   .allgroup .arr-ico{color:currentColor}
 
+  /* ПУСТАЯ ГРУППА. Таб не прячем: список групп — это карта раздела, дырка в нём читается как
+     «у них этого нет», хотя услуги просто ещё не привязаны в админке. Вместо пустоты одна плитка,
+     ведущая на страницу группы: человек не упирается в ничто, а страница группы (она живая и
+     нужна для SEO) получает вход. Ссылку «Все услуги группы» под сеткой в этом случае прячем —
+     иначе два одинаковых входа подряд. */
+  .pane--empty .allgroup{display:none}
+
   .seam{padding:40px 0;text-align:center;color:var(--text-tertiary);font-size:13px}
 
-  @media(max-width:720px){
+  @media(max-width:1023px){
+    .combo-grid{grid-template-columns:repeat(2,1fr)}
+  }
+  @media(max-width:767px){
     h1{font-size:26px;line-height:30px}
     .combo-grid{grid-template-columns:1fr}
     .wrap{width:min(100% - 32px, 1200px)}
@@ -58,10 +71,11 @@
     <!-- крошки + заголовок остаются СТАРЫЕ (показаны бледным как контекст, мы их не трогаем) -->
     <div class="stub">Главная / Каталог услуг / Технологии печати<div class="h">Услуги типографии</div>— существующие крошки и заголовок, НЕ меняем —</div>
 
-    <div class="tabs" id="tabs" style="margin-top:24px">
-      <button class="active" data-tab="brosh">Брошюровка и переплёт</button>
-      <button data-tab="post">Постпечатная обработка</button>
-      <button data-tab="print">Печать</button>
+    <div class="mk-tabs" id="tabs" role="tablist" aria-label="Группы технологий" style="margin-top:24px">
+      <button type="button" class="mk-tab is-active" role="tab" aria-selected="true" data-tab="brosh">Брошюровка и переплёт</button>
+      <button type="button" class="mk-tab" role="tab" aria-selected="false" data-tab="post">Постпечатная обработка</button>
+      <button type="button" class="mk-tab" role="tab" aria-selected="false" data-tab="print">Печать</button>
+      <button type="button" class="mk-tab" role="tab" aria-selected="false" data-tab="empty">Резка и сверление</button>
     </div>
 
     <!-- Брошюровка — реальные кадры -->
@@ -126,6 +140,15 @@
       </div>
       <a class="allgroup" href="https://mdmprint.ru/pechat">Все услуги: Печать <i class="arr-ico"></i></a>
     </div>
+
+    <!-- ГРУППА БЕЗ ПРИВЯЗАННЫХ УСЛУГ — как это выглядит (в бою таких сейчас нет) -->
+    <div class="pane pane--empty" data-pane="empty">
+      <div class="combo-grid">
+        <a href="https://mdmprint.ru/rezka-i-sverlenie" class="mk-tilelink">
+          <span class="mk-tilelink__media"><span class="ph">кадр группы</span></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Резка и сверление</span><span class="mk-tilelink__note">Смотреть все услуги группы</span></span><i class="arr-ico"></i></a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -134,8 +157,12 @@
 <script>
   const tabs = document.getElementById('tabs');
   tabs.addEventListener('click', e=>{
-    const b = e.target.closest('button'); if(!b) return;
-    tabs.querySelectorAll('button').forEach(x=>x.classList.toggle('active', x===b));
+    const b = e.target.closest('.mk-tab'); if(!b) return;
+    tabs.querySelectorAll('.mk-tab').forEach(x=>{
+      const on = x===b;
+      x.classList.toggle('is-active', on);
+      x.setAttribute('aria-selected', on);
+    });
     document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('show', p.dataset.pane===b.dataset.tab));
   });
 </script>
