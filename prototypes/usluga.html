@@ -209,6 +209,9 @@
   .faq-form .cbm-done{padding:8px 4px 4px}
   /* .cbm-field{display:flex} перебивает [hidden] — возвращаем для скрытых контакт-полей (как .mk-btn[hidden] в ките) */
   .faq-form .cbm-field[hidden]{display:none}
+  /* элементы мобильной ЧАВО-шторки — на десктопе скрыты (специфичность бьёт .cbm-x) */
+  .faq-cta,.faq-backdrop{display:none}
+  .faq-form .cbm-x{display:none}
 
   /* ГДЕ ПРИМЕНЯЕТСЯ / продукты */
   /* ПРОДУКТЫ — .mk-mcard из кита. Figma: 176px × 6 в ряд (176*6 + 24*5 = 1176),
@@ -780,7 +783,6 @@
     /* Форма вопроса на мобилке — во ВТОРОМ брейкпоинте (<style id="port-after">): правила .cbm-*
        стоят в этом <style> ПОЗЖЕ данного @media и перебивают его порядком при равной
        специфичности (замер: фон и высоты полей молча не применялись). */
-    .faq-form{position:static}
     /* 3 в кадре = ролик 106px шириной: подпись ломается в лесенку, а превью не разглядеть.
        2 в кадре — как у отзывов и фото ниже, единый ритм лент на мобилке. */
     /* 2.2 ролика в кадре: два целых и краешек третьего — прокрутка считывается без стрелок.
@@ -1859,6 +1861,43 @@
        от них (решение Omar, 16.07). Плата за это — контент 310 из 390: контейнер 16 + карточка 24. */
     .faq-form .cbm-row{flex-direction:column;gap:var(--sp-12)}
     .faq-form input[type=tel],.faq-form input.cbm-tf,.faq-form .cbm-sel select{height:48px}
+
+    /* ── ЧАВО = КНОПКА + НИЖНЯЯ ШТОРКА ────────────────────────────────────
+       Инлайн-форма среди аккордеонов на телефоне — длинная простыня полей.
+       Прячем её в шторку (как заявка/звонок), вызов — кнопкой «Задать вопрос».
+       Одна и та же форма, без дублей id: .faq-form просто становится fixed.
+       Держим её всегда за нижним краем (translateY 100%, visibility:hidden) и
+       выдвигаем по body.faqsheet — смена display не дала бы анимации выезда. */
+    .faq-cta{display:block;background:var(--surface-subtle);border-radius:var(--radius-md);padding:var(--sp-20)}
+    .faq-cta__t{font-weight:700;font-size:var(--t-ui)}
+    .faq-cta__s{color:var(--text-secondary);font-size:var(--t-cap);margin:var(--sp-4) 0 var(--sp-12)}
+    .faq-cta .mk-btn{width:100%}
+
+    .faq-backdrop{display:block;position:fixed;inset:0;background:rgba(17,17,17,.42);
+      opacity:0;visibility:hidden;transition:opacity .18s,visibility .18s;z-index:100}
+    body.faqsheet .faq-backdrop{opacity:1;visibility:visible}
+
+    .faq-form .cbm-x{display:flex;z-index:2}   /* крестик поверх скролла (вид — от .cbm-x) */
+
+    /* Шторка: метрики как у .cbm — радиус, 88dvh, ручка, внутренний скролл, липкий заголовок.
+       Селектор .usl-faq .faq-form (0,2,0) — чтобы перебить мобильное .usl-faq .faq-form{padding}. */
+    .usl-faq .faq-form{position:fixed;left:0;right:0;bottom:0;z-index:101;
+      display:flex;flex-direction:column;width:100%;max-width:none;margin:0;
+      max-height:88dvh;padding:var(--sp-20) 0 0;
+      background:var(--surface-card);border-color:transparent;
+      border-radius:var(--radius-outside) var(--radius-outside) 0 0;
+      overflow:hidden;visibility:hidden;
+      transform:translateY(100%);transition:transform .24s ease,visibility .24s}
+    body.faqsheet .faq-form{visibility:visible;transform:none}
+    .faq-form::before{content:"";position:absolute;top:var(--sp-8);left:50%;transform:translateX(-50%);
+      width:36px;height:4px;border-radius:var(--radius-pill);background:var(--border-strong)}
+    .faq-form > [data-role]{padding-inline:var(--container-pad);
+      flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+    .faq-form > [data-role] > .cbm-title{position:sticky;top:0;z-index:1;background:var(--surface-card);
+      margin-inline:calc(var(--container-pad) * -1);padding:0 44px var(--sp-10) var(--container-pad);
+      border-bottom:1px solid transparent;transition:border-color .15s}
+    .faq-form > [data-role].scrolled > .cbm-title{border-bottom-color:var(--border)}
+    .faq-form > [data-role] > .cbm-title + *{margin-top:0}
 
     /* ── МОДАЛКА = ШТОРКА СНИЗУ ──────────────────────────────────────────────────
        Центрированный попап на телефоне не работает: он тянулся во весь экран, кнопка
@@ -3586,9 +3625,20 @@
             <details name="faq" class="mk-acc mk-acc--card"><summary class="mk-acc__q">На каких материалах делается тиснение?</summary><p class="mk-acc__a">Лучше всего на дизайнерской бумаге и картоне от 250 г. Подойдём к выбору материала под ваш проект.</p></details>
           </div>
 
+          <!-- Мобилка: инлайн-форма прячется, вопрос задаётся кнопкой → нижняя шторка (та же форма). -->
+          <div class="faq-cta">
+            <p class="faq-cta__t">Остались вопросы?</p>
+            <p class="faq-cta__s">Ответим удобным для вас способом.</p>
+            <button type="button" class="mk-btn mk-btn--primary" data-faq-open>Задать вопрос</button>
+          </div>
+
           <!-- Форма «Задайте свой вопрос» — набор полей как в блоке FAQ на mdmprint.ru.
-               Способ связи управляет тем, какое контакт-поле показано (телефон/e-mail/Telegram). -->
+               Способ связи управляет тем, какое контакт-поле показано (телефон/e-mail/Telegram).
+               На мобилке .faq-form превращается в нижнюю шторку (CSS в port-after). -->
           <aside class="faq-form mk-card">
+            <button class="cbm-x" type="button" data-faq-close aria-label="Закрыть">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
             <div data-role="form">
               <h3 class="cbm-title">Задайте свой вопрос</h3>
               <p class="cbm-sub">Напишите вопрос — ответим в ближайшее время удобным для вас способом.</p>
@@ -3639,7 +3689,9 @@
                   <input type="checkbox" class="mk-check" name="promo">
                   <span>Согласен получать новости, спецпредложения и информацию об акциях <em>(необязательно)</em></span>
                 </label>
-                <button type="submit" class="cbm-submit mk-btn mk-btn--primary" disabled>Задать вопрос</button>
+                <div class="cbm-foot">
+                  <button type="submit" class="cbm-submit mk-btn mk-btn--primary" disabled>Задать вопрос</button>
+                </div>
               </form>
             </div>
 
@@ -3653,6 +3705,7 @@
               </div>
             </div>
           </aside>
+          <div class="faq-backdrop"></div>
         </div>
       </div>
     </section>
@@ -4692,6 +4745,37 @@
       // на реале: POST { comment, contact_way, contact, name, promo, consent:true, page, ts } + антиспам/rate-limit
       formWrap.hidden = true; doneWrap.hidden = false;
     });
+
+    // ── Мобилка: кнопка «Задать вопрос» → шторка снизу (та же форма). ──
+    // На десктопе триггеры/оверлей display:none, кликов нет — обработчики безвредны.
+    let lastFocus = null;
+    function resetForm(){ form.reset(); formWrap.hidden = false; doneWrap.hidden = true;
+      formWrap.scrollTop = 0; formWrap.classList.remove('scrolled'); syncContacts(); refresh(); }
+    function openFaq(){
+      lastFocus = document.activeElement;
+      resetForm();
+      document.body.classList.add('faqsheet');
+      document.body.style.overflow = 'hidden';
+      if(typeof closeMega === 'function') closeMega();
+      setTimeout(()=>q.focus(), 60);
+    }
+    function closeFaq(){
+      document.body.classList.remove('faqsheet');
+      document.body.style.overflow = '';
+      resetForm();
+      if(lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    document.querySelectorAll('[data-faq-open]').forEach(o=>o.addEventListener('click', openFaq));
+    root.querySelectorAll('[data-faq-close]').forEach(c=>c.addEventListener('click', closeFaq));
+    const faqBack = document.querySelector('.faq-backdrop');
+    if(faqBack) faqBack.addEventListener('click', closeFaq);
+    document.addEventListener('keydown', e=>{
+      if(e.key === 'Escape' && document.body.classList.contains('faqsheet')) closeFaq();
+    });
+    // линия под липким заголовком — только когда под него заехало содержимое
+    formWrap.addEventListener('scroll', ()=>{
+      formWrap.classList.toggle('scrolled', formWrap.scrollTop > 4);
+    }, {passive:true});
 
     syncContacts(); refresh();
   })();
