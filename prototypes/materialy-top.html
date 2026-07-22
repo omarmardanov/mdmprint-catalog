@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Песочница: верхний блок «Каталог материалов» — табы + плитки</title>
+<link rel="stylesheet" href="../assets/css/fonts.css?v=20260722a">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=20260722a">
+<link rel="stylesheet" href="../assets/css/kit.css?v=20260722d">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);color:var(--text-primary);background:var(--surface-page);-webkit-font-smoothing:antialiased}
+  /* 1200 — под живой контейнер (.container_small), не 1176 наш: шва по ширине не будет */
+  .wrap{width:min(100% - 48px, 1200px);margin-inline:auto}
+
+  /* Меняем ТОЛЬКО табы+плитки. Крошки и заголовок — существующие на старой странице,
+     фон белый как на старом. Ниже — только новый компонент, врезается на место 3 плиток-ссылок. */
+  .top{background:var(--surface-page);padding:24px 0 40px}
+  .stub{color:var(--text-tertiary);font-size:13px}
+  .stub .h{font-family:var(--font-head);font-size:30px;line-height:36px;text-transform:uppercase;color:var(--text-primary);margin:6px 0}
+
+  /* ТАБЫ = 3 группы. Компонент КИТОВЫЙ (.mk-tabs/.mk-tab) — раньше здесь был третий по счёту
+     самописный вариант тех же табов (первый в ките, второй в подшапке услуги). Своё тут только
+     горизонтальная прокрутка: групп может стать больше, чем влезает в строку на телефоне. */
+  .mk-tabs{margin:8px 0 22px;overflow-x:auto;scrollbar-width:none}
+  .mk-tabs::-webkit-scrollbar{display:none}
+  .mk-tab{white-space:nowrap}
+
+  /* плитки — НАШ .mk-tilelink из кита + combo-раскладка (те же правила, что в usluga «Сочетается») */
+  .pane{display:none}
+  .pane.show{display:block}
+  /* Сетка 3 / 2 / 1. Средняя ступень появилась 23.07: на планшете три плитки в ряд сжимались
+     так, что подпись под названием обрезалась на втором слове — плитка горизонтальная, ей нужна
+     ширина. Ступени взяты по канону проекта: мобилка начинается с 1023 (как в токенах и на
+     странице услуги), одна колонка — с 767, это ширина, на которой проверяем вёрстку. */
+  .combo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap-card, 20px)}
+  .combo-grid .mk-tilelink__media{background:transparent;border-right:none}
+  .combo-grid .mk-tilelink__media img{mix-blend-mode:darken}
+  /* плейсхолдер-медиа для групп без снимков */
+  .ph{display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);font-size:11px;
+    background:linear-gradient(135deg,#efeae0,#e4ddcf)!important;width:100%;height:100%}
+
+  /* ссылка на страницу группы — НЕ теряем промежуточную страницу (SEO + обзор группы) */
+  .allgroup{display:inline-flex;align-items:center;gap:8px;margin-top:22px;font-size:var(--t-ui);font-weight:600;
+    color:var(--brand-text);text-decoration:none}
+  .allgroup:hover{color:var(--text-primary)}
+  .allgroup .arr-ico{color:currentColor}
+
+  /* ПУСТАЯ ГРУППА. Таб не прячем: список групп — это карта раздела, дырка в нём читается как
+     «у них этого нет», хотя услуги просто ещё не привязаны в админке. Вместо пустоты одна плитка,
+     ведущая на страницу группы: человек не упирается в ничто, а страница группы (она живая и
+     нужна для SEO) получает вход. Ссылку «Все услуги группы» под сеткой в этом случае прячем —
+     иначе два одинаковых входа подряд. */
+  .pane--empty .allgroup{display:none}
+
+  .seam{padding:40px 0;text-align:center;color:var(--text-tertiary);font-size:13px}
+
+  @media(max-width:1023px){
+    .combo-grid{grid-template-columns:repeat(2,1fr)}
+  }
+  @media(max-width:767px){
+    /* .stub .h — не h1, а див: правило целилось в тег и мимо. На «Технологиях» заголовок короткий
+       и промах не был виден, на «Материалах» строка уезжала за правый край экрана. */
+    h1,.stub .h{font-size:26px;line-height:30px}
+    .combo-grid{grid-template-columns:1fr}
+    .wrap{width:min(100% - 32px, 1200px)}
+  }
+</style>
+</head>
+<body>
+<section class="top">
+  <div class="wrap">
+    <!-- крошки + заголовок остаются СТАРЫЕ (показаны бледным как контекст, мы их не трогаем) -->
+    <div class="stub">Главная / Каталог материалов<div class="h">Каталог материалов для полиграфии</div>— существующие крошки и заголовок, НЕ меняем —</div>
+
+    <div class="mk-tabs" id="tabs" role="tablist" aria-label="Группы материалов" style="margin-top:24px">
+      <button type="button" class="mk-tab is-active" role="tab" aria-selected="true" data-tab="paper">Дизайнерская бумага</button>
+      <button type="button" class="mk-tab" role="tab" aria-selected="false" data-tab="plastic">Пластик</button>
+      <button type="button" class="mk-tab" role="tab" aria-selected="false" data-tab="kalka">Калька</button>
+      <button type="button" class="mk-tab" role="tab" aria-selected="false" data-tab="film">Плёнки для ламинации</button>
+    </div>
+
+    <div class="pane show" data-pane="paper">
+      <div class="combo-grid">
+        <a href="https://mdmprint.ru/product/bumaga-len-verona-iceblink-slon-kost-300-g-m2" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/bumaga-len-verona-iceblink-slon-kost-300-g-m2.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/bumaga-len-verona-iceblink-slon-kost-300-g-m2-400.webp 400w, ../assets/img/mat/bumaga-len-verona-iceblink-slon-kost-300-g-m2.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Лён Verona Iceblink</span><span class="mk-tilelink__note">слоновая кость · 300 г/м²</span></span><i class="arr-ico"></i></a>
+        <a href="https://mdmprint.ru/product/bumaga-len-verona-iceblink-belyj-300-g-m2" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/bumaga-len-verona-iceblink-belyj-300-g-m2.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/bumaga-len-verona-iceblink-belyj-300-g-m2-400.webp 400w, ../assets/img/mat/bumaga-len-verona-iceblink-belyj-300-g-m2.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Лён Verona Iceblink</span><span class="mk-tilelink__note">белый · 300 г/м²</span></span><i class="arr-ico"></i></a>
+        <a href="https://mdmprint.ru/product/bumaga-verona-gladkaya-iceblink-350-g-m2" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/bumaga-verona-gladkaya-iceblink-350-g-m2.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/bumaga-verona-gladkaya-iceblink-350-g-m2-400.webp 400w, ../assets/img/mat/bumaga-verona-gladkaya-iceblink-350-g-m2.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Verona гладкая Iceblink</span><span class="mk-tilelink__note">350 г/м²</span></span><i class="arr-ico"></i></a>
+        <a href="https://mdmprint.ru/product/bumaga-zponge-natur-belyj-350-g-m2" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/bumaga-zponge-natur-belyj-350-g-m2.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/bumaga-zponge-natur-belyj-350-g-m2-400.webp 400w, ../assets/img/mat/bumaga-zponge-natur-belyj-350-g-m2.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Zponge</span><span class="mk-tilelink__note">натуральный белый · 350 г/м²</span></span><i class="arr-ico"></i></a>
+        <a href="https://mdmprint.ru/product/bumaga-vintage-laid-natur-belyj-255-g-m2" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/bumaga-vintage-laid-natur-belyj-255-g-m2.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/bumaga-vintage-laid-natur-belyj-255-g-m2-400.webp 400w, ../assets/img/mat/bumaga-vintage-laid-natur-belyj-255-g-m2.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Vintage Laid</span><span class="mk-tilelink__note">натуральный белый · 255 г/м²</span></span><i class="arr-ico"></i></a>
+        <a href="https://mdmprint.ru/product/bumaga-touch-paper-chernyj-300-g-m2" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/bumaga-touch-paper-chernyj-300-g-m2.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/bumaga-touch-paper-chernyj-300-g-m2-400.webp 400w, ../assets/img/mat/bumaga-touch-paper-chernyj-300-g-m2.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Touch Paper</span><span class="mk-tilelink__note">чёрный · 300 г/м²</span></span><i class="arr-ico"></i></a>
+      </div>
+      <a class="allgroup" href="https://mdmprint.ru/bumaga">Все материалы: Дизайнерская бумага (34) <i class="arr-ico"></i></a>
+    </div>
+
+    <div class="pane" data-pane="plastic">
+      <div class="combo-grid">
+        <a href="https://mdmprint.ru/product/plastik-synaps-450-g-m2-350-mkm" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/plastik-synaps-450-g-m2-350-mkm.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/plastik-synaps-450-g-m2-350-mkm-400.webp 400w, ../assets/img/mat/plastik-synaps-450-g-m2-350-mkm.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Synaps</span><span class="mk-tilelink__note">450 г/м² · 350 мкм</span></span><i class="arr-ico"></i></a>
+        <a href="https://mdmprint.ru/product/plastik-synaps-375-g-m2-300-mkm" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/plastik-synaps-375-g-m2-300-mkm.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/plastik-synaps-375-g-m2-300-mkm-400.webp 400w, ../assets/img/mat/plastik-synaps-375-g-m2-300-mkm.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Synaps</span><span class="mk-tilelink__note">375 г/м² · 300 мкм</span></span><i class="arr-ico"></i></a>
+        <a href="https://mdmprint.ru/product/plastik-synaps-300-g-m2-250-mkm" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/plastik-synaps-300-g-m2-250-mkm.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/plastik-synaps-300-g-m2-250-mkm-400.webp 400w, ../assets/img/mat/plastik-synaps-300-g-m2-250-mkm.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Synaps</span><span class="mk-tilelink__note">300 г/м² · 250 мкм</span></span><i class="arr-ico"></i></a>
+      </div>
+      <a class="allgroup" href="https://mdmprint.ru/bumaga">Все материалы: Пластик <i class="arr-ico"></i></a>
+    </div>
+
+    <div class="pane" data-pane="kalka">
+      <div class="combo-grid">
+        <a href="https://mdmprint.ru/product/bumaga-golden-star-crystal-kalka-200g-m2" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/bumaga-golden-star-crystal-kalka-200g-m2.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/bumaga-golden-star-crystal-kalka-200g-m2-400.webp 400w, ../assets/img/mat/bumaga-golden-star-crystal-kalka-200g-m2.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Golden Star Crystal</span><span class="mk-tilelink__note">200 г/м²</span></span><i class="arr-ico"></i></a>
+        <a href="https://mdmprint.ru/product/bumaga-golden-star-crystal-kalka-93g-m2" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/bumaga-golden-star-crystal-kalka-93g-m2.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/bumaga-golden-star-crystal-kalka-93g-m2-400.webp 400w, ../assets/img/mat/bumaga-golden-star-crystal-kalka-93g-m2.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">Golden Star Crystal</span><span class="mk-tilelink__note">93 г/м²</span></span><i class="arr-ico"></i></a>
+      </div>
+      <a class="allgroup" href="https://mdmprint.ru/bumaga">Все материалы: Калька <i class="arr-ico"></i></a>
+    </div>
+
+    <div class="pane" data-pane="film">
+      <div class="combo-grid">
+        <a href="https://mdmprint.ru/product/plenka-golograficheskaya-tochki" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/plenka-golograficheskaya-tochki.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/plenka-golograficheskaya-tochki-400.webp 400w, ../assets/img/mat/plenka-golograficheskaya-tochki.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">«Точки»</span><span class="mk-tilelink__note">голографическая плёнка</span></span><i class="arr-ico"></i></a>
+        <a href="https://mdmprint.ru/product/plenka-golograficheskaya-zvyozdy" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/plenka-golograficheskaya-zvyozdy.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/plenka-golograficheskaya-zvyozdy-400.webp 400w, ../assets/img/mat/plenka-golograficheskaya-zvyozdy.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">«Звёзды»</span><span class="mk-tilelink__note">голографическая плёнка</span></span><i class="arr-ico"></i></a>
+        <a href="https://mdmprint.ru/product/plenka-golograficheskaya-snezhinki" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/plenka-golograficheskaya-snezhinki.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/plenka-golograficheskaya-snezhinki-400.webp 400w, ../assets/img/mat/plenka-golograficheskaya-snezhinki.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">«Снежинки»</span><span class="mk-tilelink__note">голографическая плёнка</span></span><i class="arr-ico"></i></a>
+        <a href="https://mdmprint.ru/product/plenka-golograficheskaya-raduga" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/plenka-golograficheskaya-raduga.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/plenka-golograficheskaya-raduga-400.webp 400w, ../assets/img/mat/plenka-golograficheskaya-raduga.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">«Радуга»</span><span class="mk-tilelink__note">голографическая плёнка</span></span><i class="arr-ico"></i></a>
+        <a href="https://mdmprint.ru/product/plenka-prozrachnaya-glitter" class="mk-tilelink">
+          <span class="mk-tilelink__media"><img src="../assets/img/mat/plenka-prozrachnaya-glitter.webp" alt="" loading="lazy" width="800" height="600"
+            srcset="../assets/img/mat/plenka-prozrachnaya-glitter-400.webp 400w, ../assets/img/mat/plenka-prozrachnaya-glitter.webp 800w" sizes="(max-width:1023px) 45vw, 140px"></span>
+          <span class="mk-tilelink__txt"><span class="mk-tilelink__title">«Глиттер»</span><span class="mk-tilelink__note">прозрачная плёнка с глиттером</span></span><i class="arr-ico"></i></a>
+      </div>
+      <a class="allgroup" href="https://mdmprint.ru/laminacziya">Все материалы: Плёнки для ламинации <i class="arr-ico"></i></a>
+    </div>
+  </div>
+</section>
+
+<div class="seam">↓ ниже — старое тело страницы «Каталога материалов» (Портфолио, Отзывы, ЧАВО, форма) — НЕ трогаем</div>
+
+<script>
+  const tabs = document.getElementById('tabs');
+  tabs.addEventListener('click', e=>{
+    const b = e.target.closest('.mk-tab'); if(!b) return;
+    tabs.querySelectorAll('.mk-tab').forEach(x=>{
+      const on = x===b;
+      x.classList.toggle('is-active', on);
+      x.setAttribute('aria-selected', on);
+    });
+    document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('show', p.dataset.pane===b.dataset.tab));
+  });
+</script>
+</body>
+</html>

@@ -59,7 +59,9 @@
     .combo-grid{grid-template-columns:repeat(2,1fr)}
   }
   @media(max-width:767px){
-    h1{font-size:26px;line-height:30px}
+    /* .stub .h — не h1, а див: правило целилось в тег и мимо. На «Технологиях» заголовок короткий
+       и промах не был виден, на «Материалах» строка уезжала за правый край экрана. */
+    h1,.stub .h{font-size:26px;line-height:30px}
     .combo-grid{grid-template-columns:1fr}
     .wrap{width:min(100% - 32px, 1200px)}
   }
