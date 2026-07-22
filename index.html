@@ -30,6 +30,8 @@
   .note{background:var(--surface-card);border-radius:var(--radius-md);padding:16px 18px;
     font-size:13px;line-height:20px;color:var(--text-secondary);margin-top:8px}
   .note b{color:var(--text-primary)}
+  .refs{font-size:13px;line-height:20px;color:var(--text-secondary);margin:6px 2px 0}
+  .refs a{color:var(--text-primary);text-decoration:underline;text-underline-offset:2px}
 </style>
 </head>
 <body>
@@ -37,7 +39,7 @@
   <h1>MDMprint — каталог: прототипы и передача в разработку</h1>
   <p class="sub">Редизайн страниц каталога. Прототипы свёрстаны в HTML/CSS и являются
     <b>эталоном вёрстки</b>, а не картинкой: их переносят на WordPress как код.</p>
-  <p class="upd">Обновлено 20.07.2026</p>
+  <p class="upd">Обновлено 22.07.2026</p>
 
   <h2>Начать отсюда</h2>
   <a class="row" href="docs.html?doc=BRIEF_PM.md">
@@ -74,26 +76,10 @@
         остальное тело не трогаем. Тот же паттерн — для «Каталога материалов». См. docs/TEHNOLOGII_TOP.md.</span></span>
     <span class="arr">›</span>
   </a>
-  <a class="row" href="prototypes/header-catalog.html">
-    <span><b>Шапка и каталог</b>
-      <span class="d">Мегаменю на десктопе, drill-down на мобилке. Отдельный стенд шапки.</span></span>
-    <span class="arr">›</span>
-  </a>
-  <a class="row" href="prototypes/technology-template.html">
-    <span><b>Шаблон страницы технологии</b>
-      <span class="d">Ранний вариант. Актуальная сборка — в странице услуги выше.</span></span>
-    <span class="arr">›</span>
-  </a>
-  <a class="row" href="prototypes/buttons.html">
-    <span><b>Витрина кнопок</b>
-      <span class="d">Все состояния кнопок дизайн-системы на одной странице.</span></span>
-    <span class="arr">›</span>
-  </a>
-  <a class="row" href="prototypes/_sandbox-specs.html">
-    <span><b>Блок «Характеристики»<span class="tag tag--wip">не согласован</span></b>
-      <span class="d">Для шаблона материалов. Собран, но в эталон не перенесён — ждёт решения.</span></span>
-    <span class="arr">›</span>
-  </a>
+  <p class="refs"><b>Справочные стенды</b> (не эталон, для сверки деталей):
+    <a href="prototypes/header-catalog.html">мегаменю шапки</a> ·
+    <a href="prototypes/buttons.html">витрина кнопок ДС</a>.
+    Канон шапки живёт в <code>usluga.html</code>.</p>
 
   <h2>Документация</h2>
   <a class="row" href="docs.html?doc=DESIGN_SYSTEM.md">
