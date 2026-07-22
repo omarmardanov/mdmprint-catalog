@@ -1153,6 +1153,22 @@
   .cbm-check em{color:var(--text-tertiary);font-style:normal}
   /* .cbm-submit = .mk-btn--primary; своё — растяжка по ширине формы */
   .cbm-submit{width:100%;margin-top:3px}
+  /* ОШИБКА ОТПРАВКИ — четвёртое состояние формы (было три: пусто / ошибка полей / успех).
+     Не экран-заглушка, а плашка НАД кнопкой: экран увёл бы человека от формы, а с ним и
+     заполненные поля. Здесь данные остаются на месте, повтор — одно нажатие.
+     Запасной канал в тексте обязателен: если сервер лежит, вторая попытка тоже не пройдёт,
+     и телефон — единственное, что человеку осталось. */
+  .cbm-alert{display:flex;gap:var(--sp-10);align-items:flex-start;
+    background:#fdecea;border:1px solid #f5c6c0;border-radius:var(--radius-md);
+    padding:var(--sp-12) var(--sp-14);margin-bottom:var(--sp-12);
+    font-size:var(--t-caption);line-height:1.45;color:var(--text-primary)}
+  .cbm-alert[hidden]{display:none}
+  .cbm-alert svg{width:18px;height:18px;flex-shrink:0;color:var(--danger);margin-top:1px}
+  .cbm-alert a{color:var(--text-primary);font-weight:600;white-space:nowrap;
+    border-bottom:1px solid var(--border-strong)}
+  /* Пока запрос в пути: кнопка занята и не принимает второй клик — иначе на медленной сети
+     человек жмёт трижды и создаёт три заявки. */
+  .cbm-submit[data-busy]{pointer-events:none}
   /* Подвал формы. Раньше кнопка и примечание были прямыми детьми form и разделялись её
      gap:13px; теперь они внутри обёртки, и расстояние надо задать здесь — иначе слипаются. */
   .cbm-foot{display:flex;flex-direction:column;gap:var(--sp-10)}
@@ -3132,6 +3148,11 @@
             <span>Согласен получать новости и спецпредложения <em>(необязательно)</em></span>
           </label>
           <div class="cbm-foot">
+            <div class="cbm-alert" data-role="alert" hidden role="alert">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8v5M12 16.5v.01M10.3 3.9 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><b>Заявка не ушла.</b> Похоже, пропала связь. Данные сохранены — нажмите ещё раз.
+                Если не выходит, позвоните: <a href="tel:+74952561000">+7 (495) 256-10-00</a></span>
+            </div>
             <button type="submit" class="cbm-submit mk-btn mk-btn--primary" id="cbmSubmit" disabled>Жду звонка</button>
             <p class="cbm-fine">Мы используем номер только для обратного звонка по вашей заявке.</p>
           </div>
@@ -3236,6 +3257,11 @@
           <!-- .cbm-foot: на мобилке залипает внизу шторки, чтобы кнопка была видна всегда,
                а поля прокручивались под ней. На десктопе это обычный блок в потоке. -->
           <div class="cbm-foot">
+            <div class="cbm-alert" data-role="alert" hidden role="alert">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8v5M12 16.5v.01M10.3 3.9 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><b>Заявка не ушла.</b> Похоже, пропала связь. Данные сохранены — нажмите ещё раз.
+                Если не выходит, позвоните: <a href="tel:+74952561000">+7 (495) 256-10-00</a></span>
+            </div>
             <button type="submit" class="cbm-submit mk-btn mk-btn--primary" disabled>Отправить заявку</button>
             <p class="cbm-fine">Мы используем контакты только для ответа по вашей заявке.</p>
           </div>
@@ -3295,7 +3321,7 @@
                    иначе при загрузке скачет раскладка. Был PNG 1374 КБ в корне ассетов под именем
                    image.png — стал webp 53 КБ (−96%) в img/hero/ с осмысленным именем. -->
               <img src="../assets/img/hero/tisnenie-vizitka.webp" alt="Визитка с тиснением фольгой"
-                   width="1356" height="1017" fetchpriority="high">
+                   width="1356" height="1017" fetchpriority="high" srcset="../assets/img/hero/tisnenie-vizitka-720.webp 720w, ../assets/img/hero/tisnenie-vizitka.webp 1356w" sizes="(max-width:1023px) 100vw, 557px">
           </div>
         </div>
       </div>
@@ -3730,7 +3756,12 @@
                   <span>Согласен получать новости и спецпредложения <em>(необязательно)</em></span>
                 </label>
                 <div class="cbm-foot">
-                  <button type="submit" class="cbm-submit mk-btn mk-btn--primary" disabled>Задать вопрос</button>
+                  <div class="cbm-alert" data-role="alert" hidden role="alert">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8v5M12 16.5v.01M10.3 3.9 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><b>Заявка не ушла.</b> Похоже, пропала связь. Данные сохранены — нажмите ещё раз.
+                Если не выходит, позвоните: <a href="tel:+74952561000">+7 (495) 256-10-00</a></span>
+            </div>
+            <button type="submit" class="cbm-submit mk-btn mk-btn--primary" disabled>Задать вопрос</button>
                 </div>
               </form>
             </div>
@@ -3756,27 +3787,27 @@
         <div class="sec-head"><h2>Где применяется тиснение</h2></div>
         <div class="pcards">
           <a href="#" class="mk-mcard mk-mcard--link">
-            <span class="mk-mcard__media"><img src="../assets/img/products/vizitki.webp" alt="Визитки" loading="lazy" width="704" height="528"></span>
+            <span class="mk-mcard__media"><img src="../assets/img/products/vizitki.webp" alt="Визитки" loading="lazy" width="704" height="528" srcset="../assets/img/products/vizitki-352.webp 352w, ../assets/img/products/vizitki.webp 704w" sizes="(max-width:1023px) 45vw, 176px"></span>
             <span class="mk-mcard__body"><span class="mk-mcard__title">Визитки</span></span>
           </a>
           <a href="#" class="mk-mcard mk-mcard--link">
-            <span class="mk-mcard__media"><img src="../assets/img/products/papki.webp" alt="Папки" loading="lazy" width="704" height="528"></span>
+            <span class="mk-mcard__media"><img src="../assets/img/products/papki.webp" alt="Папки" loading="lazy" width="704" height="528" srcset="../assets/img/products/papki-352.webp 352w, ../assets/img/products/papki.webp 704w" sizes="(max-width:1023px) 45vw, 176px"></span>
             <span class="mk-mcard__body"><span class="mk-mcard__title">Папки</span></span>
           </a>
           <a href="#" class="mk-mcard mk-mcard--link">
-            <span class="mk-mcard__media"><img src="../assets/img/products/mnogostranichnaya.webp" alt="Каталоги и брошюры" loading="lazy" width="704" height="528"></span>
+            <span class="mk-mcard__media"><img src="../assets/img/products/mnogostranichnaya.webp" alt="Каталоги и брошюры" loading="lazy" width="704" height="528" srcset="../assets/img/products/mnogostranichnaya-352.webp 352w, ../assets/img/products/mnogostranichnaya.webp 704w" sizes="(max-width:1023px) 45vw, 176px"></span>
             <span class="mk-mcard__body"><span class="mk-mcard__title">Каталоги и брошюры</span></span>
           </a>
           <a href="#" class="mk-mcard mk-mcard--link">
-            <span class="mk-mcard__media"><img src="../assets/img/products/korobki.webp" alt="Коробки и упаковка" loading="lazy" width="704" height="528"></span>
+            <span class="mk-mcard__media"><img src="../assets/img/products/korobki.webp" alt="Коробки и упаковка" loading="lazy" width="704" height="528" srcset="../assets/img/products/korobki-352.webp 352w, ../assets/img/products/korobki.webp 704w" sizes="(max-width:1023px) 45vw, 176px"></span>
             <span class="mk-mcard__body"><span class="mk-mcard__title">Коробки и упаковка</span></span>
           </a>
           <a href="#" class="mk-mcard mk-mcard--link">
-            <span class="mk-mcard__media"><img src="../assets/img/products/plastikovye-karty.webp" alt="Пластиковые карты" loading="lazy" width="704" height="528"></span>
+            <span class="mk-mcard__media"><img src="../assets/img/products/plastikovye-karty.webp" alt="Пластиковые карты" loading="lazy" width="704" height="528" srcset="../assets/img/products/plastikovye-karty-352.webp 352w, ../assets/img/products/plastikovye-karty.webp 704w" sizes="(max-width:1023px) 45vw, 176px"></span>
             <span class="mk-mcard__body"><span class="mk-mcard__title">Пластиковые карты</span></span>
           </a>
           <a href="#" class="mk-mcard mk-mcard--link">
-            <span class="mk-mcard__media"><img src="../assets/img/products/listovaya.webp" alt="Открытки" loading="lazy" width="704" height="528"></span>
+            <span class="mk-mcard__media"><img src="../assets/img/products/listovaya.webp" alt="Открытки" loading="lazy" width="704" height="528" srcset="../assets/img/products/listovaya-352.webp 352w, ../assets/img/products/listovaya.webp 704w" sizes="(max-width:1023px) 45vw, 176px"></span>
             <span class="mk-mcard__body"><span class="mk-mcard__title">Открытки</span></span>
           </a>
         </div>
@@ -3794,7 +3825,7 @@
              нужны макро-рендеры самих отделок. -->
         <div class="combo-grid">
           <a href="#" class="mk-tilelink">
-            <span class="mk-tilelink__media"><img src="../assets/img/tech/kongrev.webp" alt="" loading="lazy" width="1536" height="1024"></span>
+            <span class="mk-tilelink__media"><img src="../assets/img/tech/kongrev.webp" alt="" loading="lazy" width="1536" height="1024" srcset="../assets/img/tech/kongrev-384.webp 384w, ../assets/img/tech/kongrev.webp 1536w" sizes="140px"></span>
             <span class="mk-tilelink__txt">
               <span class="mk-tilelink__title">Конгрев</span>
               <span class="mk-tilelink__note">Рельеф без фольги</span>
@@ -3805,7 +3836,7 @@
           <!-- ДЕМО, УДАЛИТЬ ПОСЛЕ ВЫБОРА КАДРА: та же плитка со старым, дальним планом.
                Сравниваем читаемость силуэта в медиа 140×93. -->
           <a href="#" class="mk-tilelink">
-            <span class="mk-tilelink__media"><img src="../assets/img/tech/kongrev2.webp" alt="" loading="lazy" width="1536" height="1024"></span>
+            <span class="mk-tilelink__media"><img src="../assets/img/tech/kongrev2.webp" alt="" loading="lazy" width="1536" height="1024" srcset="../assets/img/tech/kongrev2-384.webp 384w, ../assets/img/tech/kongrev2.webp 1536w" sizes="140px"></span>
             <span class="mk-tilelink__txt">
               <span class="mk-tilelink__title">Конгрев (старый кадр)</span>
               <span class="mk-tilelink__note">Рельеф без фольги</span>
@@ -3813,7 +3844,7 @@
             <i class="arr-ico"></i>
           </a>
           <a href="#" class="mk-tilelink">
-            <span class="mk-tilelink__media"><img src="../assets/img/tech/uf-lak.webp" alt="" loading="lazy" width="1536" height="1024"></span>
+            <span class="mk-tilelink__media"><img src="../assets/img/tech/uf-lak.webp" alt="" loading="lazy" width="1536" height="1024" srcset="../assets/img/tech/uf-lak-384.webp 384w, ../assets/img/tech/uf-lak.webp 1536w" sizes="140px"></span>
             <span class="mk-tilelink__txt">
               <span class="mk-tilelink__title">Выборочный УФ-лак</span>
               <span class="mk-tilelink__note">Глянец на матовом фоне</span>
@@ -3994,7 +4025,7 @@
                альфа не нужна. Рядом лежат cta-photo.webp (тот же кадр на белом) и
                cta-emboss.webp (тёмная обложка с вырезанной альфой). Низ срезает линия футера. -->
           <div class="cta-fig" aria-hidden="true">
-            <img src="../assets/img/cta-photo-dark.webp" alt="" width="840" height="1024">
+            <img src="../assets/img/cta-photo-dark.webp" alt="" width="840" height="1024" srcset="../assets/img/cta-photo-dark-640.webp 640w, ../assets/img/cta-photo-dark.webp 840w" sizes="(max-width:1023px) 60vw, 320px">
           </div>
         </div>
       </div>
@@ -4463,6 +4494,27 @@
     })();
 
   /* ── Модалки-лиды (обратный звонок + заявка): общая логика ── */
+  /* ── Отправка: одна на три формы ──────────────────────────────────────────────
+     В прототипе бэкенда нет, поэтому отправка сымитирована. Но сымитирована ЧЕСТНО:
+     с паузой и с возможностью отказа — иначе состояние «не отправилось» невозможно ни
+     нарисовать, ни показать заказчику, а на бою оно случается чаще всего остального.
+     Демонстрация: добавьте ?fail к адресу страницы — все формы начнут падать.
+     Разработчику: заменить тело sendLead на реальный fetch, остальное менять не нужно —
+     разметка плашки, блокировка кнопки и возврат к форме уже разведены по состояниям. */
+  const FAIL_DEMO = location.search.includes('fail');
+  function sendLead(payload){
+    return new Promise((resolve, reject)=>{
+      setTimeout(()=> FAIL_DEMO ? reject(new Error('network')) : resolve({ok:true}), 700);
+    });
+  }
+  /* Обёртка кнопки на время запроса: подпись меняется, повторный клик не проходит.
+     Возвращает функцию отката — её зовут и на успехе, и на ошибке. */
+  function busy(btn){
+    const label = btn.textContent;
+    btn.dataset.busy = '1'; btn.disabled = true; btn.textContent = 'Отправляем…';
+    return ()=>{ delete btn.dataset.busy; btn.disabled = false; btn.textContent = label; };
+  }
+
   function setupLead(back, triggerSel){
     if(!back) return;
     const formWrap = back.querySelector('[data-role="form"]');
@@ -4730,7 +4782,17 @@
       set('[data-done-contact]', way === 'E-mail' && mailEl ? mailEl.value.trim() : phone.value.trim());
       const ctxSrc = form.querySelector('input[name="context"]');
       set('[data-done-ctx]', ctxSrc && ctxSrc.value);
-      formWrap.hidden = true; doneWrap.hidden = false;
+
+      const alert = form.querySelector('[data-role="alert"]');
+      const btn   = form.querySelector('button[type="submit"]');
+      if(alert) alert.hidden = true;          // прошлую ошибку гасим до новой попытки
+      const done = busy(btn);
+      sendLead({way, page: location.href})
+        .then(()=>{ done(); formWrap.hidden = true; doneWrap.hidden = false; })
+        .catch(()=>{
+          done();
+          if(alert){ alert.hidden = false; alert.scrollIntoView({block:'nearest', behavior:'smooth'}); }
+        });
     });
 
     refresh();
@@ -4818,7 +4880,16 @@
       }
       consent.closest('.cbm-check')?.classList.remove('invalid');
       // на реале: POST { comment, contact_way, contact, name, promo, consent:true, page, ts } + антиспам/rate-limit
-      formWrap.hidden = true; doneWrap.hidden = false;
+      const alert = form.querySelector('[data-role="alert"]');
+      const btn   = form.querySelector('button[type="submit"]');
+      if(alert) alert.hidden = true;
+      const done = busy(btn);
+      sendLead({page: location.href})
+        .then(()=>{ done(); formWrap.hidden = true; doneWrap.hidden = false; })
+        .catch(()=>{
+          done();
+          if(alert){ alert.hidden = false; alert.scrollIntoView({block:'nearest', behavior:'smooth'}); }
+        });
     });
 
     // ── Мобилка: кнопка «Задать вопрос» → шторка снизу (та же форма). ──
